@@ -1,34 +1,16 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
-// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
-
-
-using IdentityServer4.EntityFramework.DbContexts;
-using IdentityServer4.EntityFramework.Mappers;
-using IdentityServer4.EntityFramework.Storage;
+﻿using Duende.IdentityServer.EntityFramework.DbContexts;
+using Duende.IdentityServer.EntityFramework.Mappers;
+using Duende.IdentityServer.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using System.Linq;
 
 namespace IdentityServer
 {
     public class SeedData
     {
-        public static void EnsureSeedData(string connectionString)
+        public static void EnsureSeedData(WebApplication app)
         {
-            var services = new ServiceCollection();
-            services.AddOperationalDbContext(options =>
-            {
-                options.ConfigureDbContext = db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
-            });
-            services.AddConfigurationDbContext(options =>
-            {
-                options.ConfigureDbContext = db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
-            });
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
 
@@ -68,7 +50,7 @@ namespace IdentityServer
                 Log.Debug("IdentityResources already populated");
             }
 
-            if (!context.ApiResources.Any())
+            if (!context.ApiScopes.Any())
             {
                 Log.Debug("ApiScopes being populated");
                 foreach (var resource in Config.ApiScopes.ToList())
@@ -80,6 +62,23 @@ namespace IdentityServer
             else
             {
                 Log.Debug("ApiScopes already populated");
+            }
+
+            if (!context.IdentityProviders.Any())
+            {
+                Log.Debug("OIDC IdentityProviders being populated");
+                context.IdentityProviders.Add(new OidcProvider
+                {
+                    Scheme = "demoidsrv",
+                    DisplayName = "IdentityServer",
+                    Authority = "https://demo.duendesoftware.com",
+                    ClientId = "login",
+                }.ToEntity());
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("OIDC IdentityProviders already populated");
             }
         }
     }
