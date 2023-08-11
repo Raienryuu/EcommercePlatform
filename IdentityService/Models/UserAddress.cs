@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IdentityService.Models {
-    public class UserAddress {
+    public class UserAddress : IUserData {
         [Key]
         public int Id {get; set;}
         public string? Name { get; set; }

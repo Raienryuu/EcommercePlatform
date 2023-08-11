@@ -1,6 +1,6 @@
 namespace IdentityService.Models
 {
-    public class NewUser
+    public class NewUser : IUserData
     {
         public required string UserName { get; set; }
         public required string Password { get; set; }

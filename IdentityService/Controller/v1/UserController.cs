@@ -1,5 +1,6 @@
 ﻿using IdentityService.Data;
 using IdentityService.Models;
+using IdentityService.Models.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
@@ -30,8 +31,14 @@ namespace IdentityService.Controller
         public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
         {
             PasswordHasher<IdentityUser>  passwordHasher = new();
-            //data validation
-            IdentityUser newUser = new(){
+
+            bool isValid = new NewUserValidator().Validate(registrationData);
+
+            if (!isValid) {  
+                return BadRequest("Invalid user data");
+            }
+
+            IdentityUser newUser = new () {
                 UserName = registrationData.UserName,
                 Email = registrationData.Email,
                 PhoneNumber = registrationData.PhoneNumber,
@@ -50,7 +57,7 @@ namespace IdentityService.Controller
                 await _db.SaveChangesAsync();
                 return Ok();
             } else {
-                return BadRequest("Invalid user data");
+                return BadRequest("Unable to register a new user.");
             }
         }
 
@@ -58,17 +65,17 @@ namespace IdentityService.Controller
         [Route("login")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<JwtSecurityToken> > Login(
+        public async Task<ActionResult> Login(
             [FromBody] UserCredentials credentials)
         {
             if (credentials is null)
             {
-                throw new ArgumentNullException(nameof(credentials));
+                return BadRequest("No user credentials have been suplied.");
             }
 
             var user = await _userManager.FindByNameAsync(credentials.Login);
             if (user is not null){
-                var result = await _signinManager.PasswordSignInAsync(user, credentials.Password, false, false);
+                var result = await _signinManager.PasswordSignInAsync(user, credentials.Password, true, false);
                 if(result.Succeeded)
                 {
                     return Accepted();
@@ -76,18 +83,6 @@ namespace IdentityService.Controller
             }
 
             return BadRequest("{\"message\":\"Not found matching data in database.\"}");
-        }
-
-        // PUT api/<AuthorizationController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<AuthorizationController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

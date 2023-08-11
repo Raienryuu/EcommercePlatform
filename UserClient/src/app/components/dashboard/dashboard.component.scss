@@ -1,0 +1,21 @@
+div.dashboard {
+    background-color: indigo;
+    color: #fff;
+    height: 3rem;
+    padding: 1rem;
+    display: flex;
+    flex-flow: row;
+}
+
+div.left {
+    text-align: left;
+    flex: auto;
+}
+
+div.right {
+    text-align: right;
+    flex: auto;
+}
+
+
+
