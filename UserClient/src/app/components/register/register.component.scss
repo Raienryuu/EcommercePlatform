@@ -1,22 +1,26 @@
-div.loginPanel {
+div.registerPanel {
     margin:auto;
-    width: clamp(100px, 50%, 500px);
+    width: clamp(100px, 70%, 900px);
 }
 
-.loginForm {
+.registerForm {
+    margin: 4rem;
     border-width: 1px;
     border-style: solid;
     border-radius: 10px;
     border-color: #dfdfdf;
-    padding: 2rem;
-    display: flex;
+    padding: 4rem;
+    display: grid;
+    grid-template-columns: auto auto;
     flex-flow: column;
-    flex-direction: column;
+    flex-direction: row;
+    column-gap: 2rem;
 }
 
 .inputs {
     margin: 0.1rem;
     border-radius: 0.1rem;
+    padding: 1rem;
     display: grid;
     width: 100%;
 }
@@ -28,13 +32,5 @@ div.loginPanel {
     width: 100%;
     margin: 0.2rem;
 }
-
-div.register {
-    display: flex;
-    align-items: center;
-    flex-direction: column;   
-}
-
-
 
 

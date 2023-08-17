@@ -1,9 +1,13 @@
 ﻿using IdentityService.Data;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics;
+using System.Net;
+using System.Text;
 
 namespace IdentityService
 {
@@ -18,7 +22,6 @@ namespace IdentityService
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add services to the container.
             var connectionString = Configuration.GetConnectionString("DefaultConnection") ??
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -26,20 +29,15 @@ namespace IdentityService
                 .LogTo(message => Debug.WriteLine(message))
                 );
 
-            //builder.Services.AddAuthentication().AddIdentityCookies();
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddUserManager<AspNetUserManager<IdentityUser>>()
-                .AddSignInManager<SignInManager<IdentityUser>>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            services.AddIdentity<IdentityUser, IdentityRole>(options => 
+                options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddLogging(options =>
-            options.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning)); 
+                options.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning)); 
 
-
-            var env = Configuration["ASPNETCORE_ENVIRONMENT"];
-            if (env == Environments.Development)
+            if (Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development)
             {
                 services.AddDatabaseDeveloperPageExceptionFilter();
                 services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
@@ -49,23 +47,25 @@ namespace IdentityService
                     .AllowAnyHeader();
                 }));
             }
-
+            
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            })
-            .AddCookie(setup => setup.ExpireTimeSpan = TimeSpan.FromMinutes(60))
-            .AddOpenIdConnect(options =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
             {
-                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.Authority = identityUrl.ToString();
-                options.SignedOutRedirectUri = callBackUrl.ToString();
-                options.ClientSecret = "secret";
-                options.ResponseType = useLoadTest ? "code id_token token" : "code id_token";
-                options.SaveTokens = true;
-                options.GetClaimsFromUserInfoEndpoint = true;
-                options.RequireHttpsMetadata = false;
-                options.Scope.Add("products");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Issuer"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
+                        .GetBytes(Configuration["Jwt:Key"]))
+                };
             });
 
             services.AddSwaggerGen(c =>
@@ -90,19 +90,40 @@ namespace IdentityService
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
                 });
+                app.UseExceptionHandler("/Error");
             }
             else
             {
-                app.UseExceptionHandler("/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCookiePolicy(
+            new CookiePolicyOptions
+                {
+                    Secure = CookieSecurePolicy.Always
+                }
+            );
 
             app.UseCors("MyPolicy");
 
             // app.UseHttpsRedirection();
 
+            // var roleManager = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope()
+            //     .ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // var rolesToAdd = new List<string> { "User"};
+            // foreach (var roleName in rolesToAdd)
+            // {
+            //     var roleExists = roleManager.RoleExistsAsync(roleName).Result;
+            //     if (!roleExists)
+            //     {
+            //         roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
+            //     }
+            // }
+
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

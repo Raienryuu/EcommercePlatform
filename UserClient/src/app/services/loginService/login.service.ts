@@ -22,9 +22,10 @@ export class LoginService {
       'http://localhost:5156/api/v1/User/login', user, options);
   }
 
+
   TestRequest(): Observable<any> {
     return this.httpClient.get<Observable<any> >(
-      'http://localhost:5286/weatherforecast', { withCredentials: true}
+      'http://localhost:5156/api/v1/User/test', { withCredentials: true}
     );
   }
 

@@ -1,0 +1,93 @@
+<div class="registerPanel">
+    <form class="registerForm">
+        <mat-form-field class="inputs">
+            <mat-label>Login</mat-label>
+            <input matInput type="text" name="login" [(ngModel)]="user.UserName"
+                required>
+            <mat-error> Login is empty</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="inputs">
+            <mat-label>Email</mat-label>
+            <input matInput type="text" name="email" [(ngModel)]="user.Email"
+                required>
+            <mat-error> Email is empty</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="inputs">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" name="password" [(ngModel)]="user.Password"
+                required>
+            <mat-error *ngIf="user.Password != confirmPassword"> Password is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Confirm password</mat-label>
+            <input matInput type="password" name="password2" [(ngModel)]="confirmPassword"
+                required>
+            <mat-error *ngIf="user.Password != confirmPassword"> Password is empty</mat-error>
+        </mat-form-field>
+        
+
+        <mat-form-field class="inputs">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" name="name" [(ngModel)]="user.Name"
+                required>
+            <mat-error> Name is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Last name</mat-label>
+            <input matInput type="text" name="lastname" [(ngModel)]="user.Lastname"
+                required>
+            <mat-error> Last name is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field>
+            <mat-label>Favorite food</mat-label>
+            <mat-select>
+              <mat-option value="kokos">Kokos</mat-option>
+              <mat-option value="bana">Bana</mat-option>
+            </mat-select>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Phone number</mat-label>
+            <input matInput type="text" name="phonenumber" [(ngModel)]="user.PhoneNumber"
+                required>
+            <mat-error> Phone number is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Address</mat-label>
+            <input matInput type="text" name="address" [(ngModel)]="user.Address"
+                required>
+            <mat-error> Address is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>City</mat-label>
+            <input matInput type="text" name="city" [(ngModel)]="user.City"
+                required>
+            <mat-error> City is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Postal code</mat-label>
+            <input matInput type="text" name="zipcode" [(ngModel)]="user.ZIPCode"
+                required>
+            <mat-error> Postal code is empty</mat-error>
+        </mat-form-field>
+        
+        <mat-form-field class="inputs">
+            <mat-label>Country</mat-label>
+            <input matInput type="text" name="country" [(ngModel)]="user.Country"
+                required>
+            <mat-error> Country is empty</mat-error>
+        </mat-form-field>
+        
+        <button mat-raised-button class="buttons" color="primary"
+            (click)="Register()">Register</button>
+    </form>
+</div>
+
