@@ -1,17 +1,32 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { NewUser } from 'src/app/Models/user-registration-form';
+import { CountriesNoPhonesSorted } from './RegisterRawData';
+import { UserService } from 'src/app/services/userService/user.service';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  Validators,
+} from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+import * as intlTelInput from 'intl-tel-input';
+import { ToNewUser, registerForm } from './RegisterTemplateData';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
   user!: NewUser;
   confirmPassword: string;
-  
-  constructor(){
+  registerForm: FormGroup;
+  passwordMatcher1: PasswordsErrorStateMatcher;
+  passwordMatcher2: PasswordsErrorStateMatcher;
+  phonePrefixElement: intlTelInput.Plugin | null;
+  countriesNoPhonesSorted = CountriesNoPhonesSorted;
+
+  constructor(private userService: UserService) {
     this.user = {
       UserName: '',
       Password: '',
@@ -23,54 +38,69 @@ export class RegisterComponent {
       Address: '',
       City: '',
       ZIPCode: '',
-      Country: ''
+      Country: '',
     };
     this.confirmPassword = '';
+
+    this.registerForm = registerForm;
+    this.passwordMatcher1 = new PasswordsErrorStateMatcher();
+    this.passwordMatcher2 = new PasswordsErrorStateMatcher();
+    this.phonePrefixElement = null;
   }
 
-  
-
-
-  ngOnInit(): void{
-    userForm : new FormGroup({
-      UserName: new FormControl(this.user.UserName, [
-        Validators.required, Validators.minLength(3)
-      ]),
-      Password: new FormControl(this.user.Password, [
-        Validators.required, Validators.minLength(3),
-      ]),
-      Name: new FormControl(this.user.Name, [
-        Validators.required
-      ]),
-      Lastname: new FormControl(this.user.Lastname, [
-        Validators.required
-      ]),
-      Email: new FormControl(this.user.Email, [
-        Validators.required, Validators.email
-      ]),
-      PhonePrefix: new FormControl(this.user.PhonePrefix, [
-        Validators.required
-      ]),
-      PhoneNumber: new FormControl(this.user.PhoneNumber, [
-        Validators.required
-      ]),
-      Address: new FormControl(this.user.Address, [
-        Validators.required
-      ]),
-      City: new FormControl(this.user.City, [
-        Validators.required
-      ]),
-      ZIPCode: new FormControl(this.user.ZIPCode, [
-        Validators.required
-      ]),
-      Country: new FormControl(this.user.Country, [
-        Validators.required
-      ])
-    });
+  Register(): void {
+    if (this.registerForm.valid) {
+      this.user = ToNewUser(this.registerForm);
+      console.log(this.user);
+      this.userService
+        .Register(this.user)
+        .subscribe((result: any) => console.log(result));
+    }
+  }
+  ngAfterViewInit(): void {
+    const input = document.querySelector('#phoneNumber');
+    if (input) {
+      this.phonePrefixElement = window.intlTelInput(input, {
+        separateDialCode: false,
+        preferredCountries: [],
+      });
+      input.addEventListener('countrychange', () => {
+        this.UpdatePhonePrefix(this.phonePrefixElement);
+      });
+    }
   }
 
+  UpdatePhonePrefix($event: any): void {
+    this.registerForm
+      .get('phonePrefix')
+      ?.setValue(this.phonePrefixElement?.getSelectedCountryData()?.dialCode);
+    this.registerForm.get('phoneNumber')?.updateValueAndValidity();
+  }
+}
 
-  Register(): void{
-    console.log(this.user);
+class PasswordsErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl, form: FormGroupDirective): boolean {
+    const passwordControl = form.control.get('password');
+    const confirmPasswordControl = form.control.get('password2');
+
+    if (control.touched && control.invalid) {
+      return true;
+    }
+
+    if (form.submitted && control.invalid) {
+      return true;
+    }
+
+    if (
+      passwordControl &&
+      confirmPasswordControl &&
+      passwordControl.valid &&
+      confirmPasswordControl.valid &&
+      passwordControl?.touched &&
+      confirmPasswordControl?.touched
+    ) {
+      return passwordControl.value !== confirmPasswordControl.value;
+    }
+    return false;
   }
 }

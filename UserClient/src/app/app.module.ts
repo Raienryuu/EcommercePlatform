@@ -14,13 +14,17 @@ import { MatInputModule } from '@angular/material/input'
 import { MatGridListModule } from '@angular/material/grid-list';
 import { RegisterComponent } from './components/register/register.component';
 import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
+
+
+
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     DashboardComponent,
-    RegisterComponent,
+    RegisterComponent
 
   ],
   imports: [
@@ -32,7 +36,8 @@ import { MatSelectModule } from '@angular/material/select';
     MatButtonModule,
     MatInputModule,
     MatGridListModule,
-    MatSelectModule
+    MatSelectModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

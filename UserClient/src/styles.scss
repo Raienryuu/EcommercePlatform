@@ -9,3 +9,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mat-mdc-form-field-focus-overlay {
     background: rgba(77, 64, 255, 0) !important;
   }
+
+.mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label {
+    color: var(--mdc-filled-text-field-label-text-color) !important;
+}
