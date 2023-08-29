@@ -11,26 +11,26 @@ div.registerPanel {
   border-radius: 10px;
   border-color: #dfdfdf;
   padding: 3rem;
+  padding-bottom: 6rem;
   display: grid;
   grid-template-columns: auto auto;
   place-items: center;
+  grid-gap: 2%;
+  grid-row: 2%;
+  box-sizing: border-box;
 }
 
 .inputs {
-  margin: 0.1rem;
-  border-radius: 0.1rem;
-  padding: 0rem;
-  width: 90%;
+  width: 100%;
 }
 
 .buttons {
   display: flex;
   justify-content: center;
   align-items: center;
-  grid-row-start: 7;
-  grid-row-end: 8;
   width: 70%;
   margin: 0.2rem;
+  padding-bottom: 0;
 }
 
 :host ::ng-deep .mdc-text-field {
@@ -49,5 +49,6 @@ div.registerPanel {
   grid-column-end: 3;
 }
 
-
-
+button {
+  width: 70%;
+}

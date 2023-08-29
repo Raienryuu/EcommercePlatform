@@ -51,7 +51,7 @@ export class RegisterComponent {
   Register(): void {
     if (this.registerForm.valid) {
       this.user = ToNewUser(this.registerForm);
-      console.log(this.user);
+
       this.userService
         .Register(this.user)
         .subscribe((result: any) => console.log(result));
@@ -63,7 +63,9 @@ export class RegisterComponent {
       this.phonePrefixElement = window.intlTelInput(input, {
         separateDialCode: false,
         preferredCountries: [],
+        initialCountry: 'auto',
       });
+
       input.addEventListener('countrychange', () => {
         this.UpdatePhonePrefix(this.phonePrefixElement);
       });
