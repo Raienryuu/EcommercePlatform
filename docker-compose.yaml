@@ -1,0 +1,19 @@
+services:
+  rabbiclient:
+    build: 
+      context: AmqpTests
+      dockerfile: Dockerfile
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+    expose:
+      - 5672
+    environment:
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+
+    

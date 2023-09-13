@@ -1,8 +1,12 @@
 
+using System.Diagnostics;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -14,7 +18,6 @@ namespace ProductService
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -28,26 +31,19 @@ namespace ProductService
                     .AllowAnyHeader();
             }));
 
-            var Configuration = builder.Configuration;
-            builder.Services.AddAuthentication(options =>
+            builder.Configuration.Sources.Add(new JsonConfigurationSource
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Issuer"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-                        .GetBytes(Configuration["Jwt:Key"] ?? throw new Exception("Jwt:Key is null")))
-                };
+                Path = "appsettings.Development.json",
+                Optional = false,
+                ReloadOnChange = true
             });
+            
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+            builder.Services.AddDbContext<ProductDbContext>(options =>
+                options.UseSqlServer(connectionString)
+                .LogTo(message => Debug.WriteLine(message))
+            );
 
             var app = builder.Build();
 
@@ -55,14 +51,14 @@ namespace ProductService
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI( options =>
+                {
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+                    options.RoutePrefix = string.Empty;
+                });
                 app.UseCors("DevPolicy");
             }
-
-            //app.UseHttpsRedirection();
             
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.MapControllers();
 
