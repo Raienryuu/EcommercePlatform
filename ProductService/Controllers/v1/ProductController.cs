@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -38,7 +39,7 @@ namespace ProductService.Controllers
         public async Task<ActionResult<IEnumerable<Product>>> GetProductsPage(
              int page, int pageSize, [FromQuery] SearchFilers? filters)
         {
-            if (page < 1 && pageSize < 1 || pageSize > 200)
+            if (page < 1 || pageSize < 1 || pageSize > 200)
             {
                 return BadRequest("Page and PageSize must be greater than 0 and less than 200");
             }
@@ -76,7 +77,7 @@ namespace ProductService.Controllers
                 query = query.Where(p => p.Quantity >= filters.MinQuantity);
             }
 
-            // TODO: product soring
+            // TODO: product sorting
             // query = query.OrderBy(p => p.Name);
 
             return query;

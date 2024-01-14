@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using ProductService.Migrations;
 
 namespace ProductService.Models;
 public class Product
@@ -19,7 +17,7 @@ public class Product
     [ConcurrencyCheck]
     public byte[]? ConcurrencyStamp { get; set; }
 
-    internal void RefreshConcurrencyStamp()
+    public void RefreshConcurrencyStamp()
     {
         ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4];
     }

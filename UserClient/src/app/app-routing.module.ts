@@ -2,11 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
+import { CatalogComponent } from './components/catalog/catalog.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'register' },
+  { path: '', pathMatch: 'full', redirectTo: 'products' },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
+  { path: 'products', component: CatalogComponent}
 ];
 
 @NgModule({
