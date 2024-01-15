@@ -29,7 +29,10 @@ namespace ProductService.Controllers
         public async Task<ActionResult<Product>> GetProduct(int id)
         {
             var result = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
-            return Ok(result);
+            if (result is not null){
+                return Ok(result);
+            }
+            return NoContent();
         }
 
         [HttpGet]
