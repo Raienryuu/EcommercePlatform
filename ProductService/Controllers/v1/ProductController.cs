@@ -52,6 +52,10 @@ namespace ProductService.Controllers
 
       var products = await query.Skip((page - 1) * pageSize)
           .Take(pageSize).ToListAsync();
+      if(products.Count == 0)
+      {
+        return NoContent();
+      }
       return Ok(products);
     }
 

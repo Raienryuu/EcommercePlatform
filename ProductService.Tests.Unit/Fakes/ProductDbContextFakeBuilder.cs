@@ -59,6 +59,23 @@ public class ProductDbContextFakeBuilder : IDisposable
     return this;
   }
 
+  public ProductDbContextFakeBuilder WithCategories()
+  {
+    _db.ProductCategories.Add(new ProductCategory
+    {
+      CategoryName = "Tableware"
+    });
+    _db.ProductCategories.Add(new ProductCategory
+    {
+      CategoryName = "Clothing"
+    });
+    _db.ProductCategories.Add(new ProductCategory
+    {
+      CategoryName = "Sample category"
+    });
+    return this;
+  }
+
   public ProductDbContextFake Build()
   {
     _db.SaveChanges();
