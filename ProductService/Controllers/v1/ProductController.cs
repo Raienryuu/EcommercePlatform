@@ -45,7 +45,8 @@ namespace ProductService.Controllers
     {
       if (page < 1 || pageSize < 1 || pageSize > 200)
       {
-        return BadRequest("Page and PageSize must be greater than 0 and less than 200");
+        return BadRequest(CreateErrorResponse(
+          "Page and PageSize must be greater than 0 and PageSize less than 200"));
       }
 
       IQueryable<Product> query = ApplySearchFilters(filters);
@@ -104,6 +105,7 @@ namespace ProductService.Controllers
         return BadRequest(CreateErrorResponse("Category not found"));
       }
 
+      newProduct.RefreshConcurrencyStamp();
       _db.Products.Add(newProduct);
       await _db.SaveChangesAsync();
 
@@ -118,7 +120,7 @@ namespace ProductService.Controllers
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status304NotModified)]
-    public async Task<ActionResult> UpdateProduct(int id, [FromBody] Product updatedProduct)
+    public async Task<ActionResult<Product>> UpdateProduct(int id, [FromBody] Product updatedProduct)
     {
       var oldProduct = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
       if (oldProduct is null)

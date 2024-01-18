@@ -14,7 +14,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "White Cup",
       Description = "Fairly big cup",
       Price = 15,
-      Quantity = 0
+      Quantity = 0,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -22,7 +23,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "Red Cup",
       Description = "Fairly big cup",
       Price = 20,
-      Quantity = 10
+      Quantity = 10,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -30,7 +32,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "Blue Cup",
       Description = "Fairly big cup",
       Price = 25,
-      Quantity = 6
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -38,7 +41,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "Green Cup",
       Description = "Fairly big cup",
       Price = 30,
-      Quantity = 50
+      Quantity = 50,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -46,7 +50,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "Yellow Cup",
       Description = "Fairly big cup",
       Price = 35,
-      Quantity = 50
+      Quantity = 50,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -54,7 +59,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Name = "T-shirt",
       Description = "One size fits all",
       Price = 1500,
-      Quantity = 34
+      Quantity = 34,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     return this;
   }

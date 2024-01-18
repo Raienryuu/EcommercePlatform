@@ -1,6 +1,8 @@
 using System.Collections;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using ProductService.Controllers;
@@ -140,8 +142,66 @@ public class ProductControllerTests
 
       var result = await _cut.AddNewProduct(p);
 
-      Assert.Equal(typeof(CreatedResult), result.GetType());
-
+      Assert.IsType<CreatedResult>(result);
     }
+    [Fact]
+    public async Task AddNewProduct_ProductMissingRequiredField_DbUpdateException()
+    {
+      Product p = new(){
+        Name = "Sample product",
+        CategoryId = 1,
+        Price = 15m,
+        Description = "Do not buy",
+        Quantity = 0
+      };
+      p.Name = null;
+      var _db = new ProductDbContextFakeBuilder().
+        WithCategories().Build();
+      var _cut = new ProductsController(_nullLogger, _db);
+
+      var e = Record.ExceptionAsync(
+        async () => await _cut.AddNewProduct(p));
+
+      Assert.IsType<DbUpdateException>(e.Result);
+    }
+    [Fact]
+    public async Task AddNewProduct_InvalidProductCategory_DbUpdateException()
+    {
+      Product p = new(){
+        Name = "Sample product",
+        CategoryId = 1,
+        Price = 15m,
+        Description = "Do not buy",
+        Quantity = 0
+      };
+      p.CategoryId = -1;
+      var _db = new ProductDbContextFakeBuilder().
+        WithCategories().Build();
+      var _cut = new ProductsController(_nullLogger, _db)
+      {
+        Url = Substitute.For<IUrlHelper>()
+      };
+      var result = await _cut.AddNewProduct(p);
+
+      Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateProduct_ValidProduct_ConcurrencyStampChanged()
+    {
+      var _db = new ProductDbContextFakeBuilder().
+        WithCategories().WithProducts().Build();
+      var _cut = new ProductsController(_nullLogger, _db);
+      var productResult = await _cut.GetProduct(1);
+      Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
+      newProductData.Description = "Fresh and intriguing description";
+      byte[] oldStamp = newProductData.ConcurrencyStamp!;
+
+      var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+
+      Product updatedProduct = ((result.Result as OkObjectResult)!.Value as Product)!;
+      Assert.NotEqual(oldStamp, updatedProduct.ConcurrencyStamp);
+    }
+    
 }
 
