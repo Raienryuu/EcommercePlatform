@@ -53,7 +53,7 @@ namespace ProductService.Controllers
 
       var products = await query.Skip((page - 1) * pageSize)
           .Take(pageSize).ToListAsync();
-      if(products.Count == 0)
+      if (products.Count == 0)
       {
         return NoContent();
       }
@@ -125,17 +125,25 @@ namespace ProductService.Controllers
       var oldProduct = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
       if (oldProduct is null)
       {
-        return NotFound("Product not found");
+        return NotFound(CreateErrorResponse("Product not found"));
+      }
+
+      if (!DoesCategoryExists(updatedProduct.CategoryId).Result)
+      {
+        return NotFound(CreateErrorResponse("Given category does not exists"));
       }
 
       if (updatedProduct.ConcurrencyStamp is not null &&
-          oldProduct.ConcurrencyStamp!.SequenceEqual(updatedProduct.ConcurrencyStamp))
+        oldProduct.ConcurrencyStamp!.SequenceEqual(updatedProduct.ConcurrencyStamp))
       {
 
         oldProduct.Price = updatedProduct.Price;
         oldProduct.Quantity = updatedProduct.Quantity;
         oldProduct.Name = updatedProduct.Name;
         oldProduct.Description = updatedProduct.Description;
+        oldProduct.CategoryId = updatedProduct.CategoryId;
+        oldProduct.Category = await _db.ProductCategories
+          .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
 
         oldProduct.RefreshConcurrencyStamp();
         await _db.SaveChangesAsync();
@@ -149,6 +157,14 @@ namespace ProductService.Controllers
     private static string CreateErrorResponse(string message)
     {
       return $"{{\"type\": \"error\", \"message\": \"{message}\"}}";
+    }
+
+    private async Task<bool> DoesCategoryExists(int categoryId)
+    {
+      var result = await _db.ProductCategories.FirstOrDefaultAsync(
+        cat => cat.Id == categoryId);
+      return result is not null;
+
     }
   }
 }

@@ -36,8 +36,9 @@ public class ProductControllerTests
   [Fact]
   public async Task GetProdutsPage_NameFilter_ProductsThatNameContainsSubstring()
   {
-    SearchFilters nameFilter = new (){
-        Name = "blue"
+    SearchFilters nameFilter = new()
+    {
+      Name = "blue"
     };
     int PAGE = 1;
     int PAGE_SIZE = 20;
@@ -55,153 +56,188 @@ public class ProductControllerTests
     }
   }
 
-    [Fact]
-    public async Task GetProdutsPage_PriceFilter_ProductsBetweenMinAndMaxPrice()
+  [Fact]
+  public async Task GetProdutsPage_PriceFilter_ProductsBetweenMinAndMaxPrice()
+  {
+    SearchFilters priceFilter = new()
     {
-        SearchFilters priceFilter = new()
-        {
-            MinPrice = 30,
-            MaxPrice = 40
-        };
-        int PAGE = 1;
-        int PAGE_SIZE = 20;
-        var _db = new ProductDbContextFakeBuilder()
-        .WithProducts().Build();
-        var _cut = new ProductsController(_nullLogger, _db);
+      MinPrice = 30,
+      MaxPrice = 40
+    };
+    int PAGE = 1;
+    int PAGE_SIZE = 20;
+    var _db = new ProductDbContextFakeBuilder()
+    .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
 
-        var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, priceFilter);
+    var result = await _cut.GetProductsPage(
+  PAGE, PAGE_SIZE, priceFilter);
 
     IEnumerable<Product> data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
-        foreach (var entity in data!)
-        {
-            Assert.True(entity.Price >= priceFilter.MinPrice);
-            Assert.True(entity.Price <= priceFilter.MaxPrice);
-        }
-    }
-
-    [Fact]
-    public async Task GetProductsPage_QuantityFilter_ProductsWithEnoughSupply()
+    foreach (var entity in data!)
     {
-        SearchFilters quantityFilter = new()
-        {
-            MinQuantity = 30
-        };
-        int PAGE = 1;
-        int PAGE_SIZE = 20;
-        var _db = new ProductDbContextFakeBuilder()
-        .WithProducts().Build();
-        var _cut = new ProductsController(_nullLogger, _db);
-
-        var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, quantityFilter);
-
-        IEnumerable<Product> data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-
-        foreach (var entity in data!)
-        {
-            Assert.True(entity.Price >= quantityFilter.MinQuantity);
-        }
+      Assert.True(entity.Price >= priceFilter.MinPrice);
+      Assert.True(entity.Price <= priceFilter.MaxPrice);
     }
+  }
 
-    [Theory]
-    [InlineData(1, 20, typeof(NoContentResult))]
-    [InlineData(-5, 20, typeof(BadRequestObjectResult))]
-    [InlineData(1, 250, typeof(BadRequestObjectResult))]
-    public async Task GetProductsPage_InvalidPageParams_AppropriateResponse(
-      int page, int pageSize, Type resultType)
+  [Fact]
+  public async Task GetProductsPage_QuantityFilter_ProductsWithEnoughSupply()
+  {
+    SearchFilters quantityFilter = new()
     {
-      var _db = new ProductDbContextFakeBuilder()
-        .Build();
-      var _cut = new ProductsController(_nullLogger, _db);
+      MinQuantity = 30
+    };
+    int PAGE = 1;
+    int PAGE_SIZE = 20;
+    var _db = new ProductDbContextFakeBuilder()
+    .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
 
-      var result = await _cut.GetProductsPage(page, pageSize, new SearchFilters{});
+    var result = await _cut.GetProductsPage(
+  PAGE, PAGE_SIZE, quantityFilter);
 
-      Assert.Equal(resultType, result.Result!.GetType());
-    }
+    IEnumerable<Product> data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
-    [Fact]
-    public async Task AddNewProduct_ValidProduct_ProductAddedToDatabase()
+    foreach (var entity in data!)
     {
-      Product p = new Product(){
-        Name = "Sample product",
-        CategoryId = 1,
-        Price = 15m,
-        Description = "Do not buy",
-        Quantity = 0
-      };
-      string URL = "/api/v1/Products/1";
-      var _db = new ProductDbContextFakeBuilder().
-        WithCategories().Build();
-        var _cut = new ProductsController(_nullLogger, _db)
-        {
-            Url = Substitute.For<IUrlHelper>()
-        };
-        _cut.Url.Action().Returns(URL);
-
-      var result = await _cut.AddNewProduct(p);
-
-      Assert.IsType<CreatedResult>(result);
+      Assert.True(entity.Price >= quantityFilter.MinQuantity);
     }
-    [Fact]
-    public async Task AddNewProduct_ProductMissingRequiredField_DbUpdateException()
+  }
+
+  [Theory]
+  [InlineData(1, 20, typeof(NoContentResult))]
+  [InlineData(-5, 20, typeof(BadRequestObjectResult))]
+  [InlineData(1, 250, typeof(BadRequestObjectResult))]
+  public async Task GetProductsPage_InvalidPageParams_AppropriateResponse(
+    int page, int pageSize, Type resultType)
+  {
+    var _db = new ProductDbContextFakeBuilder()
+      .Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+
+    var result = await _cut.GetProductsPage(page, pageSize, new SearchFilters { });
+
+    Assert.Equal(resultType, result.Result!.GetType());
+  }
+
+  [Fact]
+  public async Task AddNewProduct_ValidProduct_ProductAddedToDatabase()
+  {
+    Product p = new Product()
     {
-      Product p = new(){
-        Name = "Sample product",
-        CategoryId = 1,
-        Price = 15m,
-        Description = "Do not buy",
-        Quantity = 0
-      };
-      p.Name = null;
-      var _db = new ProductDbContextFakeBuilder().
-        WithCategories().Build();
-      var _cut = new ProductsController(_nullLogger, _db);
-
-      var e = Record.ExceptionAsync(
-        async () => await _cut.AddNewProduct(p));
-
-      Assert.IsType<DbUpdateException>(e.Result);
-    }
-    [Fact]
-    public async Task AddNewProduct_InvalidProductCategory_DbUpdateException()
+      Name = "Sample product",
+      CategoryId = 1,
+      Price = 15m,
+      Description = "Do not buy",
+      Quantity = 0
+    };
+    string URL = "/api/v1/Products/1";
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().Build();
+    var _cut = new ProductsController(_nullLogger, _db)
     {
-      Product p = new(){
-        Name = "Sample product",
-        CategoryId = 1,
-        Price = 15m,
-        Description = "Do not buy",
-        Quantity = 0
-      };
-      p.CategoryId = -1;
-      var _db = new ProductDbContextFakeBuilder().
-        WithCategories().Build();
-      var _cut = new ProductsController(_nullLogger, _db)
-      {
-        Url = Substitute.For<IUrlHelper>()
-      };
-      var result = await _cut.AddNewProduct(p);
+      Url = Substitute.For<IUrlHelper>()
+    };
+    _cut.Url.Action().Returns(URL);
 
-      Assert.IsType<BadRequestObjectResult>(result);
-    }
+    var result = await _cut.AddNewProduct(p);
 
-    [Fact]
-    public async Task UpdateProduct_ValidProduct_ConcurrencyStampChanged()
+    Assert.IsType<CreatedResult>(result);
+  }
+  [Fact]
+  public async Task AddNewProduct_ProductMissingRequiredField_DbUpdateException()
+  {
+    Product p = new()
     {
-      var _db = new ProductDbContextFakeBuilder().
-        WithCategories().WithProducts().Build();
-      var _cut = new ProductsController(_nullLogger, _db);
-      var productResult = await _cut.GetProduct(1);
-      Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
-      newProductData.Description = "Fresh and intriguing description";
-      byte[] oldStamp = newProductData.ConcurrencyStamp!;
+      Name = "Sample product",
+      CategoryId = 1,
+      Price = 15m,
+      Description = "Do not buy",
+      Quantity = 0
+    };
+    p.Name = null;
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
 
-      var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+    var e = Record.ExceptionAsync(
+      async () => await _cut.AddNewProduct(p));
 
-      Product updatedProduct = ((result.Result as OkObjectResult)!.Value as Product)!;
-      Assert.NotEqual(oldStamp, updatedProduct.ConcurrencyStamp);
-    }
-    
+    Assert.IsType<DbUpdateException>(e.Result);
+  }
+  [Fact]
+  public async Task AddNewProduct_InvalidProductCategory_DbUpdateException()
+  {
+    Product p = new()
+    {
+      Name = "Sample product",
+      CategoryId = 1,
+      Price = 15m,
+      Description = "Do not buy",
+      Quantity = 0
+    };
+    p.CategoryId = -1;
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().Build();
+    var _cut = new ProductsController(_nullLogger, _db)
+    {
+      Url = Substitute.For<IUrlHelper>()
+    };
+    var result = await _cut.AddNewProduct(p);
+
+    Assert.IsType<BadRequestObjectResult>(result);
+  }
+
+  [Fact]
+  public async Task UpdateProduct_ChangedProduct_ConcurrencyStampChanged()
+  {
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    var productResult = await _cut.GetProduct(1);
+    Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
+    newProductData.Description = "Fresh and intriguing description";
+    byte[] oldStamp = newProductData.ConcurrencyStamp!;
+
+    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+
+    Product updatedProduct = ((result.Result as OkObjectResult)!.Value as Product)!;
+    Assert.NotEqual(oldStamp, updatedProduct.ConcurrencyStamp);
+  }
+
+  [Fact]
+  public async Task UpdateProduct_ProductWithNonexistentCategory_CategoryError()
+  {
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    var productResult = await _cut.GetProduct(1);
+    Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
+    newProductData.CategoryId = 5555;
+
+    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+
+    var errorString = (result.Result as NotFoundObjectResult)!.Value as string;
+    Assert.Contains("category", errorString);
+  }
+
+  [Fact]
+  public async Task UpdateProduct_OutdatedConcurrencyStamp_ConcurrencyStampError()
+  {
+    var _db = new ProductDbContextFakeBuilder().
+      WithCategories().WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    var productResult = await _cut.GetProduct(1);
+    Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
+    newProductData.RefreshConcurrencyStamp();
+
+    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+
+    var errorString = (result.Result as UnprocessableEntityObjectResult)!.Value as string;
+    Assert.Contains("ConcurrencyStamp", errorString);
+  }
+
 }
 
