@@ -109,19 +109,6 @@ namespace IdentityService
 
             // app.UseHttpsRedirection();
 
-            // var roleManager = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope()
-            //     .ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            // var rolesToAdd = new List<string> { "User"};
-            // foreach (var roleName in rolesToAdd)
-            // {
-            //     var roleExists = roleManager.RoleExistsAsync(roleName).Result;
-            //     if (!roleExists)
-            //     {
-            //         roleManager.CreateAsync(new IdentityRole(roleName)).Wait();
-            //     }
-            // }
-
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();

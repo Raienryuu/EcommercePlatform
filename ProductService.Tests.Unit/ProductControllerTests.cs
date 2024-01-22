@@ -235,8 +235,8 @@ public class ProductControllerTests
 
     var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
 
-    var errorString = (result.Result as UnprocessableEntityObjectResult)!.Value as string;
-    Assert.Contains("ConcurrencyStamp", errorString);
+    var error = (result.Result as UnprocessableEntityObjectResult)!.Value as string;
+    Assert.Contains("ConcurrencyStamp", error);
   }
 
 }
