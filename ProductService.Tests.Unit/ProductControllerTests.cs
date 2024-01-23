@@ -224,19 +224,18 @@ public class ProductControllerTests
   }
 
   [Fact]
-  public async Task UpdateProduct_OutdatedConcurrencyStamp_ConcurrencyStampError()
+  public async Task UpdateProduct_OutdatedConcurrencyStamp_DbUpdateConcurrencyException()
   {
     var _db = new ProductDbContextFakeBuilder().
       WithCategories().WithProducts().Build();
     var _cut = new ProductsController(_nullLogger, _db);
     var productResult = await _cut.GetProduct(1);
     Product newProductData = ((productResult.Result as OkObjectResult)!.Value as Product)!;
-    newProductData.RefreshConcurrencyStamp();
+    //newProductData.RefreshConcurrencyStamp();
+    newProductData.ConcurrencyStamp[0] += 1;
+    var ex = Record.ExceptionAsync(async () => await _cut.UpdateProduct(newProductData.Id, newProductData));
 
-    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
-
-    var error = (result.Result as UnprocessableEntityObjectResult)!.Value as string;
-    Assert.Contains("ConcurrencyStamp", error);
+    Assert.IsType<DbUpdateConcurrencyException>(ex.Result);
   }
 
 }

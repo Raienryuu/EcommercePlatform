@@ -98,13 +98,13 @@ namespace IdentityService.Controller
       var user = await _userManager.FindByNameAsync(credentials.Login);
       if (user is null)
       {
-        return BadRequest("{\"message\":\"Not found matching data in database.\"}");
+        return BadRequest("{\"message\":\"Not able to get matching values from database.\"}");
       }
 
-      var result = await _signinManager.UserManager.CheckPasswordAsync(user, credentials.Password);
+      var result = await _userManager.CheckPasswordAsync(user, credentials.Password);
       if (!result)
       {
-        BadRequest("{\"message\":\"Not found matching data in database.\"}");
+        return BadRequest("{\"message\":\"Not able to get matching values from database.\"}");
       }
 
       var key = new SymmetricSecurityKey(
@@ -116,13 +116,14 @@ namespace IdentityService.Controller
       {
         new Claim(ClaimTypes.Name, user.UserName),
         new Claim(ClaimTypes.Email, user.Email),
-        new Claim(ClaimTypes.Role, string.Join(',', await _userManager.GetRolesAsync(user))),
+        new Claim(ClaimTypes.Role, string.Join(',',
+          await _userManager.GetRolesAsync(user))),
       };
 
       var tokenData = new JwtSecurityToken(_configuration["Jwt:Issuer"],
         _configuration["Jwt:Issuer"],
         claims,
-        expires: DateTime.Now.AddDays(30),
+        expires: DateTime.Now.AddDays(double.Parse(_configuration[key: "Jwt:ExpireTimeInDays"])),
         signingCredentials: tokenCredentials);
 
       var jwToken = new JwtSecurityTokenHandler().WriteToken(tokenData);
@@ -142,3 +143,5 @@ namespace IdentityService.Controller
     }
   }
 }
+
+

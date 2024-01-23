@@ -119,7 +119,8 @@ namespace ProductService.Controllers
 
     [HttpPatch("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status304NotModified)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<Product>> UpdateProduct(int id, [FromBody] Product updatedProduct)
     {
       var oldProduct = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
@@ -134,7 +135,7 @@ namespace ProductService.Controllers
       }
 
       if (updatedProduct.ConcurrencyStamp is not null &&
-        oldProduct.ConcurrencyStamp!.SequenceEqual(updatedProduct.ConcurrencyStamp))
+        oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct.ConcurrencyStamp))
       {
 
         oldProduct.Price = updatedProduct.Price;
