@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
 import { Product } from 'src/app/Models/product';
 
-
 @Component({
   selector: 'app-catalog',
   templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.scss']
+  styleUrls: ['./catalog.component.scss'],
 })
 export class CatalogComponent {
   products : Product[] =  [
