@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Product } from 'src/app/Models/product';
 
 @Component({
@@ -6,6 +6,8 @@ import { Product } from 'src/app/Models/product';
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
+
+
 export class CatalogComponent {
   products : Product[] =  [
     { id: 1, categoryId: 2, name: "Product A", description: "Description for Product A", price: 9.99, quantity: 10 },
@@ -19,4 +21,16 @@ export class CatalogComponent {
     { id: 9, categoryId: 1, name: "Product I", description: "Description for Product I", price: 7.99, quantity: 15 },
     { id: 10, categoryId: 2, name: "Product J", description: "Description for Product J", price: 11.99, quantity: 7 },
   ];
+  nameFilter: String = '';
+
+  @HostListener('document:scroll', ['$event'])
+  OpacityController() {
+    const distance = 120;
+    if (document.body.scrollTop > distance || document.documentElement.scrollTop > distance) {
+      document.querySelector('div.applied-filters')!.classList.add('opacity');
+    }
+    else {
+      document.querySelector('div.applied-filters')!.classList.remove('opacity');
+    }
+  }
 }

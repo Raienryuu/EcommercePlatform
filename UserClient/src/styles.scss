@@ -3,9 +3,9 @@
 //html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-$primary: #3f51b5;
+$app-primary: #3f51b5;
 
-$accent: #ff4081;
+$app-accent: #ff4081;
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
     background-color: rgba(77, 64, 255, 0) !important;

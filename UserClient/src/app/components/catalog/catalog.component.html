@@ -1,36 +1,63 @@
 <mat-drawer-container class="catalog-main">
-  <mat-drawer mode="side" opened class="filters">
-    <mat-form-field class="filter-field">
-      <mat-label>Min</mat-label>
-      <input matInput class="filter-input" type="number" placeholder="0" />
-      <span matTextPrefix>€&nbsp;</span>
-    </mat-form-field>
+  <mat-drawer mode="side" opened>
+    <div class="categories">
+      <ul>
+          <li>Tupperware</li>
+        <ul>
+          <li>Cups</li>
+          <li>Plates</li>
+        </ul>
+        <li>Video</li>
+        <ul>
+          <li>TVs</li>
+          <li>Consoles</li>
+        </ul>
+      </ul>
+    </div>
+
+    <div class="filters">
+      <mat-form-field class="filter-field">
+        <mat-label>Name includes</mat-label>
+        <input matInput class="filter-input" [(ngModel)]="nameFilter"/>
+      </mat-form-field>
+      <mat-form-field class="filter-field">
+        <mat-label>Min</mat-label>
+        <input matInput class="filter-input" type="number" placeholder="0"/>
+        <span matTextPrefix>€&nbsp;</span>
+      </mat-form-field>
+      <mat-form-field class="filter-field">
+        <mat-label>Min</mat-label>
+        <input matInput class="filter-input" type="number" placeholder="0"/>
+        <span matTextPrefix>€&nbsp;</span>
+      </mat-form-field>
+      <button mat-raised-button color="primary">
+        Should I be here?
+      </button>
+    </div>
   </mat-drawer>
   <mat-drawer-content>
     <div class="applied-filters">
-      Filters applied:
       <button mat-stroked-button class="applied-filter">
-        Price > 50 <b><a href>X</a></b>
+        Price > 50
+        <mat-icon class="material-icons-outlined" fontIcon="close"/>
+      </button>
+      <button mat-stroked-button class="applied-filter">
+        Price < 200
+        <mat-icon class="material-icons-outlined" fontIcon="close"/>
+      </button>
+      <button mat-stroked-button class="applied-filter">
+        Includes "<span class="value">{{nameFilter}}</span>"
+        <mat-icon class="material-icons-outlined" fontIcon="close"/>
       </button>
     </div>
     <div class="products">
       <div class="product" *ngFor="let product of products">
         {{ product.name }}
-        <img src="../../../assets/kubek.webp" width="150px" />
+        <img src="../../../assets/kubek.webp" width="150px"/>
         <b>
           {{ product.price }}
         </b>
-        <button style="flex-wrap: right" mat-flat-button>
-          <mat-icon>add_shopping_cart</mat-icon>
-        </button>
-      </div>
-      <div class="product" *ngFor="let product of products">
-        {{ product.name }}
-        <img src="../../../assets/kubek.webp" width="150px" />
-        <b>
-          {{ product.price }}
-        </b>
-        <button style="flex-wrap: right" mat-flat-button>
+        <button mat-flat-button>
           <mat-icon>add_shopping_cart</mat-icon>
         </button>
       </div>
