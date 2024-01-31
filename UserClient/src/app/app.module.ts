@@ -17,6 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatSidenavModule } from '@angular/material/sidenav'
 
 
 
@@ -41,7 +42,8 @@ import { MatIcon, MatIconModule } from '@angular/material/icon';
     MatGridListModule,
     MatSelectModule,
     ReactiveFormsModule,
-    MatIconModule
+    MatIconModule,
+    MatSidenavModule
   ],
   providers: [],
   bootstrap: [AppComponent]
