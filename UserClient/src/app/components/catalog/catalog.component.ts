@@ -24,8 +24,8 @@ export class CatalogComponent {
   nameFilter: String = '';
 
   @HostListener('document:scroll', ['$event'])
-  OpacityController() {
-    const distance = 120;
+  AppliedFiltersOpacityOnScroll() {
+    const distance: number = 120;
     if (document.body.scrollTop > distance || document.documentElement.scrollTop > distance) {
       document.querySelector('div.applied-filters')!.classList.add('opacity');
     }

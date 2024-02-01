@@ -18,6 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav'
+import {NgOptimizedImage} from "@angular/common";
 
 
 
@@ -43,7 +44,8 @@ import { MatSidenavModule } from '@angular/material/sidenav'
     MatSelectModule,
     ReactiveFormsModule,
     MatIconModule,
-    MatSidenavModule
+    MatSidenavModule,
+    NgOptimizedImage,
   ],
   providers: [],
   bootstrap: [AppComponent]

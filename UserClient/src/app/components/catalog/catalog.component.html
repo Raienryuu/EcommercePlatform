@@ -30,9 +30,6 @@
         <input matInput class="filter-input" type="number" placeholder="0"/>
         <span matTextPrefix>€&nbsp;</span>
       </mat-form-field>
-      <button mat-raised-button color="primary">
-        Should I be here?
-      </button>
     </div>
   </mat-drawer>
   <mat-drawer-content>
@@ -52,14 +49,14 @@
     </div>
     <div class="products">
       <div class="product" *ngFor="let product of products">
-        {{ product.name }}
-        <img src="../../../assets/kubek.webp" width="150px"/>
-        <b>
-          {{ product.price }}
-        </b>
-        <button mat-flat-button>
-          <mat-icon>add_shopping_cart</mat-icon>
-        </button>
+        <img ngSrc="assets/kubek.webp" width="150" height="150" priority alt="productImg">
+        <h1 style="position: relative">{{ product.name }} <br></h1>
+        <div style="display: flex; justify-content: space-between; align-items: center">
+          <div class="product-price">{{ product.price }} €</div>
+          <button mat-flat-button class="product-btn">
+            <mat-icon class="product-btn-icon">add_shopping_cart</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
   </mat-drawer-content>
