@@ -3,9 +3,11 @@
 //html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
-$app-primary: #3f51b5;
+$app-primary: hsla(231, 48%, 48%, 1);
+$app-primary-light: hsla(231, 5%, 98%);
 
-$app-accent: #ff4081;
+$app-accent: hsla(340, 100%, 63%, 1);
+$app-accent-light: lighten($app-accent, 12);
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
     background-color: rgba(77, 64, 255, 0) !important;

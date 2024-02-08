@@ -23,6 +23,8 @@ export class CatalogComponent {
   ];
   nameFilter: String = '';
 
+categoryBreadcrumbs: string[] = ['Tupperware', 'Pots'];
+test: boolean = true;
   @HostListener('document:scroll', ['$event'])
   AppliedFiltersOpacityOnScroll() {
     const distance: number = 120;

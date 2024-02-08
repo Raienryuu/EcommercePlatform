@@ -1,3 +1,4 @@
+@import "/src/styles.scss";
 
 .catalog-main {
   background: white;
@@ -11,8 +12,8 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  padding: 0 4svh;
-  margin: 2svw 0;
+  padding: 0 10px;
+  margin: 15px 0;
 }
 
 .filter-field {
@@ -22,13 +23,40 @@ input.filter-input::-webkit-inner-spin-button {
   display: none;
 }
 
+.breadcrumbs-wrapper {
+  display: flex;
+  justify-content: center;
+  padding-top: 2svh;
+}
+
+.category-breadcrumbs {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  width: calc(100% - 2svw);
+  justify-self: center;
+  flex-wrap: wrap;
+  font-weight: lighter;
+  background: $app-primary-light;
+}
+
+.category-breadcrumbs a {
+  margin: 1vw 0.5vw;
+  font-size: clamp(1rem, 1.5svw, 2rem);
+  font-weight: 500;
+}
+
+.category-breadcrumbs mat-icon {
+  color: black;
+}
+
 .applied-filters {
   position: sticky;
   top: 0;
   background-color: white;
   display: flex;
   flex-wrap: wrap;
-  justify-content: left;
+  justify-content: center;
   padding-left: 5svw;
   gap: 1rem;
   z-index: 1;
@@ -42,14 +70,18 @@ input.filter-input::-webkit-inner-spin-button {
 }
 
 .value {
-  color: #ff4081;
+  color: $app-accent;
 }
 
 .products {
   display: grid;
-  grid-auto-flow: row;
-  grid-gap: 0;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 0 1svw;
+  --column-gap: 1svw;
+  --max-columns-amount: 5;
+  --column-width: calc(100% / var(--max-columns-amount));
+  --column-with-gap: calc(var(--column-width) - var(--column-gap));
+  grid-gap: var(--column-gap);
+  grid-template-columns: repeat(auto-fit, minmax(max(250px, var(--column-with-gap)), 1fr));
 }
 
 .product {
@@ -58,21 +90,30 @@ input.filter-input::-webkit-inner-spin-button {
   justify-content: center;
   padding: 5px;
   height: 250px;
-  border: 1px solid aliceblue;
+  //border: 2px solid aliceblue;
+  background: $app-primary-light;
+}
+
+.product h1 {
+  font-size: clamp(1.8rem, 1.4vw + 0.3rem, 2.5rem);
+  line-height: 1.2;
+  margin: 0;
 }
 
 .product-price {
-  font-weight: 400;
-  font-size: 1.3rem;
+  font-size: clamp(1.3rem, 1.5svw, 1.6rem);
+
 }
 
-.product-btn{
+.product-btn {
   position: relative;
   border: 1px solid #ddd;
   align-items: center;
+  background: $app-primary;
+  color: white;
 }
 
-.product-btn-icon {
+.product-btn-icon{
   margin: 0;
 }
 
@@ -102,3 +143,4 @@ input.filter-input::-webkit-inner-spin-button {
 .mat-drawer-content {
   overflow: unset;
 }
+
