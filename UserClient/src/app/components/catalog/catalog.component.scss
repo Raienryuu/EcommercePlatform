@@ -1,11 +1,15 @@
-@import "/src/styles.scss";
+@use "/src/color-palette.scss" as colors;
 
 .catalog-main {
   background: white;
 }
 
+.side-drawer{
+
+}
+
 .categories {
-  border: 2px solid mediumpurple;
+  //border: 2px solid mediumpurple;
 }
 
 .filters {
@@ -37,7 +41,7 @@ input.filter-input::-webkit-inner-spin-button {
   justify-self: center;
   flex-wrap: wrap;
   font-weight: lighter;
-  background: $app-primary-light;
+  background: colors.$gray-100;
 }
 
 .category-breadcrumbs a {
@@ -47,19 +51,20 @@ input.filter-input::-webkit-inner-spin-button {
 }
 
 .category-breadcrumbs mat-icon {
-  color: black;
+  color: colors.$gray-900;
 }
 
 .applied-filters {
   position: sticky;
   top: 0;
-  background-color: white;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   padding-left: 5svw;
   gap: 1rem;
   z-index: 1;
+  background: white;
+
 }
 
 .applied-filter {
@@ -67,10 +72,12 @@ input.filter-input::-webkit-inner-spin-button {
   border-radius: 15px;
   border-width: 1px;
   border-color: grey;
+  font-size: clamp(1rem, 1svw, 2rem);
+
 }
 
 .value {
-  color: $app-accent;
+  color: colors.$primary-400;
 }
 
 .products {
@@ -81,7 +88,7 @@ input.filter-input::-webkit-inner-spin-button {
   --column-width: calc(100% / var(--max-columns-amount));
   --column-with-gap: calc(var(--column-width) - var(--column-gap));
   grid-gap: var(--column-gap);
-  grid-template-columns: repeat(auto-fit, minmax(max(250px, var(--column-with-gap)), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(max(200px, var(--column-with-gap)), 1fr));
 }
 
 .product {
@@ -90,8 +97,8 @@ input.filter-input::-webkit-inner-spin-button {
   justify-content: center;
   padding: 5px;
   height: 250px;
-  //border: 2px solid aliceblue;
-  background: $app-primary-light;
+  //border: 1px solid colors.$primary-200;
+  //background: colors.$primary-100;
 }
 
 .product h1 {
@@ -109,7 +116,7 @@ input.filter-input::-webkit-inner-spin-button {
   position: relative;
   border: 1px solid #ddd;
   align-items: center;
-  background: $app-primary;
+  background: colors.$primary-800;
   color: white;
 }
 
@@ -142,5 +149,13 @@ input.filter-input::-webkit-inner-spin-button {
 
 .mat-drawer-content {
   overflow: unset;
+}
+
+.mat-drawer-side {
+  border-right: 1px solid colors.$gray-300;
+}
+
+img {
+  filter: contrast(95%);
 }
 

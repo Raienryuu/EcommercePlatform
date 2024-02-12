@@ -1,5 +1,5 @@
 <mat-drawer-container class="catalog-main">
-  <mat-drawer mode="side" opened>
+  <mat-drawer mode="side" opened class="side-drawer">
     <div class="categories">
       <ul>
         <li>Tupperware</li>
@@ -60,7 +60,7 @@
     </div>
     <div class="products">
       <div class="product" *ngFor="let product of products">
-        <img ngSrc="assets/kubek.webp" width="150" height="150" priority alt="productImg">
+        <img ngSrc="assets/kubek.webp" width="200" height="180" priority alt="productImg">
         <h1 style="position: relative">{{ product.name }} <br></h1>
         <div style="display: flex; justify-content: space-between; align-items: center">
           <div class="product-price">{{ product.price }} €</div>
@@ -72,3 +72,5 @@
     </div>
   </mat-drawer-content>
 </mat-drawer-container>
+
+
