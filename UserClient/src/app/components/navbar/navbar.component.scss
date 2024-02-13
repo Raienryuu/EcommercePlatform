@@ -1,20 +1,27 @@
-div.navbar {
-    background-color: #3f51b5;
+@use '/src/color-palette' as colors;
+
+.navbar {
+    background-color: colors.$primary-800;
     color: #fff;
-    height: 3rem;
+    height: 2rem;
     padding: 1rem;
     display: flex;
     flex-flow: row;
 }
 
-div.left {
+.left {
     text-align: left;
     flex: auto;
 }
 
-div.right {
+.right {
     text-align: right;
     flex: auto;
+}
+
+button.nav-btn {
+  background: colors.$primary-500;
+  color: white;
 }
 
 

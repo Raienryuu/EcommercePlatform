@@ -4,7 +4,6 @@
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 
-
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
     background-color: rgba(77, 64, 255, 0) !important;
 }
@@ -15,3 +14,4 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label {
     color: var(--mdc-filled-text-field-label-text-color) !important;
 }
+@import 'src/color-palette';
