@@ -1,17 +1,41 @@
+@import 'src/color-palette';
 /* You can add global styles to this file, and also import other style files */
 
 //html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+$font-size: clamp(0.82rem, calc(0.9svw + 0.5svh), 14px);
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: $font-size;
 
+}
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-    background-color: rgba(77, 64, 255, 0) !important;
+  background-color: transparent !important;
 }
+
 .mat-mdc-form-field-focus-overlay {
-    background: rgba(77, 64, 255, 0) !important;
-  }
+  background: transparent !important;
+}
 
 .mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label {
-    color: var(--mdc-filled-text-field-label-text-color) !important;
+  color: var(--mdc-filled-text-field-label-text-color) !important;
 }
-@import 'src/color-palette';
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label, .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label--float-above {
+  color: $gray-400 !important;
+}
+
+.mat-mdc-form-field {
+  --mat-form-field-container-text-size: $font-size;
+}
+
+.mat-typography {
+  font-size: $font-size;
+}
+
+app-catalog .filter-field .mat-mdc-form-field-flex{
+  height: 2rem;
+  align-items: center;
+  text-align: center;
+}

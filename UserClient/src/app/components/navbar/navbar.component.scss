@@ -1,12 +1,18 @@
 @use '/src/color-palette' as colors;
+.navbar-wrapper {
+    background-color: colors.$primary-800;
+    color: colors.$gray-100;
+}
 
 .navbar {
-    background-color: colors.$primary-800;
-    color: #fff;
-    height: 2rem;
+    background-color: inherit;
+    color: inherit;
     padding: 1rem;
     display: flex;
     flex-flow: row;
+    box-sizing: border-box;
+    max-width: 1800px;
+    margin: 0 auto;
 }
 
 .left {
@@ -21,7 +27,8 @@
 
 button.nav-btn {
   background: colors.$primary-500;
-  color: white;
+  color: colors.$gray-100;
+  font-size: inherit;
 }
 
 

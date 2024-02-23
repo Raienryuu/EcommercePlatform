@@ -16,11 +16,11 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
-import { MatIcon, MatIconModule } from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav'
 import {NgOptimizedImage} from "@angular/common";
-
-
+import {MatTreeModule} from "@angular/material/tree";
+import {MatListModule} from "@angular/material/list";
 
 
 @NgModule({
@@ -46,6 +46,8 @@ import {NgOptimizedImage} from "@angular/common";
     MatIconModule,
     MatSidenavModule,
     NgOptimizedImage,
+    MatTreeModule,
+    MatListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
