@@ -21,4 +21,9 @@ public class Product
     {
         ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4];
     }
+
+    public Product()
+    {
+        RefreshConcurrencyStamp();
+    }
 }

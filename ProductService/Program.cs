@@ -17,9 +17,9 @@ namespace ProductService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
+            builder.Services.AddCors(o => o.AddPolicy("DevPolicy", policyBuilder =>
             {
-                builder.WithOrigins("http://localhost:4200")
+                policyBuilder.WithOrigins("http://localhost:4200")
                     .AllowCredentials()
                     .AllowAnyHeader();
             }));

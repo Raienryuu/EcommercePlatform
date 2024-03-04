@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 using ProductService.Models;
+
+namespace ProductService;
 
 public class ProductDbContext : DbContext
 {
@@ -19,6 +20,10 @@ public class ProductDbContext : DbContext
         modelBuilder.Entity<Product>().HasOne(p => p.Category)
             .WithMany()
             .HasForeignKey(p => p.CategoryId);
+
+        // index on price
+        // index to help searching with name fragment
+        // index composite if possible to combine these /\
 
         modelBuilder.Entity<Product>().HasData(
             new Product

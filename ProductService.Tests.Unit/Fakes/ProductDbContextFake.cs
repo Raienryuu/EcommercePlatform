@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ProductService;
 
 namespace ProductServiceTests.Fakes;
 

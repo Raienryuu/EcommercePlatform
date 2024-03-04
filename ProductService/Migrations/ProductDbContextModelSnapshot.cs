@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using ProductService;
 
 #nullable disable
 
@@ -34,7 +35,6 @@ namespace ProductService.Migrations
 
                     b.Property<byte[]>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .ValueGeneratedOnUpdate()
                         .HasColumnType("varbinary(max)");
 
                     b.Property<string>("Description")

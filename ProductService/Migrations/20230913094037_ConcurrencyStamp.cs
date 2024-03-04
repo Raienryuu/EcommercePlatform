@@ -19,6 +19,7 @@ namespace ProductService.Migrations
                 table: "Products",
                 type: "varbinary(max)",
                 nullable: true);
+
         }
 
         /// <inheritdoc />
