@@ -4,15 +4,16 @@ public class SearchFilters
 {
   public enum SortType
   {
-    MinPrice = 1,
-    MaxPrice = 2
+    PriceAsc = 1,
+    PriceDesc = 2,
+    QuantityAsc = 3
   }
   public string? Name { get; set; }
   public decimal? MinPrice { get; set; }
   public decimal? MaxPrice { get; set; }
   public int? MinQuantity { get; set; }
 
-  public SortType Order { get; set; } = SortType.MinPrice;
+  public SortType Order { get; set; } = SortType.PriceAsc;
 
   public SearchFilters(){}
 

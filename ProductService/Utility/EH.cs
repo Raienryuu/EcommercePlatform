@@ -2,7 +2,7 @@
 
 namespace ProductService.Utility;
 
-public static class ExpressionHelper<T>
+public static class EH<T>
 {
   public static Expression<Func<T, bool>> CombineAsAnd(
     Expression<Func<T, bool>> exp1, Expression<Func<T, bool>> exp2)

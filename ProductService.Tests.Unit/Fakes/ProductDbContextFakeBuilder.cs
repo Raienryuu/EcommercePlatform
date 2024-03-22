@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using ProductService.Models;
 using ProductServiceTests.Fakes;
 
@@ -11,15 +10,6 @@ public class ProductDbContextFakeBuilder : IDisposable
     _db.Products.Add(new Product
     {
       CategoryId = 1,
-      Name = "White Cup",
-      Description = "Fairly big cup",
-      Price = 15,
-      Quantity = 0,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
-    });
-    _db.Products.Add(new Product
-    {
-      CategoryId = 1,
       Name = "Red Cup",
       Description = "Fairly big cup",
       Price = 20,
@@ -29,10 +19,10 @@ public class ProductDbContextFakeBuilder : IDisposable
     _db.Products.Add(new Product
     {
       CategoryId = 1,
-      Name = "Blue Cup",
+      Name = "White Cup",
       Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
+      Price = 15,
+      Quantity = 0,
       ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
@@ -47,9 +37,19 @@ public class ProductDbContextFakeBuilder : IDisposable
     _db.Products.Add(new Product
     {
       CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    });
+    
+    _db.Products.Add(new Product
+    {
+      CategoryId = 1,
       Name = "Yellow Cup",
       Description = "Fairly big cup",
-      Price = 35,
+      Price = 23,
       Quantity = 50,
       ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });

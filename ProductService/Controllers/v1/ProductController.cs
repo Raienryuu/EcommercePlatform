@@ -8,18 +8,12 @@ namespace ProductService.Controllers.v1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
-public class ProductsController : ControllerBase
+public class ProductsController(
+  ILogger<ProductsController> logger,
+  ProductDbContext db)
+  : ControllerBase
 {
-  private readonly ProductDbContext _db;
-  private readonly ILogger<ProductsController> _logger;
-
-  public ProductsController(
-    ILogger<ProductsController> logger,
-    ProductDbContext db)
-  {
-    _logger = logger;
-    _db = db;
-  }
+  private readonly ILogger<ProductsController> _logger = logger;
 
   [HttpGet]
   [Route("{id}")]
@@ -27,7 +21,7 @@ public class ProductsController : ControllerBase
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult<Product>> GetProduct(int id)
   {
-    var result = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
+    var result = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
     if (result is not null) return Ok(result);
     return NoContent();
   }
@@ -43,7 +37,8 @@ public class ProductsController : ControllerBase
       return BadRequest(CreateErrorResponse(
         "Page and PageSize must be greater than 0 and PageSize less " +
         "than 200"));
-    var pagination = new ProductsPagination(filters, _db)
+
+    var pagination = new ProductsPagination(filters, db)
       .GetOffsetPageQuery(pageNum, pageSize);
     var products = await pagination.ToListAsync();
 
@@ -66,8 +61,11 @@ public class ProductsController : ControllerBase
         "PageSize greater than 1, and PageSize less " +
         "than 200"));
 
-    var query = new ProductsPagination(currentValues, _db)
+    var query = new ProductsPagination(currentValues, db)
       .GetAdjacentPageQuery(pageSize, isPreviousPage, product);
+
+    var s = query.ToQueryString();
+    Console.WriteLine(s);
 
     var products = await query.ToListAsync();
     return Ok(products);
@@ -77,15 +75,15 @@ public class ProductsController : ControllerBase
   [ProducesResponseType(StatusCodes.Status201Created)]
   public async Task<ActionResult> AddNewProduct([FromBody] Product newProduct)
   {
-    newProduct.Category = await _db.ProductCategories
+    newProduct.Category = await db.ProductCategories
       .SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
 
     if (newProduct.Category is null)
       return BadRequest(CreateErrorResponse("Category not found"));
 
     newProduct.RefreshConcurrencyStamp();
-    _db.Products.Add(newProduct);
-    await _db.SaveChangesAsync();
+    db.Products.Add(newProduct);
+    await db.SaveChangesAsync();
 
     var createdUri = Url.Action(
       "GetProduct",
@@ -95,6 +93,7 @@ public class ProductsController : ControllerBase
     return base.Created(createdUri!, newProduct);
   }
 
+
   [HttpPatch("{id}")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -102,14 +101,15 @@ public class ProductsController : ControllerBase
   public async Task<ActionResult<Product>> UpdateProduct(int id,
     [FromBody] Product updatedProduct)
   {
-    var oldProduct = await _db.Products.SingleOrDefaultAsync(p => p.Id == id);
+    var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
     if (oldProduct is null)
       return NotFound(CreateErrorResponse("Product not found"));
 
     if (!DoesCategoryExists(updatedProduct.CategoryId).Result)
       return NotFound(CreateErrorResponse("Given category does not exists"));
 
-    if (updatedProduct.ConcurrencyStamp is not null &&
+    if (oldProduct.ConcurrencyStamp is not null &&
+        updatedProduct.ConcurrencyStamp is not null &&
         oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
           .ConcurrencyStamp))
     {
@@ -118,14 +118,17 @@ public class ProductsController : ControllerBase
       oldProduct.Name = updatedProduct.Name;
       oldProduct.Description = updatedProduct.Description;
       oldProduct.CategoryId = updatedProduct.CategoryId;
-      oldProduct.Category = await _db.ProductCategories
+      oldProduct.Category = await db.ProductCategories
         .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
 
       oldProduct.RefreshConcurrencyStamp();
-      await _db.SaveChangesAsync();
+      await db.SaveChangesAsync();
 
       return Ok(oldProduct);
     }
+
+    //testign testing testing testing testnig
+
 
     return UnprocessableEntity(
       CreateErrorResponse("ConcurrencyStamp mismatch"));
@@ -138,7 +141,7 @@ public class ProductsController : ControllerBase
 
   private async Task<bool> DoesCategoryExists(int categoryId)
   {
-    var result = await _db.ProductCategories.FirstOrDefaultAsync(
+    var result = await db.ProductCategories.FirstOrDefaultAsync(
       cat => cat.Id == categoryId);
     return result is not null;
   }

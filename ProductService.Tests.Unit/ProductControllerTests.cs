@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +21,7 @@ public class ProductControllerTests
   [Theory]
   [InlineData(1, typeof(OkObjectResult))]
   [InlineData(0, typeof(NoContentResult))]
-  public async Task GetProduct_ProductId_Product(int productId,
+  public async Task GetProduct_ProductId_ProductOrNoContent(int productId,
     Type statusCodeResponse)
   {
     var _db = new ProductDbContextFakeBuilder()
@@ -34,17 +35,18 @@ public class ProductControllerTests
 
   [Fact]
   public async Task
-    GetProdutsPage_NameFilter_ProductsThatNameContainsSubstring()
+    GetProdutsPage_ProductNameFilter_ProductsThatNameContainsSubstring()
   {
     SearchFilters nameFilter = new()
     {
-      Name = "blue",
-      Order = SearchFilters.SortType.MinPrice
+      Name = "White",
+      Order = SearchFilters.SortType.PriceAsc
     };
     var PAGE = 1;
     var PAGE_SIZE = 20;
     var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
+      .WithProducts()
+      .Build();
     var _cut = new ProductsController(_nullLogger, _db);
 
     var result = await _cut.GetProductsPage(
@@ -53,14 +55,13 @@ public class ProductControllerTests
     var data =
       ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
     foreach (var entity in data!)
-      Assert.Contains(nameFilter.Name, entity.Name,
-        StringComparison.InvariantCultureIgnoreCase);
+      Assert.Contains(nameFilter.Name, entity.Name);
   }
 
   [Theory]
-  [InlineData(false, 1)]
-  [InlineData(true, 3)]
-  public async Task GetAdjacentPage_Filters_ProperPageWithItem(
+  [InlineData(false, 3)]
+  [InlineData(true, 5)]
+  public async Task GetAdjacentPage_PriceAscendingOrder_ProperPageWithItem(
     bool isPreviousPage, int expectedProductId)
   {
     const int PAGE_SIZE = 1;
@@ -71,11 +72,12 @@ public class ProductControllerTests
     var _cut = new ProductsController(_nullLogger, _db);
     Product referencedItem = new()
     {
+      Id = 4,
       CategoryId = 1,
-      Name = "Red Cup",
+      Name = "Blue Cup",
       Description = "Fairly big cup",
-      Price = 20,
-      Quantity = 10,
+      Price = 25,
+      Quantity = 6,
       ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
@@ -83,7 +85,38 @@ public class ProductControllerTests
       .GetAdjacentPage(PAGE_SIZE, isPreviousPage, filters, referencedItem);
 
     var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(expectedProductId, data.First().Id);    
+    Assert.Equal(expectedProductId, data.First().Id);
+  }
+
+  [Theory]
+  [InlineData(false, 5)]
+  [InlineData(true, 3)]
+  public async Task GetAdjacentPage_PriceDescendingOrder_ProperPageWithItem(
+    bool isPreviousPage, int expectedProductId)
+  {
+    const int PAGE_SIZE = 1;
+
+    SearchFilters filters = new(){
+      Order = SearchFilters.SortType.PriceDesc
+    };
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    Product referencedItem = new()
+    {
+      Id = 4,
+      CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    };
+
+    var result = await _cut
+      .GetAdjacentPage(PAGE_SIZE, isPreviousPage, filters, referencedItem);
+    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+    Assert.Equal(expectedProductId, data.First().Id);
   }
 
   [Fact]
@@ -93,7 +126,7 @@ public class ProductControllerTests
     {
       MinPrice = 30,
       MaxPrice = 40,
-      Order = SearchFilters.SortType.MinPrice
+      Order = SearchFilters.SortType.PriceAsc
     };
     var PAGE = 1;
     var PAGE_SIZE = 20;
@@ -120,7 +153,7 @@ public class ProductControllerTests
     SearchFilters quantityFilter = new()
     {
       MinQuantity = 30,
-      Order = SearchFilters.SortType.MinPrice
+      Order = SearchFilters.SortType.PriceAsc
     };
     var PAGE = 1;
     var PAGE_SIZE = 20;
@@ -135,7 +168,45 @@ public class ProductControllerTests
       ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
     foreach (var entity in data!)
-      Assert.True(entity.Price >= quantityFilter.MinQuantity);
+      Assert.True(entity.Quantity >= quantityFilter.MinQuantity);
+  }
+
+  [Theory]
+  [InlineData(true)]
+  [InlineData(false)]
+  public async Task GetProductsPage_OrderByPriceFilter_ProductsOrderedByPrice
+    (bool isPriceAscending)
+  {
+    SearchFilters quantityFilter = new()
+    {
+      Order = isPriceAscending ? SearchFilters.SortType.PriceAsc : SearchFilters.SortType.PriceDesc
+    };
+    var PAGE = 1;
+    var PAGE_SIZE = 5;
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+
+    var result = await _cut.GetProductsPage(
+      PAGE, PAGE_SIZE, quantityFilter);
+
+    var data =
+      ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+
+    Product previous_entity = data.First();
+
+    foreach (var entity in data!)
+    {
+      if (isPriceAscending)
+      {
+        Assert.True(entity.Price >= previous_entity.Price);
+      }
+      else
+      {
+        Assert.True(entity.Price <= previous_entity.Price);
+      }
+      previous_entity = entity;
+    }
   }
 
   [Theory]
@@ -152,7 +223,7 @@ public class ProductControllerTests
     var result =
       await _cut.GetProductsPage(page, pageSize, new SearchFilters
       {
-        Order = SearchFilters.SortType.MinPrice
+        Order = SearchFilters.SortType.PriceAsc
       });
 
     Assert.Equal(resultType, result.Result!.GetType());
@@ -194,19 +265,21 @@ public class ProductControllerTests
       Description = "Do not buy",
       Quantity = 0
     };
-    p.Name = null;
+    p.Name = null!;
     var _db = new ProductDbContextFakeBuilder().WithCategories().Build();
     var _cut = new ProductsController(_nullLogger, _db);
 
-    var e = Record.ExceptionAsync(
+    var e = await Record.ExceptionAsync(
       async () => await _cut.AddNewProduct(p));
 
-    Assert.IsType<DbUpdateException>(e.Result);
+    Assert.IsType<DbUpdateException>(e);
   }
 
   [Fact]
   public async Task AddNewProduct_InvalidProductCategory_DbUpdateException()
   {
+
+
     Product p = new()
     {
       Name = "Sample product",
@@ -272,10 +345,10 @@ public class ProductControllerTests
     var newProductData =
       ((productResult.Result as OkObjectResult)!.Value as Product)!;
 
-    newProductData.ConcurrencyStamp[0] += 1;
-    var ex = Record.ExceptionAsync(async () =>
+    newProductData.ConcurrencyStamp![0] += 1;
+    var ex = await Record.ExceptionAsync(async () =>
       await _cut.UpdateProduct(newProductData.Id, newProductData));
 
-    Assert.IsType<DbUpdateConcurrencyException>(ex.Result);
+    Assert.IsType<DbUpdateConcurrencyException>(ex);
   }
 }

@@ -1,134 +1,87 @@
-﻿using System.Linq.Expressions;
-using ProductService.Models;
+﻿using ProductService.Models;
+using ProductService.Utility.Filters;
+using Exp = System.Linq.Expressions.Expression<System.Func<
+  ProductService.Models.Product, bool>>;
+
 
 namespace ProductService.Utility;
 
-public class ProductsPagination
+public class ProductsPagination(
+  SearchFilters filters,
+  ProductDbContext db)
 {
-  private SearchFilters _filters;
-  private IQueryable<Product> _query;
+  private IQueryable<Product> _query = db.Products.AsQueryable();
 
-  public ProductsPagination(SearchFilters filters,
-    ProductDbContext db)
+  public IQueryable<Product> GetOffsetPageQuery(
+    int pageNumber, int pageSize)
   {
-    _filters = filters;
-    _query = db.Products.AsQueryable();
-  }
+    var filtersL = CreateFilters();
+    ExecuteFilters(filtersL);
 
-  public IQueryable<Product> GetOffsetPageQuery(int pageNumber, int pageSize)
-  {
-    var filterExpression = ApplySearchFiltersForOffset();
-    _query = _query.Where(filterExpression);
-    _query = ApplySortType();
     return _query.Skip((pageNumber - 1) * pageSize)
       .Take(pageSize);
   }
 
+  private void ExecuteFilters(List<IFilterable<Product>> filtersL)
+  {
+    foreach (var f in filtersL)
+    {
+      _query = f.ApplyConstraint(_query);
+      _query = f.ApplyOrder(_query);
+    }
+  }
+
+
+  private List<IFilterable<Product>> CreateFilters()
+  {
+    var list = new List<IFilterable<Product>>
+    {
+      new MinPriceFilter(
+        filters.Order,
+        filters.MinPrice),
+      new MaxPriceFilter(
+        filters.Order,
+        filters.MaxPrice),
+      new MinQuantityFilter(
+        filters.Order,
+        filters.MinQuantity),
+      new NameFilter(
+        filters.Order,
+        filters.Name)
+    };
+    return list;
+  }
+
+
   public IQueryable<Product> GetAdjacentPageQuery(int pageSize,
     bool isPreviousPage, Product product)
   {
-    var filterExpression = ApplySearchFiltersForKeyset(product);
-    var keysetExpression =
-      AddProductsWithEqualSortingValue(product, isPreviousPage);
+    var filtersL = CreateFilters();
+    ExecuteFilters(filtersL, product, isPreviousPage);
 
-    var combinedExpression = ExpressionHelper<Product>.CombineAsOr(
-      keysetExpression, filterExpression);
-    _query = _query.Where(combinedExpression);
-    ApplySortType();
-    return _query.Take(pageSize);
+    return isPreviousPage
+      ? _query.Take(pageSize).Reverse()
+      : _query.Take(pageSize);
   }
 
-  private Expression<Func<Product, bool>> AddProductsWithEqualSortingValue(
-    Product product, bool isPreviousPage)
+  private void ExecuteFilters(List<IFilterable<Product>> filtersL,
+    Product p, bool isPreviousPage)
   {
-    Expression<Func<Product, bool>>? keysetExpression;
-    switch (_filters.Order)
-    {
-      case SearchFilters.SortType.MinPrice:
-      case SearchFilters.SortType.MaxPrice:
-        keysetExpression = AddProductsWithEqualPrice(product, isPreviousPage);
-        break;
-      default:
-        throw new InvalidDataException("SortType in SearchFilter" +
-                                       " is invalid");
-    }
-    return keysetExpression;
+    var expression = ChainFilters(filtersL,
+      p, isPreviousPage);
+    _query = _query.Where(expression);
+    foreach (var filter in filtersL)
+      _query = filter.ApplyOrder(_query, isPreviousPage);
   }
 
-  private Expression<Func<Product, bool>> AddProductsWithEqualPrice(
-    Product product, bool isPreviousPage)
+  private static Exp ChainFilters(List<IFilterable<Product>> filtersL,
+    Product p, bool isPreviousPage)
   {
-    if (isPreviousPage)
-    {
-      return p => p.Price == product.Price && p.Id < product.Id;
-    }
-
-    return p => p.Price == product.Price && p.Id > product.Id;
-  }
-
-
-  private IQueryable<Product> ApplySortType()
-  {
-    _query = _filters.Order switch
-    {
-      SearchFilters.SortType.MinPrice => _query.OrderBy(p => p.Price),
-      SearchFilters.SortType.MaxPrice => _query.OrderByDescending(p => p.Price),
-      _ => throw new InvalidDataException("SortType in SearchFilter is invalid")
-    };
-
-    _query = (_query as IOrderedQueryable<Product>)!.ThenBy(p => p.Id);
-
-    return _query;
-  }
-
-  private Expression<Func<Product, bool>> ApplySearchFiltersForOffset()
-  {
-    Expression<Func<Product, bool>> filterExpr = product => true;
-
-    if (_filters.Name is not null)
-    {
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Name.Contains(_filters.Name,
-          StringComparison.InvariantCultureIgnoreCase), filterExpr);
-    }
-    if (_filters.MinPrice is not null)
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Price >= _filters.MinPrice, filterExpr);
-    if (_filters.MaxPrice is not null)
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Price <= _filters.MaxPrice, filterExpr);
-    if (_filters.MinQuantity is not null)
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Quantity >= _filters.MinQuantity, filterExpr);
-
-    return filterExpr;
-  }
-
-  private Expression<Func<Product, bool>> ApplySearchFiltersForKeyset(
-    Product product)
-  {
-    Expression<Func<Product, bool>> filterExpr = p => true;
-
-    if (_filters.Name is not null)
-    {
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Name.Contains(_filters.Name), filterExpr);
-    }
-    if (_filters.MinPrice is not null)
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Price >= _filters.MinPrice && p.Id != product.Id,
-        filterExpr);
-    if (_filters.MaxPrice is not null)
-    {
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Price <= _filters.MaxPrice && p.Id != product.Id,
-        filterExpr);
-    }
-    if (_filters.MinQuantity is not null)
-      filterExpr = ExpressionHelper<Product>.CombineAsAnd(
-        p => p.Quantity >= _filters.MinQuantity && p.Id != product.Id,
-        filterExpr);
-
-    return filterExpr;
+    Exp expression = e => true;
+    return filtersL.Aggregate(expression,
+      (current, filter) =>
+        EH<Product>.CombineAsAnd(
+          filter.GetExpressionForKeysetPagination(
+            p, isPreviousPage), current));
   }
 }

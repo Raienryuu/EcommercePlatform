@@ -21,10 +21,6 @@ public class ProductDbContext : DbContext
             .WithMany()
             .HasForeignKey(p => p.CategoryId);
 
-        // index on price
-        // index to help searching with name fragment
-        // index composite if possible to combine these /\
-
         modelBuilder.Entity<Product>().HasData(
             new Product
             {
