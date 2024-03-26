@@ -48,12 +48,12 @@ public class ProductsController(
   }
 
   [HttpGet]
-  [Route("adjacentPage/{pageSize}/{isPreviousPage}")]
+  [Route("nextPage/{pageSize}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult<IEnumerable<Product>>> GetAdjacentPage(
-    int pageSize, bool isPreviousPage,
-    [FromQuery] SearchFilters currentValues,
+  public async Task<ActionResult<IEnumerable<Product>>> GetNextPage(
+    int pageSize,
+    [FromQuery] SearchFilters filters,
     [FromBody] Product product)
   {
     if (pageSize < 1 || pageSize > 200)
@@ -61,8 +61,32 @@ public class ProductsController(
         "PageSize greater than 1, and PageSize less " +
         "than 200"));
 
-    var query = new ProductsPagination(currentValues, db)
-      .GetAdjacentPageQuery(pageSize, isPreviousPage, product);
+    var query = new ProductsPagination(filters, db)
+      .GetNextPageQuery(pageSize, product);
+
+    var s = query.ToQueryString();
+    Console.WriteLine(s);
+
+    var products = await query.ToListAsync();
+    return Ok(products);
+  }
+
+  [HttpGet]
+  [Route("previousPage/{pageSize}")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  public async Task<ActionResult<IEnumerable<Product>>> GetPreviousPage(
+    int pageSize,
+    [FromQuery] SearchFilters filters,
+    [FromBody] Product product)
+  {
+    if (pageSize < 1 || pageSize > 200)
+      return BadRequest(CreateErrorResponse(
+        "PageSize greater than 1, and PageSize less " +
+        "than 200"));
+
+    var query = new ProductsPagination(filters, db)
+      .GetPreviousPageQuery(pageSize, product);
 
     var s = query.ToQueryString();
     Console.WriteLine(s);
@@ -108,30 +132,27 @@ public class ProductsController(
     if (!DoesCategoryExists(updatedProduct.CategoryId).Result)
       return NotFound(CreateErrorResponse("Given category does not exists"));
 
-    if (oldProduct.ConcurrencyStamp is not null &&
-        updatedProduct.ConcurrencyStamp is not null &&
-        oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
+    if (oldProduct.ConcurrencyStamp is null ||
+        updatedProduct.ConcurrencyStamp is null ||
+        !oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
           .ConcurrencyStamp))
-    {
-      oldProduct.Price = updatedProduct.Price;
-      oldProduct.Quantity = updatedProduct.Quantity;
-      oldProduct.Name = updatedProduct.Name;
-      oldProduct.Description = updatedProduct.Description;
-      oldProduct.CategoryId = updatedProduct.CategoryId;
-      oldProduct.Category = await db.ProductCategories
-        .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
+      return UnprocessableEntity(
+        CreateErrorResponse("ConcurrencyStamp mismatch"));
 
-      oldProduct.RefreshConcurrencyStamp();
-      await db.SaveChangesAsync();
+    oldProduct.Price = updatedProduct.Price;
+    oldProduct.Quantity = updatedProduct.Quantity;
+    oldProduct.Name = updatedProduct.Name;
+    oldProduct.Description = updatedProduct.Description;
+    oldProduct.CategoryId = updatedProduct.CategoryId;
+    oldProduct.Category = await db.ProductCategories
+      .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
 
-      return Ok(oldProduct);
-    }
+    oldProduct.RefreshConcurrencyStamp();
+    await db.SaveChangesAsync();
+
+    return Ok(oldProduct);
 
     //testign testing testing testing testnig
-
-
-    return UnprocessableEntity(
-      CreateErrorResponse("ConcurrencyStamp mismatch"));
   }
 
   private static string CreateErrorResponse(string message)

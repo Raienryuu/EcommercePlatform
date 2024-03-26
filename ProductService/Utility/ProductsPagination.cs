@@ -1,38 +1,57 @@
 ﻿using ProductService.Models;
 using ProductService.Utility.Filters;
+using ProductService.Utility.OrderSetters;
 using Exp = System.Linq.Expressions.Expression<System.Func<
   ProductService.Models.Product, bool>>;
 
 
 namespace ProductService.Utility;
 
-public class ProductsPagination(
-  SearchFilters filters,
-  ProductDbContext db)
+public class ProductsPagination
 {
-  private IQueryable<Product> _query = db.Products.AsQueryable();
+  private readonly Dictionary<SearchFilters.SortType, IOrderable<Product>>
+    _orderers = new()
+    {
+      { SearchFilters.SortType.PriceAsc, new PriceAscendingOrder() },
+      { SearchFilters.SortType.PriceDesc, new PriceDescendingOrder() },
+      { SearchFilters.SortType.QuantityAsc, new QuantityAscendingOrder() },
+    };
+
+
+  private IQueryable<Product> _query;
+  private readonly IEnumerable<IFilterable<Product>> _activeFilters;
+  private readonly IOrderable<Product> _itemsOrderer;
+
+  public ProductsPagination(SearchFilters filters,
+    ProductDbContext db)
+  {
+    _query = db.Products.AsQueryable();
+    _activeFilters = CreateFilters(filters);
+    _itemsOrderer = _orderers[filters.Order];
+  }
 
   public IQueryable<Product> GetOffsetPageQuery(
     int pageNumber, int pageSize)
   {
-    var filtersL = CreateFilters();
-    ExecuteFilters(filtersL);
+    ExecuteFilters();
+
+    _query = _itemsOrderer.ApplyOrderForNextPage(_query);
 
     return _query.Skip((pageNumber - 1) * pageSize)
       .Take(pageSize);
   }
 
-  private void ExecuteFilters(List<IFilterable<Product>> filtersL)
+  private void ExecuteFilters()
   {
-    foreach (var f in filtersL)
+    foreach (var f in (_activeFilters))
     {
-      _query = f.ApplyConstraint(_query);
-      _query = f.ApplyOrder(_query);
+      _query = f.ApplyFilterForOffsetPage(_query);
     }
   }
 
 
-  private List<IFilterable<Product>> CreateFilters()
+  private IEnumerable<IFilterable<Product>> CreateFilters(
+    SearchFilters filters)
   {
     var list = new List<IFilterable<Product>>
     {
@@ -52,36 +71,44 @@ public class ProductsPagination(
     return list;
   }
 
-
-  public IQueryable<Product> GetAdjacentPageQuery(int pageSize,
-    bool isPreviousPage, Product product)
+  public IQueryable<Product> GetNextPageQuery(int pageSize,
+    Product product)
   {
-    var filtersL = CreateFilters();
-    ExecuteFilters(filtersL, product, isPreviousPage);
-
-    return isPreviousPage
-      ? _query.Take(pageSize).Reverse()
-      : _query.Take(pageSize);
+    ExecuteFiltersForNextPage(product);
+    return _query.Take(pageSize);
   }
 
-  private void ExecuteFilters(List<IFilterable<Product>> filtersL,
-    Product p, bool isPreviousPage)
+  public IQueryable<Product> GetPreviousPageQuery(int pageSize,
+    Product product)
   {
-    var expression = ChainFilters(filtersL,
-      p, isPreviousPage);
+    ExecuteFiltersForPreviousPage(product);
+    return _query.Take(pageSize).Reverse();
+  }
+
+  private void ExecuteFiltersForNextPage(Product p)
+  {
+    var expression = CombineFilters(p);
+    expression = _itemsOrderer.IncludeReferencedItemForNextPage(expression, p);
     _query = _query.Where(expression);
-    foreach (var filter in filtersL)
-      _query = filter.ApplyOrder(_query, isPreviousPage);
+    _query = _itemsOrderer.ApplyOrderForNextPage(_query);
   }
 
-  private static Exp ChainFilters(List<IFilterable<Product>> filtersL,
-    Product p, bool isPreviousPage)
+  private void ExecuteFiltersForPreviousPage(Product p)
+  {
+    var expression = CombineFilters(p);
+    expression =
+      _itemsOrderer.IncludeReferencedItemForPreviousPage(expression, p);
+    _query = _query.Where(expression);
+    _query = _itemsOrderer.ApplyOrderForPreviousPage(_query);
+  }
+
+  private Exp CombineFilters(Product p)
   {
     Exp expression = e => true;
-    return filtersL.Aggregate(expression,
+    return _activeFilters.Aggregate(expression,
       (current, filter) =>
         EH<Product>.CombineAsAnd(
-          filter.GetExpressionForKeysetPagination(
-            p, isPreviousPage), current));
+          filter.GetExpressionForAdjacentPage(
+            p), current));
   }
 }

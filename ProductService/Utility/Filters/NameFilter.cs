@@ -16,7 +16,7 @@ public class NameFilter(
 
   public object? FilterValue { get; set; } = filterValue;
 
-  public IQueryable<Product> ApplyConstraint(
+  public IQueryable<Product> ApplyFilterForOffsetPage(
     IQueryable<Product> query)
   {
     if (FilterValue is not null)
@@ -24,8 +24,7 @@ public class NameFilter(
     return query;
   }
 
-  public Exp GetExpressionForKeysetPagination(
-    Product refProduct, bool isPreviousPage)
+  public Exp GetExpressionForAdjacentPage(Product refProduct)
   {
     Exp expression = e => true;
 
@@ -34,48 +33,6 @@ public class NameFilter(
         q => q.Name.Contains((string)FilterValue) &&
              q.Id != refProduct.Id, expression);
 
-    if (!IsMainFilter) return expression;
-
-    expression =
-      AddItemsWithEqualValue(expression, refProduct, isPreviousPage);
-
-    expression =
-      RemoveItemsOutsideOfValueRange(expression, refProduct, isPreviousPage);
-
     return expression;
-  }
-
-  private Exp RemoveItemsOutsideOfValueRange(
-    Exp expression, Product refProduct,
-    bool isPreviousPage)
-  {
-    if (!isPreviousPage)
-      return EH.CombineAsAnd(p => p.Quantity >=
-                                  refProduct.Quantity, expression);
-
-    return EH.CombineAsAnd(p => p.Quantity <=
-                                refProduct.Quantity, expression);
-  }
-
-  public IQueryable<Product> ApplyOrder(IQueryable<Product> query,
-    bool isPreviousPage)
-  {
-    return IsMainFilter
-      ? query
-        .OrderBy(q => q.Quantity)
-        .ThenBy(q => q.Id)
-      : query;
-  }
-
-  private static Exp AddItemsWithEqualValue(
-    Exp e,
-    Product refProduct, bool isPreviousPage)
-  {
-    if (!isPreviousPage)
-      return EH.CombineAsOr(
-        e, q => q.Quantity == refProduct.Quantity && q.Id > refProduct.Id);
-
-    return EH.CombineAsOr(
-      e, q => q.Quantity == refProduct.Quantity && q.Id < refProduct.Id);
   }
 }

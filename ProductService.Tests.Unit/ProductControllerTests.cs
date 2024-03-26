@@ -58,13 +58,12 @@ public class ProductControllerTests
       Assert.Contains(nameFilter.Name, entity.Name);
   }
 
-  [Theory]
-  [InlineData(false, 3)]
-  [InlineData(true, 5)]
-  public async Task GetAdjacentPage_PriceAscendingOrder_ProperPageWithItem(
-    bool isPreviousPage, int expectedProductId)
+  [Fact]
+  public async Task GetNextPage_PriceAscendingOrder_ProperPageWithItem()
   {
     const int PAGE_SIZE = 1;
+
+    const int EXPECTED_ID = 3;
 
     SearchFilters filters = new();
     var _db = new ProductDbContextFakeBuilder()
@@ -82,19 +81,47 @@ public class ProductControllerTests
     };
 
     var result = await _cut
-      .GetAdjacentPage(PAGE_SIZE, isPreviousPage, filters, referencedItem);
+      .GetNextPage(PAGE_SIZE, filters, referencedItem);
 
     var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(expectedProductId, data.First().Id);
+    Assert.Equal(EXPECTED_ID, data.First().Id);
   }
 
-  [Theory]
-  [InlineData(false, 5)]
-  [InlineData(true, 3)]
-  public async Task GetAdjacentPage_PriceDescendingOrder_ProperPageWithItem(
-    bool isPreviousPage, int expectedProductId)
+  [Fact]
+  public async Task GetPreviousPage_PriceAscendingOrder_ProperPageWithItem()
   {
     const int PAGE_SIZE = 1;
+
+    const int EXPECTED_ID = 5;
+
+    SearchFilters filters = new();
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    Product referencedItem = new()
+    {
+      Id = 4,
+      CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    };
+
+    var result = await _cut
+      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
+
+    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+    Assert.Equal(EXPECTED_ID, data.First().Id);
+  }
+
+  [Fact]
+  public async Task GetNextPage_PriceDescendingOrder_ProperPageWithItem()
+  {
+    const int PAGE_SIZE = 1;
+
+    const int EXPECTED_ID = 5;
 
     SearchFilters filters = new(){
       Order = SearchFilters.SortType.PriceDesc
@@ -114,9 +141,97 @@ public class ProductControllerTests
     };
 
     var result = await _cut
-      .GetAdjacentPage(PAGE_SIZE, isPreviousPage, filters, referencedItem);
+      .GetNextPage(PAGE_SIZE, filters, referencedItem);
     var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(expectedProductId, data.First().Id);
+    Assert.Equal(EXPECTED_ID, data.First().Id);
+  }
+
+[Fact]
+  public async Task GetPreviousPage_PriceDescendingOrder_ProperPageWithItem()
+  {
+    const int PAGE_SIZE = 1;
+    const int EXPECTED_ID = 3;
+
+    SearchFilters filters = new(){
+      Order = SearchFilters.SortType.PriceDesc
+    };
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    Product referencedItem = new()
+    {
+      Id = 4,
+      CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    };
+
+    var result = await _cut
+      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
+    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+    Assert.Equal(EXPECTED_ID, data.First().Id);
+  }
+
+  [Fact]
+  public async Task GetNextPage_QuantityAscendingOrder_ProperPageWithItem()
+  {
+    const int PAGE_SIZE = 1;
+
+    const int EXPECTED_ID = 1;
+
+    SearchFilters filters = new(){
+      Order = SearchFilters.SortType.QuantityAsc
+    };
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    Product referencedItem = new()
+    {
+      Id = 4,
+      CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    };
+
+    var result = await _cut
+      .GetNextPage(PAGE_SIZE, filters, referencedItem);
+    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+    Assert.Equal(EXPECTED_ID, data.First().Id);
+  }
+
+[Fact]
+  public async Task GetPreviousPage_QuantityAscendingOrder_ProperPageWithItem()
+  {
+    const int PAGE_SIZE = 1;
+    const int EXPECTED_ID = 2;
+
+    SearchFilters filters = new(){
+      Order = SearchFilters.SortType.QuantityAsc
+    };
+    var _db = new ProductDbContextFakeBuilder()
+      .WithProducts().Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    Product referencedItem = new()
+    {
+      Id = 4,
+      CategoryId = 1,
+      Name = "Blue Cup",
+      Description = "Fairly big cup",
+      Price = 25,
+      Quantity = 6,
+      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
+    };
+
+    var result = await _cut
+      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
+    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+    Assert.Equal(EXPECTED_ID, data.First().Id);
   }
 
   [Fact]
@@ -213,7 +328,7 @@ public class ProductControllerTests
   [InlineData(1, 20, typeof(NoContentResult))]
   [InlineData(-5, 20, typeof(BadRequestObjectResult))]
   [InlineData(1, 250, typeof(BadRequestObjectResult))]
-  public async Task GetProductsPage_InvalidPageParams_AppropriateResponse(
+  public async Task GetProductsPage_PageParams_AppropriateResponse(
     int page, int pageSize, Type resultType)
   {
     var _db = new ProductDbContextFakeBuilder()

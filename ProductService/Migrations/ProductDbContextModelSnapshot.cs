@@ -17,7 +17,7 @@ namespace ProductService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -55,6 +55,10 @@ namespace ProductService.Migrations
 
                     b.HasIndex("CategoryId");
 
+                    b.HasIndex("Price");
+
+                    b.HasIndex("Quantity");
+
                     b.ToTable("Products");
 
                     b.HasData(
@@ -62,6 +66,7 @@ namespace ProductService.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
+                            ConcurrencyStamp = new byte[] { 70, 6, 198, 173 },
                             Description = "White mug",
                             Name = "Mug",
                             Price = 10m,
@@ -71,6 +76,7 @@ namespace ProductService.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
+                            ConcurrencyStamp = new byte[] { 54, 78, 18, 191 },
                             Description = "Apple laptop",
                             Name = "Laptop",
                             Price = 1000m,

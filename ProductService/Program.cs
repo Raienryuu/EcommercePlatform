@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration.Json;
 
 namespace ProductService
 {
-  public class Program
+  public static class Program
   {
     public static void Main(string[] args)
     {
@@ -40,7 +40,7 @@ namespace ProductService
 
       var app = builder.Build();
 
-      // Configure the HTTP request pipeline.
+      //
       if (app.Environment.IsDevelopment())
       {
         app.UseSwagger();
