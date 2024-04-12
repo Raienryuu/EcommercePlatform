@@ -10,12 +10,12 @@ namespace ProductService.Utility;
 public class ProductsPagination
 {
   private readonly Dictionary<SearchFilters.SortType, IOrderable<Product>>
-    _orderers = new()
-    {
-      { SearchFilters.SortType.PriceAsc, new PriceAscendingOrder() },
-      { SearchFilters.SortType.PriceDesc, new PriceDescendingOrder() },
-      { SearchFilters.SortType.QuantityAsc, new QuantityAscendingOrder() },
-    };
+	_orderers = new()
+	{
+	  { SearchFilters.SortType.PriceAsc, new PriceAscendingOrder() },
+	  { SearchFilters.SortType.PriceDesc, new PriceDescendingOrder() },
+	  { SearchFilters.SortType.QuantityAsc, new QuantityAscendingOrder() },
+	};
 
 
   private IQueryable<Product> _query;
@@ -23,92 +23,92 @@ public class ProductsPagination
   private readonly IOrderable<Product> _itemsOrderer;
 
   public ProductsPagination(SearchFilters filters,
-    ProductDbContext db)
+	ProductDbContext db)
   {
-    _query = db.Products.AsQueryable();
-    _activeFilters = CreateFilters(filters);
-    _itemsOrderer = _orderers[filters.Order];
+	_query = db.Products.AsQueryable();
+	_activeFilters = CreateFilters(filters);
+	_itemsOrderer = _orderers[filters.Order];
   }
 
   public IQueryable<Product> GetOffsetPageQuery(
-    int pageNumber, int pageSize)
+	int pageNumber, int pageSize)
   {
-    ExecuteFilters();
+	ExecuteFilters();
 
-    _query = _itemsOrderer.ApplyOrderForNextPage(_query);
+	_query = _itemsOrderer.ApplyOrderForNextPage(_query);
 
-    return _query.Skip((pageNumber - 1) * pageSize)
-      .Take(pageSize);
+	return _query.Skip((pageNumber - 1) * pageSize)
+	  .Take(pageSize);
   }
 
   private void ExecuteFilters()
   {
-    foreach (var f in (_activeFilters))
-    {
-      _query = f.ApplyFilterForOffsetPage(_query);
-    }
+	foreach (var f in (_activeFilters))
+	{
+	  _query = f.ApplyFilterForOffsetPage(_query);
+	}
   }
 
 
   private IEnumerable<IFilterable<Product>> CreateFilters(
-    SearchFilters filters)
+	SearchFilters filters)
   {
-    var list = new List<IFilterable<Product>>
-    {
-      new MinPriceFilter(
-        filters.Order,
-        filters.MinPrice),
-      new MaxPriceFilter(
-        filters.Order,
-        filters.MaxPrice),
-      new MinQuantityFilter(
-        filters.Order,
-        filters.MinQuantity),
-      new NameFilter(
-        filters.Order,
-        filters.Name)
-    };
-    return list;
+	var list = new List<IFilterable<Product>>
+	{
+	  new MinPriceFilter(
+		filters.Order,
+		filters.MinPrice),
+	  new MaxPriceFilter(
+		filters.Order,
+		filters.MaxPrice),
+	  new MinQuantityFilter(
+		filters.Order,
+		filters.MinQuantity),
+	  new NameFilter(
+		filters.Order,
+		filters.Name)
+	};
+	return list;
   }
 
   public IQueryable<Product> GetNextPageQuery(int pageSize,
-    Product product)
+	Product product)
   {
-    ExecuteFiltersForNextPage(product);
-    return _query.Take(pageSize);
+	ExecuteFiltersForNextPage(product);
+	return _query.Take(pageSize);
   }
 
   public IQueryable<Product> GetPreviousPageQuery(int pageSize,
-    Product product)
+	Product product)
   {
-    ExecuteFiltersForPreviousPage(product);
-    return _query.Take(pageSize).Reverse();
+	ExecuteFiltersForPreviousPage(product);
+	return _query.Take(pageSize).Reverse();
   }
 
   private void ExecuteFiltersForNextPage(Product p)
   {
-    var expression = CombineFilters(p);
-    expression = _itemsOrderer.IncludeReferencedItemForNextPage(expression, p);
-    _query = _query.Where(expression);
-    _query = _itemsOrderer.ApplyOrderForNextPage(_query);
+	var expression = CombineFilters(p);
+	expression = _itemsOrderer.IncludeReferencedItemForNextPage(expression, p);
+	_query = _query.Where(expression);
+	_query = _itemsOrderer.ApplyOrderForNextPage(_query);
   }
 
   private void ExecuteFiltersForPreviousPage(Product p)
   {
-    var expression = CombineFilters(p);
-    expression =
-      _itemsOrderer.IncludeReferencedItemForPreviousPage(expression, p);
-    _query = _query.Where(expression);
-    _query = _itemsOrderer.ApplyOrderForPreviousPage(_query);
+	var expression = CombineFilters(p);
+	expression =
+	  _itemsOrderer.IncludeReferencedItemForPreviousPage(expression, p);
+	_query = _query.Where(expression);
+	_query = _itemsOrderer.ApplyOrderForPreviousPage(_query);
   }
 
   private Exp CombineFilters(Product p)
   {
-    Exp expression = e => true;
-    return _activeFilters.Aggregate(expression,
-      (current, filter) =>
-        EH<Product>.CombineAsAnd(
-          filter.GetExpressionForAdjacentPage(
-            p), current));
+	Exp expression = e => true;
+	return _activeFilters.Aggregate(expression,
+	  (current, filter) =>
+		EH<Product>.CombineAsAnd(
+		  filter.GetExpressionForAdjacentPage(
+			p), current));
   }
 }

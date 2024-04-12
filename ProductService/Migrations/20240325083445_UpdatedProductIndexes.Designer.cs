@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProductService;
 
@@ -11,9 +12,11 @@ using ProductService;
 namespace ProductService.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    partial class ProductDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240325083445_UpdatedProductIndexes")]
+    partial class UpdatedProductIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,7 @@ namespace ProductService.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            ConcurrencyStamp = new byte[] { 5, 42, 36, 105 },
+                            ConcurrencyStamp = new byte[] { 70, 6, 198, 173 },
                             Description = "White mug",
                             Name = "Mug",
                             Price = 10m,
@@ -76,7 +79,7 @@ namespace ProductService.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            ConcurrencyStamp = new byte[] { 233, 121, 171, 107 },
+                            ConcurrencyStamp = new byte[] { 54, 78, 18, 191 },
                             Description = "Apple laptop",
                             Name = "Laptop",
                             Price = 1000m,
@@ -94,15 +97,12 @@ namespace ProductService.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("ParentCategoryId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryName")
-                        .IsUnique();
 
                     b.HasIndex("ParentCategoryId");
 

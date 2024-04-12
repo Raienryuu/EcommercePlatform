@@ -1,9 +1,8 @@
-using System.Linq.Expressions;
 using ProductService.Models;
 using EH = ProductService.Utility.EH<ProductService.Models.Product>;
 using Exp =
   System.Linq.Expressions.Expression<
-    System.Func<ProductService.Models.Product, bool>>;
+	System.Func<ProductService.Models.Product, bool>>;
 
 namespace ProductService.Utility.OrderSetters;
 

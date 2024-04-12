@@ -1,9 +1,8 @@
-using System.Diagnostics;
 using ProductService.Models;
 using EH = ProductService.Utility.EH<ProductService.Models.Product>;
 using Exp =
   System.Linq.Expressions.Expression<
-    System.Func<ProductService.Models.Product, bool>>;
+	System.Func<ProductService.Models.Product, bool>>;
 
 namespace ProductService.Utility.Filters;
 
@@ -12,8 +11,6 @@ public class MaxPriceFilter(
   object? filterValue = null)
   : IFilterable<Product>
 {
-  public bool IsMainFilter { get; set; } =
-    order == SearchFilters.SortType.PriceDesc;
 
   public object? FilterValue { get; set; } = filterValue;
 

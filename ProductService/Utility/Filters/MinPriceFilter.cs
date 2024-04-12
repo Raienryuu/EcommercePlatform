@@ -11,8 +11,6 @@ public class MinPriceFilter(
   object? filterValue = null)
   : IFilterable<Product>
 {
-  public bool IsMainFilter { get; set; } =
-    order == SearchFilters.SortType.PriceAsc;
   public object? FilterValue { get; set; } = filterValue;
 
 

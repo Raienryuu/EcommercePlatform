@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
@@ -8,6 +7,7 @@ namespace ProductService.Controllers.v1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
+[Produces("application/json")]
 public class ProductsController(
   ILogger<ProductsController> logger,
   ProductDbContext db)
@@ -15,155 +15,182 @@ public class ProductsController(
 {
   private readonly ILogger<ProductsController> _logger = logger;
 
+  /// <summary>
+  /// Gets product with a given <paramref name="id"/>.
+  /// </summary>
+  /// <param name="id">Identifier of a product to find.</param>
+  /// <returns><ref name="result">product</ref> object</returns>
+  /// <response code="200">Found <ref name="Product">product</ref></response>
+  /// <response code="404">If product doesn't exists</response>
   [HttpGet]
   [Route("{id}")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult<Product>> GetProduct(int id)
+  [ProducesResponseType<Product>(StatusCodes.Status200OK)]
+  [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
+  public async Task<IActionResult> GetProduct(int id)
   {
-    var result = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
-    if (result is not null) return Ok(result);
-    return NoContent();
+	var result = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
+	if (result is not null) return Ok(result);
+	return NotFound(($"No product found with given ID: {id}.", id));
   }
+
 
   [HttpGet]
   [Route("{pageNum}/{pageSize}")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status204NoContent)]
-  public async Task<ActionResult<IEnumerable<Product>>> GetProductsPage(
-    int pageNum, int pageSize, [FromQuery] SearchFilters filters)
+  [ProducesResponseType<IEnumerable<Product>>(StatusCodes.Status200OK)]
+  [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest)]
+  public async Task<IActionResult> GetProductsPage(
+	int pageNum, int pageSize, [FromQuery] SearchFilters filters)
   {
-    if (pageNum < 1 || pageSize < 1 || pageSize > 200)
-      return BadRequest(CreateErrorResponse(
-        "Page and PageSize must be greater than 0 and PageSize less " +
-        "than 200"));
+	var validationResult = ValidatePaginationParams(pageSize, pageNum);
 
-    var pagination = new ProductsPagination(filters, db)
-      .GetOffsetPageQuery(pageNum, pageSize);
-    var products = await pagination.ToListAsync();
+	if (validationResult is not null)
+	{
+	  return validationResult;
+	}
 
-    if (products.Count == 0) return NoContent();
+	var pagination = new ProductsPagination(filters, db)
+	  .GetOffsetPageQuery(pageNum, pageSize);
+	var products = await pagination.ToListAsync();
 
-    return Ok(products);
+	if (products.Count == 0) return Ok("No products found on given page.");
+	return Ok(products);
   }
 
   [HttpGet]
   [Route("nextPage/{pageSize}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetNextPage(
-    int pageSize,
-    [FromQuery] SearchFilters filters,
-    [FromBody] Product product)
+	int pageSize,
+	[FromQuery] SearchFilters filters,
+	[FromBody] Product product)
   {
-    if (pageSize < 1 || pageSize > 200)
-      return BadRequest(CreateErrorResponse(
-        "PageSize greater than 1, and PageSize less " +
-        "than 200"));
+	if (pageSize < 1 || pageSize > 200)
+	  return BadRequest(CreateErrorResponse(
+		"PageSize greater than 1, and PageSize less " +
+		"than 200"));
 
-    var query = new ProductsPagination(filters, db)
-      .GetNextPageQuery(pageSize, product);
+	var query = new ProductsPagination(filters, db)
+	  .GetNextPageQuery(pageSize, product);
 
-    var s = query.ToQueryString();
-    Console.WriteLine(s);
+	var s = query.ToQueryString();
+	Console.WriteLine(s);
 
-    var products = await query.ToListAsync();
-    return Ok(products);
+	var products = await query.ToListAsync();
+	return Ok(products);
   }
 
   [HttpGet]
   [Route("previousPage/{pageSize}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
-  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetPreviousPage(
-    int pageSize,
-    [FromQuery] SearchFilters filters,
-    [FromBody] Product product)
+	int pageSize,
+	[FromQuery] SearchFilters filters,
+	[FromBody] Product product)
   {
-    if (pageSize < 1 || pageSize > 200)
-      return BadRequest(CreateErrorResponse(
-        "PageSize greater than 1, and PageSize less " +
-        "than 200"));
+	if (pageSize < 1 || pageSize > 200)
+	  return BadRequest(CreateErrorResponse(
+		"PageSize greater than 1, and PageSize less " +
+		"than 200"));
 
-    var query = new ProductsPagination(filters, db)
-      .GetPreviousPageQuery(pageSize, product);
+	var query = new ProductsPagination(filters, db)
+	  .GetPreviousPageQuery(pageSize, product);
 
-    var s = query.ToQueryString();
-    Console.WriteLine(s);
+	var s = query.ToQueryString();
+	Console.WriteLine(s);
 
-    var products = await query.ToListAsync();
-    return Ok(products);
+	var products = await query.ToListAsync();
+	return Ok(products);
   }
 
   [HttpPost]
   [ProducesResponseType(StatusCodes.Status201Created)]
   public async Task<ActionResult> AddNewProduct([FromBody] Product newProduct)
   {
-    newProduct.Category = await db.ProductCategories
-      .SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
+	newProduct.Category = await db.ProductCategories
+	  .SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
 
-    if (newProduct.Category is null)
-      return BadRequest(CreateErrorResponse("Category not found"));
+	if (newProduct.Category is null)
+	  return BadRequest(CreateErrorResponse("Category not found"));
 
-    newProduct.RefreshConcurrencyStamp();
-    db.Products.Add(newProduct);
-    await db.SaveChangesAsync();
+	newProduct.RefreshConcurrencyStamp();
+	db.Products.Add(newProduct);
+	await db.SaveChangesAsync();
 
-    var createdUri = Url.Action(
-      "GetProduct",
-      "Products",
-      new { id = newProduct.Id });
+	var createdUri = Url.Action(
+	  "GetProduct",
+	  "Products",
+	  new { id = newProduct.Id });
 
-    return base.Created(createdUri!, newProduct);
+	return base.Created(createdUri!, newProduct);
   }
 
-
+  /// <summary>
+  /// Updates product.
+  /// </summary>
+  /// <remarks>
+  /// Requires ConcurrencyStamps to match.
+  /// </remarks>
+  /// <param name="id"></param>
+  /// <param name="updatedProduct"></param>
+  /// <returns>Updated product with given ID.</returns>
+  /// <response code="200">Product with updated values.</response>
+  /// <response code="404">If product id doesn't exists.</response>
+  /// <response code="422">If ConcurrencyStamps don't match.</response>
   [HttpPatch("{id}")]
-  [ProducesResponseType(StatusCodes.Status204NoContent)]
+  [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
   public async Task<ActionResult<Product>> UpdateProduct(int id,
-    [FromBody] Product updatedProduct)
+	[FromBody] Product updatedProduct)
   {
-    var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
-    if (oldProduct is null)
-      return NotFound(CreateErrorResponse("Product not found"));
+	var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
+	if (oldProduct is null)
+	  return NotFound(CreateErrorResponse("Product not found"));
 
-    if (!DoesCategoryExists(updatedProduct.CategoryId).Result)
-      return NotFound(CreateErrorResponse("Given category does not exists"));
+	if (!await DoesCategoryExists(updatedProduct.CategoryId))
+	  return NotFound(CreateErrorResponse("Given category does not exists"));
 
-    if (oldProduct.ConcurrencyStamp is null ||
-        updatedProduct.ConcurrencyStamp is null ||
-        !oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
-          .ConcurrencyStamp))
-      return UnprocessableEntity(
-        CreateErrorResponse("ConcurrencyStamp mismatch"));
+	if (oldProduct.ConcurrencyStamp is null ||
+		updatedProduct.ConcurrencyStamp is null ||
+		!oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
+		  .ConcurrencyStamp))
+	  return UnprocessableEntity(
+		CreateErrorResponse("ConcurrencyStamp mismatch"));
 
-    oldProduct.Price = updatedProduct.Price;
-    oldProduct.Quantity = updatedProduct.Quantity;
-    oldProduct.Name = updatedProduct.Name;
-    oldProduct.Description = updatedProduct.Description;
-    oldProduct.CategoryId = updatedProduct.CategoryId;
-    oldProduct.Category = await db.ProductCategories
-      .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
+	oldProduct.Price = updatedProduct.Price;
+	oldProduct.Quantity = updatedProduct.Quantity;
+	oldProduct.Name = updatedProduct.Name;
+	oldProduct.Description = updatedProduct.Description;
+	oldProduct.CategoryId = updatedProduct.CategoryId;
+	oldProduct.Category = await db.ProductCategories
+	  .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
 
-    oldProduct.RefreshConcurrencyStamp();
-    await db.SaveChangesAsync();
+	oldProduct.RefreshConcurrencyStamp();
+	await db.SaveChangesAsync();
 
-    return Ok(oldProduct);
-
-    //testign testing testing testing testnig
+	return Ok(oldProduct);
   }
 
   private static string CreateErrorResponse(string message)
   {
-    return $"{{\"type\": \"error\", \"message\": \"{message}\"}}";
+	return $"{{\"type\": \"error\", \"message\": \"{message}\"}}";
   }
 
   private async Task<bool> DoesCategoryExists(int categoryId)
   {
-    var result = await db.ProductCategories.FirstOrDefaultAsync(
-      cat => cat.Id == categoryId);
-    return result is not null;
+	var result = await db.ProductCategories.FirstOrDefaultAsync(
+	  cat => cat.Id == categoryId);
+	return result is not null;
+  }
+
+  private IActionResult ValidatePaginationParams(int pageSize, int pageNum = 1)
+  {
+	if (pageNum < 1 || pageSize < 1 || pageSize > 200)
+	  return BadRequest(CreateErrorResponse(
+		"Page and PageSize must be greater than 0 and PageSize less " +
+		"than 200"));
+	return null!;
   }
 }
