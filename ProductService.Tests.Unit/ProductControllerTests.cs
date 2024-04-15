@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -20,7 +18,7 @@ public class ProductControllerTests
 
   [Theory]
   [InlineData(1, typeof(OkObjectResult))]
-  [InlineData(0, typeof(NoContentResult))]
+  [InlineData(0, typeof(NotFoundObjectResult))]
   public async Task GetProduct_ProductId_ProductOrNoContent(int productId,
     Type statusCodeResponse)
   {
@@ -30,7 +28,7 @@ public class ProductControllerTests
 
     var result = await _cut.GetProduct(productId);
 
-    Assert.Equal(statusCodeResponse, result.Result!.GetType());
+    Assert.Equal(statusCodeResponse, result.GetType());
   }
 
   [Fact]
@@ -53,7 +51,7 @@ public class ProductControllerTests
       PAGE, PAGE_SIZE, nameFilter);
 
     var data =
-      ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
     foreach (var entity in data!)
       Assert.Contains(nameFilter.Name, entity.Name);
   }
@@ -77,7 +75,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -106,7 +103,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -137,7 +133,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -166,7 +161,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -196,7 +190,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -225,7 +218,6 @@ public class ProductControllerTests
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     };
 
     var result = await _cut
@@ -253,7 +245,7 @@ public class ProductControllerTests
       PAGE, PAGE_SIZE, priceFilter);
 
     var data =
-      ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
     foreach (var entity in data!)
     {
@@ -280,7 +272,7 @@ public class ProductControllerTests
       PAGE, PAGE_SIZE, quantityFilter);
 
     var data =
-      ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
     foreach (var entity in data!)
       Assert.True(entity.Quantity >= quantityFilter.MinQuantity);
@@ -306,7 +298,7 @@ public class ProductControllerTests
       PAGE, PAGE_SIZE, quantityFilter);
 
     var data =
-      ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
+      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
 
     Product previous_entity = data.First();
 
@@ -325,7 +317,7 @@ public class ProductControllerTests
   }
 
   [Theory]
-  [InlineData(1, 20, typeof(NoContentResult))]
+  [InlineData(1, 20, typeof(OkObjectResult))]
   [InlineData(-5, 20, typeof(BadRequestObjectResult))]
   [InlineData(1, 250, typeof(BadRequestObjectResult))]
   public async Task GetProductsPage_PageParams_AppropriateResponse(
@@ -341,7 +333,7 @@ public class ProductControllerTests
         Order = SearchFilters.SortType.PriceAsc
       });
 
-    Assert.Equal(resultType, result.Result!.GetType());
+    Assert.Equal(resultType, result.GetType());
   }
 
   [Fact]
@@ -422,7 +414,7 @@ public class ProductControllerTests
     var _cut = new ProductsController(_nullLogger, _db);
     var productResult = await _cut.GetProduct(1);
     var newProductData =
-      ((productResult.Result as OkObjectResult)!.Value as Product)!;
+      ((productResult as OkObjectResult)!.Value as Product)!;
     newProductData.Description = "Fresh and intriguing description";
     var oldStamp = newProductData.ConcurrencyStamp!;
 
@@ -440,7 +432,7 @@ public class ProductControllerTests
     var _cut = new ProductsController(_nullLogger, _db);
     var productResult = await _cut.GetProduct(1);
     var newProductData =
-      ((productResult.Result as OkObjectResult)!.Value as Product)!;
+      ((productResult as OkObjectResult)!.Value as Product)!;
     newProductData.CategoryId = 5555;
 
     var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
@@ -458,7 +450,7 @@ public class ProductControllerTests
     var _cut = new ProductsController(_nullLogger, _db);
     var productResult = await _cut.GetProduct(1);
     var newProductData =
-      ((productResult.Result as OkObjectResult)!.Value as Product)!;
+      ((productResult as OkObjectResult)!.Value as Product)!;
 
     newProductData.ConcurrencyStamp![0] += 1;
     var ex = await Record.ExceptionAsync(async () =>

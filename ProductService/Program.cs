@@ -36,13 +36,6 @@ namespace ProductService
 		  .AllowAnyHeader();
 }));
 
-	  builder.Configuration.Sources.Add(new JsonConfigurationSource
-	  {
-		Path = "appsettings.Development.json",
-		Optional = false,
-		ReloadOnChange = true
-	  });
-
 	  var connectionString =
 		builder.Configuration.GetConnectionString("DefaultConnection");
 

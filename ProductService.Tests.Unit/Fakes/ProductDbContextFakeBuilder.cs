@@ -14,7 +14,6 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "Fairly big cup",
       Price = 20,
       Quantity = 10,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -23,7 +22,6 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "Fairly big cup",
       Price = 15,
       Quantity = 0,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -32,7 +30,6 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "Fairly big cup",
       Price = 30,
       Quantity = 50,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -41,9 +38,8 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "Fairly big cup",
       Price = 25,
       Quantity = 6,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
-    
+
     _db.Products.Add(new Product
     {
       CategoryId = 1,
@@ -51,7 +47,6 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "Fairly big cup",
       Price = 23,
       Quantity = 50,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     _db.Products.Add(new Product
     {
@@ -60,7 +55,6 @@ public class ProductDbContextFakeBuilder : IDisposable
       Description = "One size fits all",
       Price = 1500,
       Quantity = 34,
-      ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4]
     });
     return this;
   }
@@ -69,15 +63,25 @@ public class ProductDbContextFakeBuilder : IDisposable
   {
     _db.ProductCategories.Add(new ProductCategory
     {
+      Id = 1,
       CategoryName = "Tableware"
     });
     _db.ProductCategories.Add(new ProductCategory
     {
+      Id = 2,
       CategoryName = "Clothing"
     });
+    var parent = new ProductCategory
+    {
+      Id = 3,
+      CategoryName = "Sample category"
+    };
+    _db.ProductCategories.Add(parent);
     _db.ProductCategories.Add(new ProductCategory
     {
-      CategoryName = "Sample category"
+      Id = 4,
+      CategoryName = "Child Category",
+      ParentCategory = parent
     });
     return this;
   }
@@ -91,5 +95,6 @@ public class ProductDbContextFakeBuilder : IDisposable
   {
     _db.Database.EnsureDeleted();
     _db.Dispose();
+    GC.SuppressFinalize(this);
   }
 }

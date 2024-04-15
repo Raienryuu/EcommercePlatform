@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using ProductService.Models;
 
 namespace ProductService.Controllers.v1
@@ -12,14 +10,14 @@ namespace ProductService.Controllers.v1
   {
 	private readonly ProductDbContext _context = context;
 
-	// GET: api/ProductCategories
+	// GET: api/ProductCategory
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategories()
+	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategory()
 	{
 	  return await _context.ProductCategories.ToListAsync();
 	}
 
-	// GET: api/ProductCategories/5
+	// GET: api/ProductCategory/5
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ProductCategory>> GetProductCategory(int id)
 	{
@@ -33,29 +31,23 @@ namespace ProductService.Controllers.v1
 	  return (productCategory);
 	}
 
-	// GET: api/ProductCategories/releated/5
-	[HttpGet("releated/{id}")]
-	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetReleatedCategories(int id)
+	// GET: api/ProductCategory/children/5
+	[HttpGet("children/{id}")]
+	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetChildrenCategories(int id)
 	{
-	  var productCategory = await _context.ProductCategories.FindAsync(id);
+	  var productCategory = await _context.ProductCategories.Where(x => x.Id == id).FirstOrDefaultAsync();
 
 	  if (productCategory == null)
 	  {
 		return NotFound("No category found with a given ID.");
 	  }
 
-	  var releatedChildCategories = await _context.ProductCategories.Where(x => x.ParentCategory!.Id == productCategory.Id).ToListAsync();
-	  if (productCategory.ParentCategory != null)
-	  {
-		var parentCategories = await _context.ProductCategories.Where(
-			x => x.Id == productCategory.ParentCategory.Id).ToListAsync();
-		releatedChildCategories.AddRange(parentCategories);
-	  }
+	  var releatedChildCategories = await _context.ProductCategories.AsNoTracking().Where(x => x.ParentCategory!.Id == productCategory.Id).ToListAsync();
 
 	  return Ok(releatedChildCategories);
 	}
 
-	// PUT: api/ProductCategories/5
+	// PUT: api/ProductCategory/5
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPatch("{id}")]
 	public async Task<ActionResult> PatchProductCategory(int id, ProductCategory productCategory)
@@ -78,7 +70,7 @@ namespace ProductService.Controllers.v1
 	  return NoContent();
 	}
 
-	// POST: api/ProductCategories
+	// POST: api/ProductCategory
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPost]
 	public async Task<ActionResult<ProductCategory>> PostProductCategory(ProductCategory productCategory)
@@ -99,7 +91,7 @@ namespace ProductService.Controllers.v1
 	  return CreatedAtAction("GetProductCategory", new { id = productCategory.Id }, productCategory);
 	}
 
-	// DELETE: api/ProductCategories/5
+	// DELETE: api/ProductCategory/5
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> DeleteProductCategory(int id)
 	{
