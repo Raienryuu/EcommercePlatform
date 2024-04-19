@@ -21,4 +21,4 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Test
-      run: dotnet test OrderService.Tests/OrderService.Tests.csproj --verbosity normal
+      run: dotnet test ProductService.Tests.Unit/ProductServiceTests.csproj --verbosity normal
