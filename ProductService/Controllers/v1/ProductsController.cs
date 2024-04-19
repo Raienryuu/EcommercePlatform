@@ -28,11 +28,10 @@ public class ProductsController(
   [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetProduct(int id)
   {
-	var result = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
+	var result = await db.Products.FindAsync(id);
 	if (result is not null) return Ok(result);
 	return NotFound(($"No product found with given ID: {id}.", id));
   }
-
 
   [HttpGet]
   [Route("{pageNum}/{pageSize}")]
@@ -123,7 +122,7 @@ public class ProductsController(
 	  "Products",
 	  new { id = newProduct.Id });
 
-	return base.Created(createdUri!, newProduct);
+	return CreatedAtAction("GetProduct", new { id = newProduct.Id }, newProduct);
   }
 
   /// <summary>

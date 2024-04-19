@@ -59,7 +59,7 @@ namespace ProductService.Migrations
 
                     b.HasIndex("Quantity");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
                     b.HasData(
                         new
@@ -106,7 +106,7 @@ namespace ProductService.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("ProductCategories");
+                    b.ToTable("ProductCategories", (string)null);
 
                     b.HasData(
                         new

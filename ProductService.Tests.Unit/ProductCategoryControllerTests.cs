@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ProductServiceTests;
 
-public class ProductCategoryControllerTests
+public class ProductsCategoriesControllerTests
 {
 
   [Fact]
@@ -13,7 +13,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYID = 1;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.GetProductCategory(CATEGORYID);
 
@@ -25,7 +25,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYID = -1;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.GetProductCategory(CATEGORYID);
 
@@ -37,7 +37,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYID = 3;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.GetChildrenCategories(CATEGORYID);
 
@@ -51,7 +51,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYID = 2;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.GetChildrenCategories(CATEGORYID);
 
@@ -73,7 +73,7 @@ public class ProductCategoryControllerTests
       }
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PostProductCategory(newCategory);
 
@@ -88,7 +88,7 @@ public class ProductCategoryControllerTests
       CategoryName = "Tableware",
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PostProductCategory(existingCategory);
 
@@ -104,7 +104,7 @@ public class ProductCategoryControllerTests
       ParentCategory = new() { Id = 5, CategoryName = "Electronics" }
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PostProductCategory(newCategory);
 
@@ -120,7 +120,7 @@ public class ProductCategoryControllerTests
       CategoryName = "Electronics",
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PatchProductCategory(
       updatedCategory.Id, updatedCategory);
@@ -137,7 +137,7 @@ public class ProductCategoryControllerTests
       CategoryName = "PC Parts",
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PatchProductCategory(
       updatedCategory.Id, updatedCategory);
@@ -159,7 +159,7 @@ public class ProductCategoryControllerTests
       }
     };
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.PatchProductCategory(
       updatedCategory.Id, updatedCategory);
@@ -172,7 +172,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYTODELETE = 3;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.DeleteProductCategory(CATEGORYTODELETE);
 
@@ -184,7 +184,7 @@ public class ProductCategoryControllerTests
   {
     const int CATEGORYTODELETE = -1;
     var db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductCategoryController(db);
+    var _cut = new ProductsCategoriesController(db);
 
     var result = await _cut.DeleteProductCategory(CATEGORYTODELETE);
 

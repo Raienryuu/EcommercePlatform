@@ -6,18 +6,18 @@ namespace ProductService.Controllers.v1
 {
   [Route("api/v1/[controller]")]
   [ApiController]
-  public class ProductCategoryController(ProductDbContext context) : ControllerBase
+  public class ProductsCategoriesController(ProductDbContext context) : ControllerBase
   {
 	private readonly ProductDbContext _context = context;
 
-	// GET: api/ProductCategory
+	// GET: api/ProductsCategories
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategory()
+	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategories()
 	{
 	  return await _context.ProductCategories.ToListAsync();
 	}
 
-	// GET: api/ProductCategory/5
+	// GET: api/ProductsCategories/5
 	[HttpGet("{id}")]
 	public async Task<ActionResult<ProductCategory>> GetProductCategory(int id)
 	{
@@ -31,7 +31,7 @@ namespace ProductService.Controllers.v1
 	  return (productCategory);
 	}
 
-	// GET: api/ProductCategory/children/5
+	// GET: api/ProductsCategories/children/5
 	[HttpGet("children/{id}")]
 	public async Task<ActionResult<IEnumerable<ProductCategory>>> GetChildrenCategories(int id)
 	{
@@ -47,7 +47,7 @@ namespace ProductService.Controllers.v1
 	  return Ok(releatedChildCategories);
 	}
 
-	// PUT: api/ProductCategory/5
+	// PUT: api/ProductsCategories/5
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPatch("{id}")]
 	public async Task<ActionResult> PatchProductCategory(int id, ProductCategory productCategory)
@@ -70,7 +70,7 @@ namespace ProductService.Controllers.v1
 	  return NoContent();
 	}
 
-	// POST: api/ProductCategory
+	// POST: api/ProductsCategories
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPost]
 	public async Task<ActionResult<ProductCategory>> PostProductCategory(ProductCategory productCategory)
@@ -91,7 +91,7 @@ namespace ProductService.Controllers.v1
 	  return CreatedAtAction("GetProductCategory", new { id = productCategory.Id }, productCategory);
 	}
 
-	// DELETE: api/ProductCategory/5
+	// DELETE: api/ProductsCategories/5
 	[HttpDelete("{id}")]
 	public async Task<IActionResult> DeleteProductCategory(int id)
 	{

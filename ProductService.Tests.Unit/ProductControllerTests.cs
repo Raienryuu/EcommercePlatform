@@ -357,7 +357,7 @@ public class ProductControllerTests
 
     var result = await _cut.AddNewProduct(p);
 
-    Assert.IsType<CreatedResult>(result);
+    Assert.IsType<CreatedAtActionResult>(result);
   }
 
   [Fact]
