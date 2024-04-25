@@ -1,0 +1,23 @@
+@OrderService_HostAddress = http://localhost:5138
+
+GET {{OrderService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+POST {{OrderService_HostAddress}}/api/v1/orders
+
+Accept: application/json
+
+Body:
+{
+    "UserId": 1235,
+    "Products": [
+        {
+            "Id": 5,
+            "Quantity": 1
+        }
+    ]
+}
+
+
+###

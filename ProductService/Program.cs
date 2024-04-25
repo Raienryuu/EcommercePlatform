@@ -6,7 +6,7 @@ using Microsoft.OpenApi.Models;
 
 namespace ProductService
 {
-  public static class Program
+    public static class Program
   {
 	public static void Main(string[] args)
 	{
@@ -30,11 +30,11 @@ namespace ProductService
 	  });
 
 	  builder.Services.AddCors(o => o.AddPolicy("DevPolicy", policyBuilder =>
-{
-  policyBuilder.WithOrigins("http://localhost:4200")
+	  {
+		policyBuilder.WithOrigins("http://localhost:4200")
 		  .AllowCredentials()
 		  .AllowAnyHeader();
-}));
+	  }));
 
 	  var connectionString =
 		builder.Configuration.GetConnectionString("DefaultConnection");
@@ -44,9 +44,12 @@ namespace ProductService
 		  .LogTo(message => Debug.WriteLine(message))
 	  );
 
+	  builder.Services.AddLogging();
+
+	  MessageQueueUtils.Configure(builder);
+
 	  var app = builder.Build();
 
-	  //
 	  if (app.Environment.IsDevelopment())
 	  {
 		app.UseSwagger();

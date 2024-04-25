@@ -153,8 +153,7 @@ public class ProductsController(
 
 	if (oldProduct.ConcurrencyStamp is null ||
 		updatedProduct.ConcurrencyStamp is null ||
-		!oldProduct.ConcurrencyStamp.SequenceEqual(updatedProduct
-		  .ConcurrencyStamp))
+		IsConcurrencyStampEqual(updatedProduct, oldProduct))
 	  return UnprocessableEntity(
 		CreateErrorResponse("ConcurrencyStamp mismatch"));
 
@@ -170,6 +169,16 @@ public class ProductsController(
 	await db.SaveChangesAsync();
 
 	return Ok(oldProduct);
+
+	static bool IsConcurrencyStampEqual(Product updatedProduct, Product oldProduct)
+	{
+	  for (int i = 0; i < oldProduct.ConcurrencyStamp!.Length; i++)
+	  {
+		if (oldProduct.ConcurrencyStamp[i] != updatedProduct.ConcurrencyStamp[i])
+		  return false;
+	  }
+	  return true;
+	}
   }
 
   private static string CreateErrorResponse(string message)

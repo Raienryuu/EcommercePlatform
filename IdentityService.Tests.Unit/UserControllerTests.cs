@@ -77,15 +77,7 @@ public class UserControllerTests
         Mock.Get(_userManagerMock)
             .Setup(x => x.GetRolesAsync(It.IsAny<IdentityUser>()))
             .ReturnsAsync(await Task.FromResult(new List<string>() { "User", "Admin" } as IList<string>));
-        //Mock.Get(_configuration)
-        //    .Setup(x => x.GetValue<string>(It.Is<string>(s => s == "Jwt:Key")))
-        //    .Returns("1234567890123unittest4567890123456789012");
-        //Mock.Get(_configuration)
-        //    .Setup(x => x.GetValue<string>(It.Is<string>(s => s == "Jwt:Issuer")))
-        //    .Returns("unittests.net");
-        //Mock.Get(_configuration)
-        //    .Setup(x => x.GetValue<string>(It.Is<string>(s => s == "Jwt:ExpireTimeInDays")))
-        //    .Returns("30");
+
         UserCredentials userCredentials = SampleUserData.userCredentials;
 
         var result = await _cut.Login(userCredentials);
