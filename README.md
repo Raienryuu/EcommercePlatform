@@ -12,19 +12,17 @@ This project is currently under active development. While some features may be f
   - .NET
   - ASP.NET Core
   - Entity Framework Core
-  - Docker
 - **Frontend**:
   - Angular
   - TypeScript
-  - HTML/CSS
+  - HTML/SCSS
 - **Database**:
   - Microsoft SQL Server
 - **Authentication**:
   - JSON Web Tokens (JWT)
+  - ASP.NET Core Identity
 - **Message Broker**:
   - RabbitMQ
  
 ### Prerequisites
-- [.NET Core SDK](https://dotnet.microsoft.com/download) (3.1+)
-- [Node.js](https://nodejs.org/) and [npm](https://www.npmjs.com/) (for Angular)
 - [Docker](https://www.docker.com/get-started) (for containerization)
