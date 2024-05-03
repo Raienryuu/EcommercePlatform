@@ -33,6 +33,11 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/",
       "publishAllPorts": true,
+      "environmentVariables": {
+        "HTTPS_PORTS": "7107",
+        "HTTP_PORTS": "7108",
+        "ASPNETCORE_URLS": "https://+:7107, http://+:7106"
+      },
       "useSSL": true
     }
   },
