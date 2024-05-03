@@ -14,13 +14,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="df792f0a-493b-4ef4-8731-ec0e12eb1927" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Utility/Filters/CategoryFilter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/SearchFilters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/SearchFilters.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/Filters/IFilterable.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/Filters/IFilterable.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/Filters/MaxPriceFilter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/Filters/MaxPriceFilter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/Filters/MinPriceFilter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/Filters/MinPriceFilter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/Filters/MinQuantityFilter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/Filters/MinQuantityFilter.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utility/Filters/NameFilter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Utility/Filters/NameFilter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OrderService/Controllers/OrdersController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../OrderService/Controllers/OrdersController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OrderService/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/../OrderService/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OrderService/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/../OrderService/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../OrderService/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/../OrderService/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.ProductService/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.ProductService/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Properties/launchSettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/Properties/launchSettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docker-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/../docker-compose.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,7 +53,7 @@
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
@@ -62,34 +63,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;.NET Launch Settings Profile.ProductService: IIS Express.executor&quot;: &quot;Run&quot;,
-    &quot;.NET Launch Settings Profile.ProductService: https.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.Dockerfile final.executor&quot;: &quot;Run&quot;,
-    &quot;Docker.Dockerfile.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;XThreadsFramesViewSplitterKey&quot;: &quot;0.4692483&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Launch Settings Profile.ProductService: IIS Express.executor": "Run",
+    ".NET Launch Settings Profile.ProductService: https.executor": "Run",
+    "Docker.Dockerfile final.executor": "Run",
+    "Docker.Dockerfile.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "XThreadsFramesViewSplitterKey": "0.4692483",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "/home/user/RiderProjects/EcommercePlatform/ProductService/Dockerfile",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settings.ide.settings.new.ui",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\Peter\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\Peter\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\Peter\\AppData\\Local\\Symbols\\src&quot;
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "/home/user/.config/JetBrains/Rider2023.3/resharper-host/DecompilerCache",
+      "/home/user/.config/JetBrains/Rider2023.3/resharper-host/SourcesCache",
+      "/home/user/.local/share/Symbols/src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.ProductService: https">
     <configuration name="ProductService: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/ProductService.csproj" />
@@ -153,7 +155,6 @@
       <deployment type="dockerfile">
         <settings>
           <option name="containerName" value="productservice" />
-          <option name="contextFolderPath" value="C:\Users\Peter\source\net\EcommercePlatform\ProductService" />
           <option name="publishAllPorts" value="true" />
           <option name="sourceFilePath" value="Dockerfile" />
         </settings>
@@ -168,6 +169,13 @@
       <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue=".NET Launch Settings Profile.ProductService: http" />
+      <item itemvalue=".NET Launch Settings Profile.ProductService: https" />
+      <item itemvalue=".NET Launch Settings Profile.ProductService: IIS Express" />
+      <item itemvalue="Docker.Dockerfile" />
+      <item itemvalue="Docker.Dockerfile final" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Docker.Dockerfile final" />
@@ -230,6 +238,13 @@
       <workItem from="1711379579458" duration="568000" />
       <workItem from="1711437735930" duration="3773000" />
       <workItem from="1711534462109" duration="67000" />
+      <workItem from="1714385224442" duration="175000" />
+      <workItem from="1714385426493" duration="11000" />
+      <workItem from="1714385466837" duration="1275000" />
+      <workItem from="1714388928566" duration="4345000" />
+      <workItem from="1714470906713" duration="1491000" />
+      <workItem from="1714482085307" duration="1052000" />
+      <workItem from="1714483169045" duration="2422000" />
     </task>
     <task id="LOCAL-00001" summary="Added KeysetPagination support to ProductService">
       <option name="closed" value="true" />

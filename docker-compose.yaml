@@ -1,19 +1,53 @@
 services:
-  rabbiclient:
-    build: 
-      context: AmqpTests
-      dockerfile: Dockerfile
+  orderservice:
+    build:
+      dockerfile: OrderService/Dockerfile
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MQConfig__HostAddress=rabbitmq
+      - ConnectionStrings__Host=Server=sqlserver;
+      - ConnectionStrings__User=user=orderManager;
+      - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
+
+    ports:
+      - 5138:8080
     depends_on:
       - rabbitmq
+      - sqlserver
+
+  productservice:
+    build:
+      dockerfile: ProductService/Dockerfile
+      context: .
+    ports:
+      - 7107:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MQConfig__HostAddress=rabbitmq
+      - ConnectionStrings__Host=Server=sqlserver;
+      - ConnectionStrings__User=user=productManager;
+      - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
+      
+    depends_on:
+      - rabbitmq
+      - sqlserver
 
   rabbitmq:
     image: rabbitmq
     ports:
+      - 15672:15672
       - 5672:5672
-    expose:
-      - 5672
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-CU12-GDR1-ubuntu-22.04
+    environment:
+      MSSQL_SA_PASSWORD: "ozy4~X;NVS4GiOlx3,\""
+      ACCEPT_EULA: "Y"
+    ports: 
+      - 1433:1433
 
     

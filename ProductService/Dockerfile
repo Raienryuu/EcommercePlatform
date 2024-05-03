@@ -1,20 +1,25 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+#Set context inside main directory instead of single project directory
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["ProductService.csproj", "."]
-RUN dotnet restore "./ProductService.csproj"
-COPY . .
+COPY ["ProductService/ProductService.csproj", "ProductService/ProductService.csproj"]
+COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
+
+RUN dotnet restore "ProductService/ProductService.csproj"
+
+COPY ["ProductService", "ProductService"]
+COPY ["MessageQueue", "MessageQueue"]
+
 WORKDIR "/src/."
-RUN dotnet build "ProductService.csproj" -c Release -o /app/build
+RUN dotnet build "ProductService/ProductService.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "ProductService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ProductService/ProductService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 
