@@ -2,8 +2,6 @@
   "profiles": {
     "https": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -12,8 +10,6 @@
     },
     "http": {
       "commandName": "Project",
-      "launchBrowser": false,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -23,22 +19,20 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
     "Docker": {
       "commandName": "Docker",
-      "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/",
-      "publishAllPorts": true,
       "environmentVariables": {
         "HTTPS_PORTS": "7107",
-        "HTTP_PORTS": "7108",
-        "ASPNETCORE_URLS": "https://+:7107, http://+:7106"
+        "HTTP_PORTS": "7108"
       },
-      "useSSL": true
+      "publishAllPorts": true,
+      "useSSL": true,
+      "DockerfileRunArguments": "-p 7107:7107"
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",

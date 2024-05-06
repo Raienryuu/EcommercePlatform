@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MessageQueue.Contracts;
 using Microsoft.EntityFrameworkCore;
+using ProductService.Models;
 using System.Diagnostics;
 
 namespace ProductService.MessageQueue.Consumers
@@ -25,20 +26,23 @@ namespace ProductService.MessageQueue.Consumers
 	  if (storageProducts.Count != products.Count) { await PublishProductsNotAvaiable(context); return; }
 
 	  storageProducts.ForEach(x => x.Quantity -= products.First(p => p.ProductId == x.Id).Quantity);
+	  if (storageProducts.Any(x => x.Quantity < 0)) { await PublishProductsNotAvaiable(context); return; }
 
-	  if (storageProducts.Any(x => x.Quantity < 0))
+	  _db.OrdersReserved.Add(new OrderReserved
 	  {
-		await PublishProductsNotAvaiable(context);
-		return;
-	  }
+		OrderId = context.Message.OrderId,
+		IsReserved = true,
+		ReserveTimestamp = DateTime.UtcNow
+	  });
+
 	  try
 	  {
 		await _db.SaveChangesAsync();
-		_log.LogInformation("Products for order:{orderId} has been reserved succesfully.", context.Message.OrderId);
+		_log.LogInformation("Products for order: {orderId} has been reserved succesfully.", context.Message.OrderId);
 	  }
 	  catch (Exception ex)
 	  {
-		throw new Exception("Unable to reserve products for order.", ex);
+		throw new Exception("Unable to write changes to storage.", ex);
 	  }
 
 	  await context.Publish<IOrderReserved>(new
@@ -51,7 +55,7 @@ namespace ProductService.MessageQueue.Consumers
 
 	private async Task PublishProductsNotAvaiable(ConsumeContext<ReserveOrderProductsCommand> c)
 	{
-	  _log.LogInformation("Unable to reserve products for order:{orderId}", c.Message.OrderId);
+	  _log.LogInformation("Unable to reserve products for order: {orderId}", c.Message.OrderId);
 	  await c.Publish<IOrderProductsNotAvaiable>(new
 	  {
 		c.Message.OrderId,

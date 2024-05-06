@@ -1,6 +1,6 @@
 ﻿using MassTransit;
 
-namespace Orders.Models
+namespace OrderService.Models
 {
   public static class OrderStatus
   {
@@ -10,7 +10,8 @@ namespace Orders.Models
 	  AwaitingConfirmation,
 	  Confirmed,
 	  ReadyToShip,
-	  Shipped
+	  Shipped,
+	  Cancelled
 	}
 
 	public static Type FromString(string status)
@@ -21,6 +22,7 @@ namespace Orders.Models
 		nameof(Type.Confirmed) => Type.Confirmed,
 		nameof(Type.ReadyToShip) => Type.ReadyToShip,
 		nameof(Type.Shipped) => Type.Shipped,
+		nameof(Type.Cancelled) => Type.Cancelled,
 		_ => throw new NotImplementedException("Invalid OrderStatus string given.")
 	  };
 	}
