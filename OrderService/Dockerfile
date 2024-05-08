@@ -1,12 +1,10 @@
 #Set context inside main directory instead of single project directory
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5138
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["OrderService/OrderService.csproj", "OrderService/OrderService.csproj"]
 COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
@@ -17,6 +15,7 @@ COPY ["OrderService", "OrderService"]
 COPY ["MessageQueue", "MessageQueue"]
 
 WORKDIR "/src/."
+ARG BUILD_CONFIGURATION=Release
 RUN dotnet build "OrderService/OrderService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish

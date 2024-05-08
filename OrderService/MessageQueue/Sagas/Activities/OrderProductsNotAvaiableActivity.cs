@@ -19,7 +19,6 @@ namespace OrderService.MessageQueue.Sagas.Activities
 	  order!.Status = Models.OrderStatus.Type.Cancelled;
 	  try
 	  {
-
 		await _db.SaveChangesAsync();
 	  }
 	  catch (Exception ex) 

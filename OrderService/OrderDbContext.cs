@@ -15,20 +15,8 @@ public class OrderDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
 	base.OnModelCreating(modelBuilder);
-  }
 
-  public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-  {
-	UpdateLastModifiedOnModifiedOrders();
-
-	return base.SaveChangesAsync(cancellationToken);
-  }
-
-  private void UpdateLastModifiedOnModifiedOrders()
-  {
-	foreach (var order in ChangeTracker.Entries())
-	  if (order.State == EntityState.Modified)
-		order.Property("LastModified").CurrentValue = DateTime.UtcNow;
+	modelBuilder.Entity<Order>().Property("LastModified").ValueGeneratedOnUpdate();
   }
 
   public DbSet<Order> Orders { get; set; }

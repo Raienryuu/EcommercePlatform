@@ -18,7 +18,7 @@ namespace OrderService
 	  builder.Services.AddDbContext<OrderDbContext>(o =>
 	  {
 		o.UseSqlServer(connectionString);
-		o.AddInterceptors();
+		//o.AddInterceptors();
 	  });
 
 	  MessageQueueUtils.Configure(builder.Configuration, builder.Services);

@@ -9,12 +9,14 @@ services:
       - ConnectionStrings__Host=Server=sqlserver;
       - ConnectionStrings__User=user=orderManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
+      - MongoDb__HostAddress=mongo-db
 
     ports:
       - 5138:8080
     depends_on:
       - rabbitmq
       - sqlserver
+      - mongo-db
 
   productservice:
     build:
@@ -50,4 +52,9 @@ services:
     ports: 
       - 1434:1433
 
+  mongo-db:
+    image: mongo:7.0.9
+    ports:
+      - 27017:27017
+    # environment:
     

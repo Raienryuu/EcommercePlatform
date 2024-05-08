@@ -4,11 +4,10 @@ using OrderService.MessageQueue.Sagas.Activities;
 using OrderService.MessageQueue.Sagas.SagaStates;
 
 namespace OrderService.MessageQueue.Sagas;
-public class NewOrderStateMachine : MassTransitStateMachine<OrderState>
+public class NewOrderSaga : MassTransitStateMachine<OrderState>
 {
-  public NewOrderStateMachine()
+  public NewOrderSaga()
   {
-	OrderDbContext _db;
 	InstanceState(x => x.CurrentState, Pending, Confirmed, ReadyToShip);
 
 	Event(() => OrderSubmitted, x =>
@@ -55,4 +54,5 @@ public class NewOrderStateMachine : MassTransitStateMachine<OrderState>
   public State Shipped { get; set; }
   public State ReadyToShip { get; set; }
   public State Cancelled { get; set; }
+
 }

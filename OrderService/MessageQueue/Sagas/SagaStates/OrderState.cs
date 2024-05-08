@@ -3,12 +3,12 @@ using MessageQueue.DTOs;
 
 namespace OrderService.MessageQueue.Sagas.SagaStates;
 
-public class OrderState : SagaStateMachineInstance
+public class OrderState : SagaStateMachineInstance, ISagaVersion
 {
-    public Guid CorrelationId { get; set; }
-    public int CurrentState { get; set; }
+  public Guid CorrelationId { get; set; }
+  public int CurrentState { get; set; }
   public OrderProductDTO[] Products { get; set; }
-
+  public int Version { get; set; }
 }
 
 public class CancelOrderState : OrderState
