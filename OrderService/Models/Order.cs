@@ -16,8 +16,9 @@ namespace OrderService.Models
 	public DateTime Created { get; set; } = DateTime.UtcNow;
 	public DateTime LastModified { get; set; } = DateTime.UtcNow;
 	public ICollection<OrderProduct> Products { get; set; } = [];
+
 	[JsonConstructor]
-	Order()
+	public Order()
 	{
 	  LastModified = DateTime.UtcNow;
 	}

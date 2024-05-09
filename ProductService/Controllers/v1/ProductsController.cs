@@ -65,7 +65,7 @@ public class ProductsController(
 	[FromBody] Product product)
   {
 	if (pageSize < 1 || pageSize > 200)
-	  return BadRequest(CreateErrorResponse(
+	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
 		"PageSize greater than 1, and PageSize less " +
 		"than 200"));
 
@@ -89,7 +89,7 @@ public class ProductsController(
 	[FromBody] Product product)
   {
 	if (pageSize < 1 || pageSize > 200)
-	  return BadRequest(CreateErrorResponse(
+	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
 		"PageSize greater than 1, and PageSize less " +
 		"than 200"));
 
@@ -111,7 +111,7 @@ public class ProductsController(
 	  .SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
 
 	if (newProduct.Category is null)
-	  return BadRequest(CreateErrorResponse("Category not found"));
+	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse("Category not found"));
 
 	newProduct.RefreshConcurrencyStamp();
 	db.Products.Add(newProduct);
@@ -126,14 +126,14 @@ public class ProductsController(
   }
 
   /// <summary>
-  /// Updates product.
+  /// Updates product with give data.
   /// </summary>
   /// <remarks>
-  /// Requires ConcurrencyStamps to match.
+  /// Requires <see cref="Product.ConcurrencyStamp"/>s to be equal.
   /// </remarks>
   /// <param name="id"></param>
   /// <param name="updatedProduct"></param>
-  /// <returns>Updated product with given ID.</returns>
+  /// <returns>Updated product.</returns>
   /// <response code="200">Product with updated values.</response>
   /// <response code="404">If product id doesn't exists.</response>
   /// <response code="422">If ConcurrencyStamps don't match.</response>
@@ -146,44 +146,23 @@ public class ProductsController(
   {
 	var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
 	if (oldProduct is null)
-	  return NotFound(CreateErrorResponse("Product not found"));
+	  return NotFound(ProductsControllerHelpers.CreateErrorResponse("Product not found"));
 
 	if (!await DoesCategoryExists(updatedProduct.CategoryId))
-	  return NotFound(CreateErrorResponse("Given category does not exists"));
+	  return NotFound(ProductsControllerHelpers.CreateErrorResponse("Given category does not exists"));
 
-	if (oldProduct.ConcurrencyStamp is null ||
-		updatedProduct.ConcurrencyStamp is null ||
-		IsConcurrencyStampEqual(updatedProduct, oldProduct))
+	if (!ProductsControllerHelpers.IsConcurrencyStampEqual(updatedProduct, oldProduct))
 	  return UnprocessableEntity(
-		CreateErrorResponse("ConcurrencyStamp mismatch"));
+		ProductsControllerHelpers
+		.CreateErrorResponse("ConcurrencyStamp mismatch"));
 
-	oldProduct.Price = updatedProduct.Price;
-	oldProduct.Quantity = updatedProduct.Quantity;
-	oldProduct.Name = updatedProduct.Name;
-	oldProduct.Description = updatedProduct.Description;
-	oldProduct.CategoryId = updatedProduct.CategoryId;
-	oldProduct.Category = await db.ProductCategories
-	  .FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
+	await ProductsControllerHelpers
+	  .AssignNewValuesToProduct(db, updatedProduct, oldProduct);
 
 	oldProduct.RefreshConcurrencyStamp();
 	await db.SaveChangesAsync();
 
 	return Ok(oldProduct);
-
-	static bool IsConcurrencyStampEqual(Product updatedProduct, Product oldProduct)
-	{
-	  for (int i = 0; i < oldProduct.ConcurrencyStamp!.Length; i++)
-	  {
-		if (oldProduct.ConcurrencyStamp[i] != updatedProduct.ConcurrencyStamp[i])
-		  return false;
-	  }
-	  return true;
-	}
-  }
-
-  private static string CreateErrorResponse(string message)
-  {
-	return $"{{\"type\": \"error\", \"message\": \"{message}\"}}";
   }
 
   private async Task<bool> DoesCategoryExists(int categoryId)
@@ -196,9 +175,34 @@ public class ProductsController(
   private IActionResult ValidatePaginationParams(int pageSize, int pageNum = 1)
   {
 	if (pageNum < 1 || pageSize < 1 || pageSize > 200)
-	  return BadRequest(CreateErrorResponse(
+	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
 		"Page and PageSize must be greater than 0 and PageSize less " +
 		"than 200"));
 	return null!;
+  }
+
+  /// <summary>
+  /// Gets IEnumerable of Product for given Ids.
+  /// </summary>
+  /// <param name="productsIds"></param>
+  /// <returns>Updated product.</returns>
+  /// <response code="200">Product with updated values.</response>
+  /// <response code="404">If product id doesn't exists.</response>
+  [HttpGet("batch")]
+  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(StatusCodes.Status404NotFound)]
+  public async Task<ActionResult<IEnumerable<Product>>> GetSelectiveProducts([FromBody] int[] productsIds)
+  {
+	if (productsIds is null)
+	{
+	  return NotFound(ProductsControllerHelpers.CreateErrorResponse("No products Id were passed."));
+	}
+
+	var products = await db.Products.Where(x => productsIds.Contains(x.Id)).ToListAsync();
+
+	if (products.Count != productsIds.Length)
+	  return NotFound(ProductsControllerHelpers.CreateErrorResponse("Some products Id were not found"));
+
+	return Ok(products);
   }
 }

@@ -119,7 +119,8 @@ public class ProductControllerTests
 
     const int EXPECTED_ID = 5;
 
-    SearchFilters filters = new(){
+    SearchFilters filters = new()
+    {
       Order = SearchFilters.SortType.PriceDesc
     };
     var _db = new ProductDbContextFakeBuilder()
@@ -141,13 +142,14 @@ public class ProductControllerTests
     Assert.Equal(EXPECTED_ID, data.First().Id);
   }
 
-[Fact]
+  [Fact]
   public async Task GetPreviousPage_PriceDescendingOrder_ProperPageWithItem()
   {
     const int PAGE_SIZE = 1;
     const int EXPECTED_ID = 3;
 
-    SearchFilters filters = new(){
+    SearchFilters filters = new()
+    {
       Order = SearchFilters.SortType.PriceDesc
     };
     var _db = new ProductDbContextFakeBuilder()
@@ -176,7 +178,8 @@ public class ProductControllerTests
 
     const int EXPECTED_ID = 1;
 
-    SearchFilters filters = new(){
+    SearchFilters filters = new()
+    {
       Order = SearchFilters.SortType.QuantityAsc
     };
     var _db = new ProductDbContextFakeBuilder()
@@ -198,13 +201,14 @@ public class ProductControllerTests
     Assert.Equal(EXPECTED_ID, data.First().Id);
   }
 
-[Fact]
+  [Fact]
   public async Task GetPreviousPage_QuantityAscendingOrder_ProperPageWithItem()
   {
     const int PAGE_SIZE = 1;
     const int EXPECTED_ID = 2;
 
-    SearchFilters filters = new(){
+    SearchFilters filters = new()
+    {
       Order = SearchFilters.SortType.QuantityAsc
     };
     var _db = new ProductDbContextFakeBuilder()
@@ -409,10 +413,11 @@ public class ProductControllerTests
   [Fact]
   public async Task UpdateProduct_ChangedProduct_ConcurrencyStampChanged()
   {
+    const int PRODUCT_ID = 1;
     var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
       .Build();
     var _cut = new ProductsController(_nullLogger, _db);
-    var productResult = await _cut.GetProduct(1);
+    var productResult = await _cut.GetProduct(PRODUCT_ID);
     var newProductData =
       ((productResult as OkObjectResult)!.Value as Product)!;
     newProductData.Description = "Fresh and intriguing description";
@@ -425,7 +430,7 @@ public class ProductControllerTests
   }
 
   [Fact]
-  public async Task UpdateProduct_ProductWithNonexistentCategory_CategoryError()
+  public async Task UpdateProduct_ProductWithNonexistingCategory_CategoryError()
   {
     var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
       .Build();
@@ -457,5 +462,19 @@ public class ProductControllerTests
       await _cut.UpdateProduct(newProductData.Id, newProductData));
 
     Assert.IsType<DbUpdateConcurrencyException>(ex);
+  }
+
+  [Fact]
+  public async Task
+    GetProductsList_ListOfExistingProductsIds_ProductsList()
+  {
+    var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
+    .Build();
+    var _cut = new ProductsController(_nullLogger, _db);
+    var productsIds = new int[] { 1, 2, 3 };
+
+    var response = await _cut.GetSelectiveProducts(productsIds);
+
+    Assert.Equal(productsIds.Length, ((response.Result as OkObjectResult)!.Value as IEnumerable<Product>)!.Count());
   }
 }
