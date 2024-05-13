@@ -21,6 +21,7 @@ import { MatSidenavModule } from '@angular/material/sidenav'
 import {NgOptimizedImage} from "@angular/common";
 import {MatTreeModule} from "@angular/material/tree";
 import {MatListModule} from "@angular/material/list";
+import { CartComponent } from './components/cart/cart.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {MatListModule} from "@angular/material/list";
     LoginComponent,
     RegisterComponent,
     NavbarComponent,
-    CatalogComponent
+    CatalogComponent,
+    CartComponent
 
   ],
   imports: [

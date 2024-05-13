@@ -6,7 +6,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { NewUser } from 'src/app/Models/user-registration-form';
+import { NewUser } from 'src/app/models/user-registration-form';
 
 export const confirmPasswordValidator: ValidatorFn = (
   control: AbstractControl

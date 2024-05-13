@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { UserCredentials } from 'src/app/Models/user-credentials';
-import { NewUser } from 'src/app/Models/user-registration-form';
+import { UserCredentials } from 'src/app/models/user-credentials';
+import { NewUser } from 'src/app/models/user-registration-form';
 import { environment } from 'src/enviroment';
 
 @Injectable({

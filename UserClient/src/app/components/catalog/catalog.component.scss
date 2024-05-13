@@ -1,16 +1,14 @@
-@import 'src/color-palette';
+@import "src/color-palette";
 
 .catalog-main {
   background: white;
   max-width: 1800px;
-  margin: 0 auto;
-  font-size: inherit;
+  // margin: 0 auto;
 }
 
 .side-drawer {
   display: flex;
   flex-shrink: 1;
-
 }
 
 .categories-back {
@@ -31,6 +29,7 @@
   --mdc-list-list-item-label-text-color: #{$gray-400};
   --mdc-list-list-item-hover-label-text-color: #{$primary-600};
   --mdc-list-list-item-one-line-container-height: 2rem;
+  overflow-x: hidden;
 }
 
 .mdc-list-item {
@@ -52,8 +51,6 @@
 .price-filter {
   display: flex;
   justify-content: space-between;
-
-
 }
 
 .price-input {
@@ -75,7 +72,7 @@ input.filter-input::-webkit-inner-spin-button {
 }
 
 .category-breadcrumbs {
-  max-width: 1800px;
+  max-width: var(--max-width);
   display: flex;
   align-items: center;
   margin: 0 auto;
@@ -85,8 +82,6 @@ input.filter-input::-webkit-inner-spin-button {
   flex-wrap: wrap;
   background: inherit;
   color: $gray-100;
-
-
 }
 
 .category-breadcrumbs a {
@@ -135,8 +130,9 @@ input.filter-input::-webkit-inner-spin-button {
   --max-columns-amount: 5;
   --column-width: calc(100% / var(--max-columns-amount));
   --column-with-gap: calc(var(--column-width) - var(--column-gap));
-  grid-gap: var(--column-gap);
-  grid-template-columns: repeat(auto-fit, minmax(max(200px, var(--column-with-gap)), 1fr));
+  --range: minmax(max(200px, var(--column-with-gap)), 1fr);
+  gap: var(--column-gap);
+  grid-template-columns: repeat(auto-fit, var(--range));
 }
 
 .product {
@@ -144,7 +140,7 @@ input.filter-input::-webkit-inner-spin-button {
   flex-direction: column;
   justify-content: center;
   margin: 1rem;
-  height: 250px;
+  height: auto;
   padding: 1ch;
   font-size: inherit;
 
@@ -161,23 +157,26 @@ img {
   border-radius: 0.5em;
 }
 
-
 .product-details {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: space-around;
   align-items: center;
 }
 
 .product-name {
-  line-height: 1.2;
-  margin: 0;
-  text-align: center;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  width: 100%;
+
   padding-top: 0.2rem;
 }
 
 .product-price {
   font-weight: 300;
-
 }
 
 .product-btn {
@@ -185,6 +184,12 @@ img {
   align-items: center;
   background: $primary-700;
   color: $gray-100;
+}
+
+.horizontal-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 
 .product-btn-icon {
@@ -211,4 +216,8 @@ img {
 
 .mat-drawer-side {
   border-right: 1px solid $gray-400;
+  border-bottom: 1px solid $gray-400;
+  border-left: 1px solid $gray-400;
+  height: max-content;
+  border-radius: 0 0 5% 5%;
 }

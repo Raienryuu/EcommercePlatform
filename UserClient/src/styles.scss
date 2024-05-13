@@ -1,13 +1,16 @@
-@import 'src/color-palette';
+@import "src/color-palette";
 /* You can add global styles to this file, and also import other style files */
 
-//html, body { height: 100%; }
-$font-size: clamp(0.82rem, calc(0.9svw + 0.5svh), 14px);
+html,
+body {
+  height: 100%;
+}
+
+$font-size: clamp(14px, calc(0.9svw + 0.5svh), 18px);
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: $font-size;
-
 }
 
 .mdc-text-field--filled:not(.mdc-text-field--disabled) {
@@ -18,11 +21,14 @@ body {
   background: transparent !important;
 }
 
-.mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label {
+.mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled)
+  .mdc-floating-label {
   color: var(--mdc-filled-text-field-label-text-color) !important;
 }
 
-.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label, .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label--float-above {
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label,
+.mdc-text-field--outlined:not(.mdc-text-field--disabled)
+  .mdc-floating-label--float-above {
   color: $gray-400 !important;
 }
 
@@ -34,7 +40,7 @@ body {
   font-size: $font-size;
 }
 
-app-catalog .filter-field .mat-mdc-form-field-flex{
+app-catalog .filter-field .mat-mdc-form-field-flex {
   height: 2rem;
   align-items: center;
   text-align: center;

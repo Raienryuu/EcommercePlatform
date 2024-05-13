@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NewUser } from 'src/app/Models/user-registration-form';
+import { NewUser } from 'src/app/models/user-registration-form';
 import { CountriesNoPhonesSorted } from './RegisterRawData';
 import { UserService } from 'src/app/services/userService/user.service';
 import {
