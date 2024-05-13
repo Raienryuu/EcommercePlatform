@@ -1,5 +1,9 @@
 import { Component, HostListener } from '@angular/core';
+import * as currency from 'currency.js';
+import { Observable } from 'rxjs';
 import { Product } from 'src/app/models/product';
+import { SearchFilters, SortType } from 'src/app/models/search-filters';
+import { ProductService } from 'src/app/services/productService/product.service';
 
 @Component({
   selector: 'app-catalog',
@@ -25,7 +29,35 @@ export class CatalogComponent {
   minPrice: number = 0;
   maxPrice: number = 0;
 
+  filters: SearchFilters;
+
+  pageNum: number = 1;
+  pageSize: number = 20;
+
+
   categoryBreadcrumbs: string[] = ['Tupperware', 'Pots'];
+
+  constructor(private productService: ProductService) {
+
+    this.filters = {
+      Order: SortType.PriceAsc,
+      Name: "",
+      MinPrice: currency(0),
+      MaxPrice: currency(0),
+      MinQuantity: 0,
+      Categories: 0
+    }
+  }
+
+  ngOnInit() {
+    this.GetProductsPage();
+  }
+
+  GetProductsPage(): void {
+    this.productService
+      .GetProductsPage(this.pageNum, this.pageSize, this.filters)
+      .subscribe(data => this.products = data);
+  }
 
   @HostListener('document:scroll', ['$event'])
   AppliedFiltersOpacityOnScroll() {
