@@ -3,7 +3,7 @@
 .catalog-main {
   background: white;
   max-width: 1800px;
-  // margin: 0 auto;
+  margin: 0 auto;
 }
 
 .side-drawer {
@@ -82,6 +82,7 @@ input.filter-input::-webkit-inner-spin-button {
   flex-wrap: wrap;
   background: inherit;
   color: $gray-100;
+  max-width: 1800px;
 }
 
 .category-breadcrumbs a {
@@ -220,4 +221,15 @@ img {
   border-left: 1px solid $gray-400;
   height: max-content;
   border-radius: 0 0 5% 5%;
+}
+
+mat-spinner.progress-spinner {
+  --mdc-circular-progress-active-indicator-color: #{$primary-800};
+  
+}
+
+mat-spinner {
+  position: relative;
+  align-self: center;
+  height: 100%;
 }

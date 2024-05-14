@@ -1,119 +1,133 @@
-<div class="breadcrumbs-wrapper" style="width: 100%; margin: 0; padding: 0">
-  <div class="category-breadcrumbs">
-    <ng-container *ngFor="let category of categoryBreadcrumbs; let i = index">
-      <mat-icon *ngIf="i > 0">remove</mat-icon>
-      <a [disabled]="i === categoryBreadcrumbs.length - 1" mat-button>
-        {{ category }}
-      </a>
-    </ng-container>
+<body>
+  <div class="breadcrumbs-wrapper" style="width: 100%; margin: 0; padding: 0">
+    <div class="category-breadcrumbs">
+      <ng-container *ngFor="let category of categoryBreadcrumbs; let i = index">
+        <mat-icon *ngIf="i > 0">remove</mat-icon>
+        <a [disabled]="i === categoryBreadcrumbs.length - 1" mat-button>
+          {{ category }}
+        </a>
+      </ng-container>
+    </div>
   </div>
-</div>
 
-<mat-sidenav-container class="catalog-main">
-  <mat-sidenav class="side-drawer" mode="side" opened>
-    <mat-list class="categories">
-      <a class="categories-return" href="" mat-list-item>
-        <div class="categories-back">
-          <mat-icon class="categories-back-icon" inline="true"
-            >arrow_upward</mat-icon
+  <mat-sidenav-container class="catalog-main">
+    <mat-sidenav class="side-drawer" mode="side" opened>
+      <mat-list class="categories">
+        <a class="categories-return" href="" mat-list-item>
+          <div class="categories-back">
+            <mat-icon class="categories-back-icon" inline="true"
+              >arrow_upward</mat-icon
+            >
+            <span> CURRENT_CATEGORY_PARENT </span>
+          </div>
+        </a>
+        <a mat-list-item>Arabic</a>
+        <a mat-list-item>Chinese</a>
+        <a mat-list-item>Japanese</a>
+      </mat-list>
+
+      <div class="filters">
+        <mat-form-field
+          appearance="outline"
+          class="filter-field"
+          floatLabel="always"
+        >
+          <mat-label>Name includes</mat-label>
+          <input [(ngModel)]="nameFilter" class="filter-input" matInput />
+        </mat-form-field>
+        <div class="price-filter">
+          <mat-form-field
+            appearance="outline"
+            class="filter-field price-input"
+            floatLabel="always"
           >
-          <span> CURRENT_CATEGORY_PARENT </span>
+            <mat-label>Min</mat-label>
+            <input
+              [(ngModel)]="minPrice"
+              class="filter-input"
+              matInput
+              type="number"
+            />
+            <span matTextPrefix>€&nbsp;</span>
+          </mat-form-field>
+          <mat-form-field
+            appearance="outline"
+            class="filter-field price-input"
+            floatLabel="always"
+          >
+            <mat-label>Min</mat-label>
+            <input
+              [(ngModel)]="maxPrice"
+              class="filter-input"
+              matInput
+              type="number"
+            />
+            <span matTextPrefix>€&nbsp;</span>
+          </mat-form-field>
         </div>
-      </a>
-      <a mat-list-item>Arabic</a>
-      <a mat-list-item>Chinese</a>
-      <a mat-list-item>Japanese</a>
-    </mat-list>
-
-    <div class="filters">
-      <mat-form-field
-        appearance="outline"
-        class="filter-field"
-        floatLabel="always"
-      >
-        <mat-label>Name includes</mat-label>
-        <input [(ngModel)]="nameFilter" class="filter-input" matInput />
-      </mat-form-field>
-      <div class="price-filter">
-        <mat-form-field
-          appearance="outline"
-          class="filter-field price-input"
-          floatLabel="always"
-        >
-          <mat-label>Min</mat-label>
-          <input
-            [(ngModel)]="minPrice"
-            class="filter-input"
-            matInput
-            type="number"
-          />
-          <span matTextPrefix>€&nbsp;</span>
-        </mat-form-field>
-        <mat-form-field
-          appearance="outline"
-          class="filter-field price-input"
-          floatLabel="always"
-        >
-          <mat-label>Min</mat-label>
-          <input
-            [(ngModel)]="maxPrice"
-            class="filter-input"
-            matInput
-            type="number"
-          />
-          <span matTextPrefix>€&nbsp;</span>
-        </mat-form-field>
       </div>
-    </div>
-  </mat-sidenav>
+    </mat-sidenav>
 
-  <mat-sidenav-content>
-    <div class="applied-filters">
-      <button *ngIf="minPrice > 0" class="applied-filter" mat-stroked-button>
-        Price > {{ minPrice }}€
-        <mat-icon class="material-icons-outlined applied-filter-icon"
-          >close</mat-icon
+    <mat-sidenav-content>
+      <div class="applied-filters">
+        <button *ngIf="minPrice > 0" class="applied-filter" mat-stroked-button>
+          Price > {{ minPrice }}€
+          <mat-icon class="material-icons-outlined applied-filter-icon"
+            >close</mat-icon
+          >
+        </button>
+        <button
+          *ngIf="maxPrice != 0 && maxPrice >= minPrice"
+          class="applied-filter"
+          mat-stroked-button
         >
-      </button>
-      <button
-        *ngIf="maxPrice != 0 && maxPrice >= minPrice"
-        class="applied-filter"
-        mat-stroked-button
-      >
-        Price < {{ maxPrice }}€
-        <mat-icon class="material-icons-outlined applied-filter-icon"
-          >close</mat-icon
+          Price < {{ maxPrice }}€
+          <mat-icon class="material-icons-outlined applied-filter-icon"
+            >close</mat-icon
+          >
+        </button>
+        <button
+          *ngIf="nameFilter.length !== 0"
+          class="applied-filter"
+          mat-stroked-button
         >
-      </button>
-      <button
-        *ngIf="nameFilter.length !== 0"
-        class="applied-filter"
-        mat-stroked-button
-      >
-        Includes "<span class="value">{{ nameFilter }}</span
-        >"
-        <mat-icon class="material-icons-outlined" fontIcon="close" />
-      </button>
-    </div>
-    <div class="products">
-      <div *ngFor="let product of products" class="product">
-        <div class="product-details">
-          <img
-            alt="productImg"
-            height="120"
-            ngSrc="assets/garnek"
-            priority="true"
-            width="170"
-          />
-          <div class="product-name">{{ product.name }}</div>
-          <div class="horizontal-flex" style="width: 100%">
-            <div class="product-price">{{ product.price }} $</div>
-            <button class="product-btn" mat-flat-button>
-              <mat-icon class="product-btn-icon">add_shopping_cart</mat-icon>
-            </button>
+          Includes "<span class="value">{{ nameFilter }}</span
+          >"
+          <mat-icon class="material-icons-outlined" fontIcon="close" />
+        </button>
+      </div>
+      <div class="products" *ngIf="products.length != 0">
+        <div *ngFor="let product of products" class="product">
+          <div class="product-details">
+            <img
+              alt="productImg"
+              height="120"
+              ngSrc="assets/garnek"
+              priority="true"
+              width="170"
+            />
+            <div class="product-name">{{ product.name }}</div>
+            <div class="horizontal-flex" style="width: 100%">
+              <div class="product-price">{{ product.price }} $</div>
+              <button class="product-btn" mat-flat-button>
+                <mat-icon class="product-btn-icon">add_shopping_cart</mat-icon>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+      <div
+        style="
+          display: flex;
+          justify-content: space-around;
+          padding-top: 50px;
+          height: 500px;
+          width: 100%;
+        "
+        *ngIf="products.length == 0"
+      >
+        <mat-spinner class="progress-spinner" diameter="200" />
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</body>

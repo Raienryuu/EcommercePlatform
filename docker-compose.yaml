@@ -30,6 +30,7 @@ services:
       - ConnectionStrings__Host=Server=sqlserver;
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
+      # - ASPNETCORE_URLS=https://+:8080;
       
     depends_on:
       - rabbitmq

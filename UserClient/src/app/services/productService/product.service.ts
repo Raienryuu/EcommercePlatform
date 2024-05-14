@@ -13,20 +13,40 @@ export class ProductService {
 
   constructor(private httpClient: HttpClient) { }
 
-  GetProductsPage(pageNum: number, pageSize: number,
-    filters: SearchFilters | undefined)
-    : Observable<Product[]> {
-    var requestUrl = environment.apiUrl + "v1/products/" + pageNum + "/" + pageSize;
+  GetProductById(id: number): Observable<Product> {
+    var url = environment.apiUrl + `v1/products/${id}`;
+    return this.httpClient.get<Product>(url);
+  }
 
-    if (filters !== undefined)
-      var requestUrl = ApplySearchFilters(requestUrl, filters);
-    console.info("using this url to acces getPage: " + requestUrl);
+  GetProductsPage(pageNum: number, pageSize: number,
+    filters: SearchFilters): Observable<Product[]> {
+    var url = environment.apiUrl + "v1/products/" + pageNum + "/" + pageSize;
+
+    var url = ApplySearchFilters(url, filters);
     return this.httpClient
-      .get<Product[]>(requestUrl);
+      .get<Product[]>(url);
+  }
+
+  GetNextPage(pageSize: number, filters: SearchFilters,
+    edgeProduct: Product): Observable<Product[]> {
+    var url = environment.apiUrl + `v1/products/nextPage/${pageSize}`;
+    var url = ApplySearchFilters(url, filters);
+    return this.httpClient.request<Product[]>('get', url, { body: { edgeProduct } });
+  }
+
+  GetPreviousPage(pageSize: number, filters: SearchFilters,
+    edgeProduct: Product): Observable<Product[]> {
+    var url = environment.apiUrl + `v1/products/previousPage/${pageSize}`;
+
+    var url = ApplySearchFilters(url, filters);
+    return this.httpClient.request<Product[]>('get', url, { body: { edgeProduct } });
   }
 }
 
 function ApplySearchFilters(url: string, filters: SearchFilters): string {
+  if (filters === undefined)
+    return url;
+
   url = url.concat("?")
   if (filters.Name !== "")
     url = url.concat("&Name=" + filters.Name);
@@ -41,7 +61,7 @@ function ApplySearchFilters(url: string, filters: SearchFilters): string {
     url = url.concat("&MinQuantity=" + filters.MinQuantity);
 
   if (filters.Order)
-    url = url.concat("Order=" + filters.Order);
+    url = url.concat("&Order=" + filters.Order);
 
   if (filters.Categories != 0)
     url = url.concat("&Categories=" + filters.Categories);

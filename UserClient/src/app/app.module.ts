@@ -18,10 +18,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav'
-import {NgOptimizedImage} from "@angular/common";
-import {MatTreeModule} from "@angular/material/tree";
-import {MatListModule} from "@angular/material/list";
+import { NgOptimizedImage } from "@angular/common";
+import { MatTreeModule } from "@angular/material/tree";
+import { MatListModule } from "@angular/material/list";
 import { CartComponent } from './components/cart/cart.component';
+import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
 
 
 @NgModule({
@@ -50,6 +51,7 @@ import { CartComponent } from './components/cart/cart.component';
     NgOptimizedImage,
     MatTreeModule,
     MatListModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

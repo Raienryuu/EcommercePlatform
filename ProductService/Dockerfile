@@ -20,6 +20,7 @@ RUN dotnet build "ProductService/ProductService.csproj" -c $BUILD_CONFIGURATION 
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
+RUN dotnet dev-certs https
 RUN dotnet publish "ProductService/ProductService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
