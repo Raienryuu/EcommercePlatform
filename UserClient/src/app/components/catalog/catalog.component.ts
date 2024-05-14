@@ -1,6 +1,4 @@
 import { Component, HostListener } from '@angular/core';
-import * as currency from 'currency.js';
-import { Observable } from 'rxjs';
 import { Product } from 'src/app/models/product';
 import { SearchFilters, SortType } from 'src/app/models/search-filters';
 import { ProductService } from 'src/app/services/productService/product.service';
@@ -42,8 +40,8 @@ export class CatalogComponent {
     this.filters = {
       Order: SortType.PriceAsc,
       Name: "",
-      MinPrice: currency(0),
-      MaxPrice: currency(0),
+      MinPrice: 0,
+      MaxPrice: 0,
       MinQuantity: 0,
       Categories: 0
     }

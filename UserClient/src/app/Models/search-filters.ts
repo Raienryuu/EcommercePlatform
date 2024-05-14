@@ -1,5 +1,3 @@
-import 'currency.js';
-import * as currency from 'currency.js';
 
 export enum SortType {
   PriceAsc = 1,
@@ -9,10 +7,10 @@ export enum SortType {
 
 export interface SearchFilters {
 
-  Name: String;
-  MinPrice: currency;
-  MaxPrice: currency;
-  MinQuantity: Number;
-  Categories: Number;
+  Name: string;
+  MinPrice: number;
+  MaxPrice: number;
+  MinQuantity: number;
+  Categories: number;
   Order: SortType;
 }

@@ -4,7 +4,6 @@ import { Observable } from 'rxjs';
 import { Product } from 'src/app/models/product';
 import { environment } from 'src/enviroment';
 import { SearchFilters } from 'src/app/models/search-filters';
-import * as currency from 'currency.js';
 
 @Injectable({
   providedIn: 'root'
@@ -51,10 +50,10 @@ function ApplySearchFilters(url: string, filters: SearchFilters): string {
   if (filters.Name !== "")
     url = url.concat("&Name=" + filters.Name);
 
-  if (filters.MinPrice > currency(0))
+  if (filters.MinPrice > 0)
     url = url.concat("&MinPrice=" + filters.MinPrice);
 
-  if (filters.MaxPrice > currency(0))
+  if (filters.MaxPrice > 0)
     url = url.concat("&MaxPrice=" + filters.MaxPrice);
 
   if (filters.MinQuantity != 0)
