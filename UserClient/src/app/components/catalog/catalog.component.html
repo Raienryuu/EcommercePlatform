@@ -33,7 +33,7 @@
           floatLabel="always"
         >
           <mat-label>Name includes</mat-label>
-          <input [(ngModel)]="nameFilter" class="filter-input" matInput />
+          <input [(ngModel)]="filters.Name" class="filter-input" matInput />
         </mat-form-field>
         <div class="price-filter">
           <mat-form-field
@@ -43,10 +43,10 @@
           >
             <mat-label>Min</mat-label>
             <input
-              [(ngModel)]="minPrice"
-              class="filter-input"
+              [(ngModel)]="filters.MinPrice"
               matInput
               type="number"
+              class="filter-field"
             />
             <span matTextPrefix>€&nbsp;</span>
           </mat-form-field>
@@ -55,12 +55,12 @@
             class="filter-field price-input"
             floatLabel="always"
           >
-            <mat-label>Min</mat-label>
+            <mat-label>Max</mat-label>
             <input
-              [(ngModel)]="maxPrice"
-              class="filter-input"
+              [(ngModel)]="filters.MaxPrice"
               matInput
               type="number"
+              class="filter-field"
             />
             <span matTextPrefix>€&nbsp;</span>
           </mat-form-field>
@@ -70,28 +70,32 @@
 
     <mat-sidenav-content>
       <div class="applied-filters">
-        <button *ngIf="minPrice > 0" class="applied-filter" mat-stroked-button>
-          Price > {{ minPrice }}€
+        <button
+          *ngIf="filters.MinPrice > 0"
+          class="applied-filter"
+          mat-stroked-button
+        >
+          Price > {{ filters.MinPrice }}€
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >
         </button>
         <button
-          *ngIf="maxPrice != 0 && maxPrice >= minPrice"
+          *ngIf="filters.MaxPrice != 0 && filters.MaxPrice >= filters.MinPrice"
           class="applied-filter"
           mat-stroked-button
         >
-          Price < {{ maxPrice }}€
+          Price < {{ filters.MaxPrice }}€
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >
         </button>
         <button
-          *ngIf="nameFilter.length !== 0"
+          *ngIf="filters.Name.length !== 0"
           class="applied-filter"
           mat-stroked-button
         >
-          Includes "<span class="value">{{ nameFilter }}</span
+          Includes "<span class="value">{{ filters.Name }}</span
           >"
           <mat-icon class="material-icons-outlined" fontIcon="close" />
         </button>
@@ -114,6 +118,107 @@
               </button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div class="paginator" *ngIf="products.length > 0">
+        <div class="paginator-items">
+          <span class="paginator-item"> Items per page: &nbsp; </span>
+          <mat-form-field
+            class="mat-mdc-paginator-page-size-select page-size paginator-item"
+            appearance="outline"
+          >
+            <mat-select
+              [value]="pageSize"
+              disableOptionCentering="false"
+              hideSingleSelectionIndicator
+              class="paginator-item"
+            >
+              <mat-option [value]="5">
+                {{ 5 }}
+              </mat-option>
+
+              <mat-option [value]="10">
+                {{ 10 }}
+              </mat-option>
+
+              <mat-option [value]="25">
+                {{ 25 }}
+              </mat-option>
+
+              <mat-option [value]="100">
+                {{ 100 }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="paginator-controls">
+          <button mat-button type="button" class="page-button">
+            <span class="page-direction"> Previous </span>
+            <mat-icon> arrow_back_ios </mat-icon>
+          </button>
+
+          <button
+            *ngIf="IsPageAvaiable(-2)"
+            mat-button
+            type="button"
+            class="page-button page-ref"
+            (click)="LoadNewPage(-2)"
+          >
+            {{ this.pageNum - 2 }}
+          </button>
+
+          <button
+            *ngIf="IsPageAvaiable(-1)"
+            mat-button
+            type="button"
+            class="page-button page-ref"
+            (click)="LoadNewPage(-1)"
+
+          >
+            {{ this.pageNum - 1 }}
+          </button>
+
+          <button
+            *ngIf="IsPageAvaiable(0)"
+            mat-button
+            type="button"
+            class="page-button page-ref"
+            (click)="LoadNewPage(0)"
+
+          >
+            {{ this.pageNum }}
+          </button>
+
+          <button
+            *ngIf="IsPageAvaiable(1)"
+            mat-button
+            type="button"
+            class="page-button page-ref"
+            (click)="LoadNewPage(1)"
+
+          >
+            {{ this.pageNum + 1 }}
+          </button>
+
+          <button
+            *ngIf="IsPageAvaiable(2)"
+            mat-button
+            type="button"
+            class="page-button page-ref"
+            (click)="LoadNewPage(2)"
+
+          >
+            {{ this.pageNum + 2 }}
+          </button>
+
+          <div class="mat-typography paginator-item" style="font-weight: 500">
+            out of {{ maxPage }}
+          </div>
+          <button mat-button type="button" class="page-button">
+            <span class="page-direction"> Next </span>
+            <mat-icon iconPositionEnd> arrow_forward_ios</mat-icon>
+          </button>
         </div>
       </div>
       <div

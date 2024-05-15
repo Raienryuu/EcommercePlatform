@@ -23,14 +23,12 @@ export class CatalogComponent {
     { id: 9, categoryId: 1, name: "Product I", description: "Description for Product I", price: 7.99, quantity: 15 },
     { id: 10, categoryId: 2, name: "Product J", description: "Description for Product J", price: 11.99, quantity: 7 },
   ];
-  nameFilter: String = '';
-  minPrice: number = 0;
-  maxPrice: number = 0;
 
   filters: SearchFilters;
 
   pageNum: number = 1;
-  pageSize: number = 20;
+  pageSize: number = 25;
+  maxPage: number = 10;
 
 
   categoryBreadcrumbs: string[] = ['Tupperware', 'Pots'];
@@ -48,13 +46,26 @@ export class CatalogComponent {
   }
 
   ngOnInit() {
-    this.GetProductsPage();
+    this.GetProductsPage(0);
   }
 
-  GetProductsPage(): void {
+  GetProductsPage(pageOffset: number): void {
     this.productService
-      .GetProductsPage(this.pageNum, this.pageSize, this.filters)
+      .GetProductsPage(this.pageNum + pageOffset, this.pageSize, this.filters)
       .subscribe(data => this.products = data);
+  }
+
+  IsPageAvaiable(pageOffset: number): boolean {
+    if (this.pageNum + pageOffset > 0 &&
+      this.pageNum + pageOffset < this.maxPage)
+      return true;
+    return false;
+  }
+
+  LoadNewPage(pageOffset: number) {
+    this.GetProductsPage(pageOffset);
+    this.pageNum += pageOffset;
+    this.products = [];
   }
 
   @HostListener('document:scroll', ['$event'])

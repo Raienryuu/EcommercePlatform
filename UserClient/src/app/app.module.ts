@@ -21,8 +21,9 @@ import { MatSidenavModule } from '@angular/material/sidenav'
 import { NgOptimizedImage } from "@angular/common";
 import { MatTreeModule } from "@angular/material/tree";
 import { MatListModule } from "@angular/material/list";
-import { CartComponent } from './components/cart/cart.component';
-import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FooterComponent } from './components/footer/footer.component';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 
 @NgModule({
@@ -32,7 +33,7 @@ import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     RegisterComponent,
     NavbarComponent,
     CatalogComponent,
-    CartComponent
+    FooterComponent,
 
   ],
   imports: [
@@ -52,6 +53,7 @@ import { MatProgressSpinnerModule} from '@angular/material/progress-spinner'
     MatTreeModule,
     MatListModule,
     MatProgressSpinnerModule,
+    MatPaginatorModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

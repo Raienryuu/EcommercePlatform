@@ -32,12 +32,11 @@
   overflow-x: hidden;
 }
 
-.mdc-list-item {
+.categories .mdc-list-item {
   transition: scale 0.3s ease-out;
-}
-
-.mdc-list-item:hover {
-  scale: 1.05;
+  &:hover {
+    scale: 1.05;
+  }
 }
 
 .filters {
@@ -225,11 +224,49 @@ img {
 
 mat-spinner.progress-spinner {
   --mdc-circular-progress-active-indicator-color: #{$primary-800};
-  
 }
 
 mat-spinner {
   position: relative;
   align-self: center;
   height: 100%;
+}
+
+.paginator {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.paginator-items {
+  display: flex;
+  align-items: center;
+}
+.paginator-controls {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+}
+
+.paginator-item {
+  margin: auto 0;
+}
+
+.page-button:hover,
+.paginator-controls button:hover {
+  color: $primary-600;
+}
+
+.paginator-controls button {
+  margin: auto 5px;
+  min-width: 0;
+  width: fit-content;
+}
+
+.page-direction {
+  color: $primary-800;
+}
+
+.page-ref {
+  color: $primary-500;
 }
