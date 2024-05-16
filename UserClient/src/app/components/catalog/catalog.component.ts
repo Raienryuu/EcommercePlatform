@@ -27,7 +27,7 @@ export class CatalogComponent {
   filters: SearchFilters;
 
   pageNum: number = 1;
-  pageSize: number = 25;
+  pageSize: number = 2;
   maxPage: number = 10;
 
 
@@ -55,6 +55,18 @@ export class CatalogComponent {
       .subscribe(data => this.products = data);
   }
 
+  GetNextPage(): void {
+    this.productService
+      .GetNextPage(this.pageSize, this.filters, this.products[this.products.length - 1])
+      .subscribe(data => this.products = data);
+  }
+
+  GetPreviousPage(): void {
+    this.productService
+      .GetPreviousPage(this.pageSize, this.filters, this.products[0])
+      .subscribe(data => this.products = data);
+  }
+
   IsPageAvaiable(pageOffset: number): boolean {
     if (this.pageNum + pageOffset > 0 &&
       this.pageNum + pageOffset < this.maxPage)
@@ -63,10 +75,18 @@ export class CatalogComponent {
   }
 
   LoadNewPage(pageOffset: number) {
-    this.GetProductsPage(pageOffset);
-    this.pageNum += pageOffset;
+    if (pageOffset === 1) {
+      this.GetNextPage();
+    } else if (pageOffset === -1) {
+      this.GetPreviousPage();
+    } else {
+      this.GetProductsPage(pageOffset);
+    }
     this.products = [];
+    this.pageNum += pageOffset;
   }
+
+
 
   @HostListener('document:scroll', ['$event'])
   AppliedFiltersOpacityOnScroll() {

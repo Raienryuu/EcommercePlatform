@@ -30,15 +30,16 @@ export class ProductService {
     edgeProduct: Product): Observable<Product[]> {
     var url = environment.apiUrl + `v1/products/nextPage/${pageSize}`;
     var url = ApplySearchFilters(url, filters);
-    return this.httpClient.request<Product[]>('get', url, { body: { edgeProduct } });
+    return this.httpClient.post<Product[]>( url, edgeProduct );
+
   }
 
   GetPreviousPage(pageSize: number, filters: SearchFilters,
     edgeProduct: Product): Observable<Product[]> {
     var url = environment.apiUrl + `v1/products/previousPage/${pageSize}`;
-
     var url = ApplySearchFilters(url, filters);
-    return this.httpClient.request<Product[]>('get', url, { body: { edgeProduct } });
+    return this.httpClient.post<Product[]>( url, edgeProduct );
+    
   }
 }
 

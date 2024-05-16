@@ -55,7 +55,7 @@ public class ProductsController(
 	return Ok(products);
   }
 
-  [HttpGet]
+  [HttpPost]
   [Route("nextPage/{pageSize}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -79,7 +79,7 @@ public class ProductsController(
 	return Ok(products);
   }
 
-  [HttpGet]
+  [HttpPost]
   [Route("previousPage/{pageSize}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
