@@ -71,9 +71,10 @@
     <mat-sidenav-content>
       <div class="applied-filters">
         <button
-          *ngIf="filters.MinPrice > 0"
+          *ngIf="filters.MinPrice"
           class="applied-filter"
           mat-stroked-button
+          (click)="RemoveMinPriceFilter()"
         >
           Price > {{ filters.MinPrice }}€
           <mat-icon class="material-icons-outlined applied-filter-icon"
@@ -81,9 +82,10 @@
           >
         </button>
         <button
-          *ngIf="filters.MaxPrice != 0 && filters.MaxPrice >= filters.MinPrice"
+          *ngIf="filters.MaxPrice && filters.MaxPrice >= filters.MinPrice"
           class="applied-filter"
           mat-stroked-button
+          (click)="RemoveMaxPriceFilter()"
         >
           Price < {{ filters.MaxPrice }}€
           <mat-icon class="material-icons-outlined applied-filter-icon"
@@ -94,6 +96,7 @@
           *ngIf="filters.Name.length !== 0"
           class="applied-filter"
           mat-stroked-button
+          (click)="RemoveNameFilter()"
         >
           Includes "<span class="value">{{ filters.Name }}</span
           >"
@@ -183,12 +186,10 @@
           </button>
 
           <button
-            *ngIf="IsPageAvaiable(0)"
             mat-button
             type="button"
-            class="page-button page-ref"
-            (click)="LoadNewPage(0)"
-
+            class="page-button page-ref current-page-button"
+            disabled="true"
           >
             {{ this.pageNum }}
           </button>

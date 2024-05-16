@@ -38,10 +38,10 @@ export class CatalogComponent {
     this.filters = {
       Order: SortType.PriceAsc,
       Name: "",
-      MinPrice: 0,
-      MaxPrice: 0,
-      MinQuantity: 0,
-      Categories: 0
+      MinPrice: null!,
+      MaxPrice: null!,
+      MinQuantity: null!,
+      Categories: null!,
     }
   }
 
@@ -86,7 +86,18 @@ export class CatalogComponent {
     this.pageNum += pageOffset;
   }
 
+  RemoveNameFilter() {
+    this.filters.Name = "";
+  }
 
+  RemoveMinPriceFilter(){
+    this.filters.MinPrice = null!;
+  }
+
+  RemoveMaxPriceFilter(){
+    console.info(this.filters.MaxPrice);
+    this.filters.MaxPrice = null!;
+  }
 
   @HostListener('document:scroll', ['$event'])
   AppliedFiltersOpacityOnScroll() {

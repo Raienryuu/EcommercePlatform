@@ -48,22 +48,23 @@ function ApplySearchFilters(url: string, filters: SearchFilters): string {
     return url;
 
   url = url.concat("?")
+  
   if (filters.Name !== "")
     url = url.concat("&Name=" + filters.Name);
 
-  if (filters.MinPrice > 0)
+  if (filters.MinPrice)
     url = url.concat("&MinPrice=" + filters.MinPrice);
 
-  if (filters.MaxPrice > 0)
+  if (filters.MaxPrice)
     url = url.concat("&MaxPrice=" + filters.MaxPrice);
 
-  if (filters.MinQuantity != 0)
+  if (filters.MinQuantity)
     url = url.concat("&MinQuantity=" + filters.MinQuantity);
 
   if (filters.Order)
     url = url.concat("&Order=" + filters.Order);
 
-  if (filters.Categories != 0)
+  if (filters.Categories)
     url = url.concat("&Categories=" + filters.Categories);
   return url;
 }
