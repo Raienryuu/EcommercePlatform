@@ -42,8 +42,8 @@ public class ProductsCategoriesControllerTests
     var result = await _cut.GetChildrenCategories(CATEGORYID);
 
     Assert.True(
-((result.Result as OkObjectResult)!
-            .Value as IEnumerable<ProductCategory>)!.Any());
+      ((result.Result as OkObjectResult)!
+        .Value as IEnumerable<ProductCategory>)!.Any());
   }
 
   [Fact]
@@ -56,8 +56,8 @@ public class ProductsCategoriesControllerTests
     var result = await _cut.GetChildrenCategories(CATEGORYID);
 
     Assert.True(
-((result.Result as OkObjectResult)!
-            .Value as IEnumerable<ProductCategory>)!.IsNullOrEmpty());
+      ((result.Result as OkObjectResult)!
+        .Value as IEnumerable<ProductCategory>)!.IsNullOrEmpty());
   }
 
   [Fact]
@@ -192,7 +192,7 @@ public class ProductsCategoriesControllerTests
   }
 
 
-  
+
 
 
 

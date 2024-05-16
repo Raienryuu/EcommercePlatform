@@ -6,6 +6,7 @@ import { CatalogComponent } from './components/catalog/catalog.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'products' },
+  { path: 'products/:categoryId', component: CatalogComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'products', component: CatalogComponent}

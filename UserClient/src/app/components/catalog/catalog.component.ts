@@ -1,6 +1,9 @@
 import { Component, HostListener } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/models/product';
+import { ProductCategory } from 'src/app/models/product-category';
 import { SearchFilters, SortType } from 'src/app/models/search-filters';
+import { ProductCategoryService } from 'src/app/services/productCategoryService/product-category.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 
 @Component({
@@ -8,6 +11,7 @@ import { ProductService } from 'src/app/services/productService/product.service'
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
+
 
 
 export class CatalogComponent {
@@ -29,11 +33,18 @@ export class CatalogComponent {
   pageNum: number = 1;
   pageSize: number = 2;
   maxPage: number = 10;
-
+  public categoryId: string | null;
 
   categoryBreadcrumbs: string[] = ['Tupperware', 'Pots'];
+  categoryChildren: ProductCategory[] = [
+    { id: 5, categoryName: "Arabic" },
+    { id: 6, categoryName: "Chinese" },
+    { id: 7, categoryName: "Japanese" }];
 
-  constructor(private productService: ProductService) {
+  constructor(private productService: ProductService,
+    private productCategoryService: ProductCategoryService,
+    private route: ActivatedRoute
+  ) {
 
     this.filters = {
       Order: SortType.PriceAsc,
@@ -43,10 +54,12 @@ export class CatalogComponent {
       MinQuantity: null!,
       Categories: null!,
     }
+    this.categoryId = this.route.snapshot.paramMap.get('categoryId');
   }
 
   ngOnInit() {
     this.GetProductsPage(0);
+    this.GetCategoryTree();
   }
 
   GetProductsPage(pageOffset: number): void {
@@ -90,13 +103,18 @@ export class CatalogComponent {
     this.filters.Name = "";
   }
 
-  RemoveMinPriceFilter(){
+  RemoveMinPriceFilter() {
     this.filters.MinPrice = null!;
   }
 
-  RemoveMaxPriceFilter(){
-    console.info(this.filters.MaxPrice);
+  RemoveMaxPriceFilter() {
     this.filters.MaxPrice = null!;
+  }
+
+  GetCategoryTree() {
+    if (this.categoryId)
+      this.productCategoryService.GetCategoryChildren(this.categoryId)
+        .subscribe(categories => this.categoryChildren = categories);
   }
 
   @HostListener('document:scroll', ['$event'])

@@ -18,12 +18,12 @@
             <mat-icon class="categories-back-icon" inline="true"
               >arrow_upward</mat-icon
             >
-            <span> CURRENT_CATEGORY_PARENT </span>
+            <span> {{ categoryId }} </span>
           </div>
         </a>
-        <a mat-list-item>Arabic</a>
-        <a mat-list-item>Chinese</a>
-        <a mat-list-item>Japanese</a>
+        <a mat-list-item *ngFor="let child of categoryChildren"
+          href="products/{{child.id}}"
+        >{{child.categoryName}}</a>
       </mat-list>
 
       <div class="filters">
