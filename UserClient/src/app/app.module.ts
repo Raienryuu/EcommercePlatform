@@ -24,6 +24,7 @@ import { MatListModule } from "@angular/material/list";
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FooterComponent } from './components/footer/footer.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { CartComponent } from './components/cart/cart.component';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
     NavbarComponent,
     CatalogComponent,
     FooterComponent,
+    CartComponent,
 
   ],
   imports: [

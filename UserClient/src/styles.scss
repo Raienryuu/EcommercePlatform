@@ -13,6 +13,11 @@ body {
   font-size: $font-size;
 }
 
+.mat-mdc-raised-button.mat-primary {
+  --mdc-protected-button-container-color: #{$primary-500};
+  --mdc-protected-button-label-text-color: #fff;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
@@ -74,6 +79,18 @@ app-catalog {
 
     .mat-mdc-form-field-subscript-wrapper {
       display: none;
+    }
+  }
+}
+
+app-cart {
+  .product {
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      margin: 0;
     }
   }
 }

@@ -1,0 +1,80 @@
+<body>
+  <div class="products">
+    <div class="headers">
+      <span class="header"></span>
+      <span class="header name"> Product name </span>
+      <span class="header"> Quantity </span>
+      <span class="header"> Price </span>
+      <span class="header"> Total </span>
+      <span class="header"></span>
+    </div>
+
+    <div class="product" *ngFor="let product of products">
+      <img
+        alt="productImg"
+        height="120"
+        width="170"
+        ngSrc="assets/garnek"
+        priority="true"
+        style="float: left"
+      />
+      <span class="product-property name">
+        {{ product.name }}
+      </span>
+      <span class="product-property quantity-wrapper">
+        <button mat-icon-button (click)="AddQuantity(product, -1)">
+          <mat-icon> chevron_left </mat-icon>
+        </button>
+        <mat-form-field
+          style="width: 60px"
+          appearance="outline"
+          floatLabel="always"
+        >
+          <input type="number" matInput [(ngModel)]="product.quantity" />
+        </mat-form-field>
+        <button mat-icon-button (click)="AddQuantity(product, 1)">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </span>
+      <span class="product-property">
+        {{ currencySymbol }}{{ product.price }}
+      </span>
+      <span class="product-property">
+        {{ currencySymbol }}{{ GetProductTotal(product) }}
+      </span>
+      <span class="product-property">
+        <button class="remove-button" mat-button>
+          <mat-icon> delete </mat-icon>
+          <span class="icon-text"> Remove </span>
+        </button>
+      </span>
+    </div>
+  </div>
+  <div class="details">
+    <div class="promotion">
+      <mat-form-field class="promotion-element" appearance="outline">
+        <mat-label>Promo code</mat-label>
+        <input matInput [value]="promoCode" />
+      </mat-form-field>
+      <button mat-stroked-button class="promotion-element">Apply</button>
+    </div>
+    <div class="finalization">
+      <div class="summary">
+        <div class="price-static">
+          <span> Price: </span>
+          <span> Tax: </span>
+          <span> Total: </span>
+        </div>
+        <div class="price-dynamic">
+          <span>{{ currencySymbol }}{{ totalCost.price }}</span>
+          <span>{{ currencySymbol }}{{ totalCost.tax }}</span>
+          <span>{{ currencySymbol }}{{ totalCost.total }}</span>
+        </div>
+      </div>
+      <button mat-raised-button color="primary" class="checkout">
+        Checkout
+      </button>
+    </div>
+  </div>
+  <div></div>
+</body>
