@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { Product } from 'src/app/models/product';
+import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 
 @Component({
   selector: 'app-cart',
@@ -13,6 +14,8 @@ export class CartComponent {
     { id: 4, categoryId: 2, name: "Short D", description: "Description for Product D", price: 24.99, quantity: 3 },
   ];
 
+  constructor(private userSettingsService: UserSettingsService) { }
+
   ngOnInit() {
     this.RecalculateTotalCost();
   }
@@ -20,6 +23,12 @@ export class CartComponent {
   currencySymbol: string = '€';
   promoCode: string = '';
   totalCost: { price: string, tax: string, total: string } = { price: '', tax: '', total: '' };
+
+  LoadUserSettings() {
+    this.userSettingsService
+      .GetCurrencySymbol()
+      .subscribe(symbol => this.currencySymbol = symbol);
+  }
 
   GetProductTotal(product: Product): string {
     return (product.price * product.quantity).toFixed(2);

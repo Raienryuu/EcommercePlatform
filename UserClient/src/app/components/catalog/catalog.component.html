@@ -48,7 +48,7 @@
               type="number"
               class="filter-field"
             />
-            <span matTextPrefix>€&nbsp;</span>
+            <span matTextPrefix>{{currencySymbol}}&nbsp;</span>
           </mat-form-field>
           <mat-form-field
             appearance="outline"
@@ -62,7 +62,7 @@
               type="number"
               class="filter-field"
             />
-            <span matTextPrefix>€&nbsp;</span>
+            <span matTextPrefix>{{currencySymbol}}&nbsp;</span>
           </mat-form-field>
         </div>
       </div>
@@ -76,7 +76,7 @@
           mat-stroked-button
           (click)="RemoveMinPriceFilter()"
         >
-          Price > {{ filters.MinPrice }}€
+          Price > {{ filters.MinPrice }}{{currencySymbol}}
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >
@@ -87,7 +87,7 @@
           mat-stroked-button
           (click)="RemoveMaxPriceFilter()"
         >
-          Price < {{ filters.MaxPrice }}€
+          Price < {{ filters.MaxPrice }}{{currencySymbol}}
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >

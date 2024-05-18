@@ -5,6 +5,7 @@ import { ProductCategory } from 'src/app/models/product-category';
 import { SearchFilters, SortType } from 'src/app/models/search-filters';
 import { ProductCategoryService } from 'src/app/services/productCategoryService/product-category.service';
 import { ProductService } from 'src/app/services/productService/product.service';
+import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 
 @Component({
   selector: 'app-catalog',
@@ -34,6 +35,7 @@ export class CatalogComponent {
   pageSize: number = 2;
   maxPage: number = 10;
   public categoryId: string | null;
+  currencySymbol: string = '€';
 
   categoryBreadcrumbs: string[] = ['Tupperware', 'Pots'];
   categoryChildren: ProductCategory[] = [
@@ -43,7 +45,8 @@ export class CatalogComponent {
 
   constructor(private productService: ProductService,
     private productCategoryService: ProductCategoryService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private userSettingsService: UserSettingsService
   ) {
 
     this.filters = {
@@ -58,8 +61,15 @@ export class CatalogComponent {
   }
 
   ngOnInit() {
+    this.LoadUserSettings();
     this.GetProductsPage(0);
     this.GetCategoryTree();
+  }
+
+  LoadUserSettings() {
+    this.userSettingsService
+      .GetCurrencySymbol()
+      .subscribe(symbol => this.currencySymbol = symbol);
   }
 
   GetProductsPage(pageOffset: number): void {
