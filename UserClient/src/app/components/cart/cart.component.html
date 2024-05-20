@@ -22,7 +22,7 @@
         {{ product.name }}
       </span>
       <span class="product-property quantity-wrapper">
-        <button mat-icon-button (click)="AddQuantity(product, -1)">
+        <button mat-icon-button (click)="AddQuantity(product, -1)" (change)="ValidateQuantity(product)">
           <mat-icon> chevron_left </mat-icon>
         </button>
         <mat-form-field

@@ -50,6 +50,11 @@ export class CartComponent {
 
   AddQuantity(product: Product, quantity: number) {
     product.quantity += quantity;
+    this.ValidateQuantity(product);
+    this.RecalculateTotalCost();
+  }
+
+  ValidateQuantity(product: Product) {
     if (product.quantity < 0)
       product.quantity = 0;
     this.RecalculateTotalCost();
