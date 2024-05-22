@@ -1,0 +1,56 @@
+<div class="content">
+  <form class="delivery-form">
+    <div class="row">
+      <mat-form-field>
+        <mat-label>First Name</mat-label>
+        <input matInput />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Last Name</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Address</mat-label>
+        <input matInput />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>City</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field>
+        <mat-label>Address, line 2</mat-label>
+        <input matInput />
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Zip or postal code</mat-label>
+        <input matInput />
+      </mat-form-field>
+    </div>
+    <div class="row">
+      <mat-form-field class="inputs">
+        <mat-label>Country</mat-label>
+        <mat-select formControlName="country" id="country">
+          <mat-option
+            *ngFor="let country of countriesNoPhonesSorted"
+            value="{{ country }}"
+            >{{ country }}</mat-option
+          >
+        </mat-select>
+        <mat-error> Please choose country</mat-error>
+      </mat-form-field>
+      <mat-form-field>
+        <input
+          matInput
+          type="tel"
+          id="phoneNumber"
+          formControlName="phoneNumber"
+          class="intl-tel-input"
+        />
+      </mat-form-field>
+    </div>
+  </form>
+</div>

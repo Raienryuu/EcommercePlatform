@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
+import { CatalogComponent } from '../catalog/catalog.component';
 
 @Component({
   selector: 'app-cart',
@@ -55,9 +56,11 @@ export class CartComponent {
   }
 
   ValidateQuantity(product: Product) {
+    const MAX_QUANTITY: number = 100;
     if (product.quantity < 0)
       product.quantity = 0;
-    this.RecalculateTotalCost();
+    if (product.quantity > MAX_QUANTITY)
+      product.quantity = MAX_QUANTITY;
   }
 
 }

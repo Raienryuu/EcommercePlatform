@@ -25,6 +25,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FooterComponent } from './components/footer/footer.component';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { CartComponent } from './components/cart/cart.component';
+import {MatStepper, MatStepperModule} from '@angular/material/stepper';
+import { CheckoutComponent } from './components/checkout/checkout.component';
+import { CheckoutComponent1 } from './components/checkout/checkout.component';
+import { CheckoutComponent2 } from './components/checkout/checkout.component';
 
 
 @NgModule({
@@ -36,6 +40,9 @@ import { CartComponent } from './components/cart/cart.component';
     CatalogComponent,
     FooterComponent,
     CartComponent,
+    CheckoutComponent,
+    CheckoutComponent1,
+    CheckoutComponent2,
 
   ],
   imports: [
@@ -56,6 +63,7 @@ import { CartComponent } from './components/cart/cart.component';
     MatListModule,
     MatProgressSpinnerModule,
     MatPaginatorModule,
+    MatStepperModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
