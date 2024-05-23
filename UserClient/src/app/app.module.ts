@@ -8,7 +8,7 @@ import { CatalogComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input'
@@ -31,41 +31,33 @@ import { CheckoutComponent1 } from './components/checkout/checkout.component';
 import { CheckoutComponent2 } from './components/checkout/checkout.component';
 
 
-@NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    RegisterComponent,
-    NavbarComponent,
-    CatalogComponent,
-    FooterComponent,
-    CartComponent,
-    CheckoutComponent,
-    CheckoutComponent1,
-    CheckoutComponent2,
-
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    MatButtonModule,
-    MatInputModule,
-    MatGridListModule,
-    MatSelectModule,
-    ReactiveFormsModule,
-    MatIconModule,
-    MatSidenavModule,
-    NgOptimizedImage,
-    MatTreeModule,
-    MatListModule,
-    MatProgressSpinnerModule,
-    MatPaginatorModule,
-    MatStepperModule,
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
-})
+@NgModule({ declarations: [
+        AppComponent,
+        LoginComponent,
+        RegisterComponent,
+        NavbarComponent,
+        CatalogComponent,
+        FooterComponent,
+        CartComponent,
+        CheckoutComponent,
+        CheckoutComponent1,
+        CheckoutComponent2,
+    ],
+    bootstrap: [AppComponent], imports: [BrowserModule,
+        FormsModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        MatButtonModule,
+        MatInputModule,
+        MatGridListModule,
+        MatSelectModule,
+        ReactiveFormsModule,
+        MatIconModule,
+        MatSidenavModule,
+        NgOptimizedImage,
+        MatTreeModule,
+        MatListModule,
+        MatProgressSpinnerModule,
+        MatPaginatorModule,
+        MatStepperModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
