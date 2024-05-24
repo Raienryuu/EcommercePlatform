@@ -29,7 +29,8 @@ import {MatStepper, MatStepperModule} from '@angular/material/stepper';
 import { CheckoutComponent } from './components/checkout/checkout.component';
 import { CheckoutComponent1 } from './components/checkout/checkout.component';
 import { CheckoutComponent2 } from './components/checkout/checkout.component';
-
+import { CountrySelectComponent } from './country-select/country-select.component';
+import { PhoneSelectComponent } from './phone-select/phone-select.component';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -42,6 +43,8 @@ import { CheckoutComponent2 } from './components/checkout/checkout.component';
         CheckoutComponent,
         CheckoutComponent1,
         CheckoutComponent2,
+        CountrySelectComponent,
+        PhoneSelectComponent,
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         FormsModule,
@@ -59,5 +62,6 @@ import { CheckoutComponent2 } from './components/checkout/checkout.component';
         MatListModule,
         MatProgressSpinnerModule,
         MatPaginatorModule,
-        MatStepperModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        MatStepperModule,
+    ], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }

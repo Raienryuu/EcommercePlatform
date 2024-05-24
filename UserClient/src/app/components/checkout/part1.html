@@ -31,26 +31,8 @@
       </mat-form-field>
     </div>
     <div class="row">
-      <mat-form-field class="inputs">
-        <mat-label>Country</mat-label>
-        <mat-select formControlName="country" id="country">
-          <mat-option
-            *ngFor="let country of countriesNoPhonesSorted"
-            value="{{ country }}"
-            >{{ country }}</mat-option
-          >
-        </mat-select>
-        <mat-error> Please choose country</mat-error>
-      </mat-form-field>
-      <mat-form-field>
-        <input
-          matInput
-          type="tel"
-          id="phoneNumber"
-          formControlName="phoneNumber"
-          class="intl-tel-input"
-        />
-      </mat-form-field>
+      <app-country-select [(country)]="selectedCountry"></app-country-select>
+      <app-phone-select></app-phone-select>
     </div>
   </form>
 </div>

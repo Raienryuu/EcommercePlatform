@@ -2,10 +2,7 @@
   <mat-stepper #stepper>
     <mat-step label="Delivery">
       <form>
-        <app-checkout1
-          (rendered)="isPart1Ready = $event"
-          [class.hidden]="!isPart1Ready"
-        />
+          <app-checkout1 />
         <div class="control-wrapper">
           <button mat-stroked-button matStepperNext class="cancel">
             Cancel

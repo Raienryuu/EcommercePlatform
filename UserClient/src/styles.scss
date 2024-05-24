@@ -13,6 +13,11 @@ body {
   font-size: $font-size;
 }
 
+.mat-typography {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-size: $font-size;
+}
+
 .mat-mdc-raised-button.mat-primary {
   --mdc-protected-button-container-color: #{$primary-500};
   --mdc-protected-button-label-text-color: #fff;

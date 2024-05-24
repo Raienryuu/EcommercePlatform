@@ -1,0 +1,17 @@
+<mat-form-field class="inputs">
+  <mat-label>Country</mat-label>
+  <mat-select id="country" [(value)]="selectedCountry">
+    <mat-option
+      *ngFor="let country of countriesNoPhonesSorted"
+      value="{{ country }}"
+      >{{ country }}</mat-option
+    >
+  </mat-select>
+  <mat-error> Please choose country</mat-error>
+</mat-form-field>
+
+<style>
+  mat-form-field {
+    margin: 5px 20px;
+  }
+</style>
