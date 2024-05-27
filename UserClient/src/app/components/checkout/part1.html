@@ -31,8 +31,8 @@
       </mat-form-field>
     </div>
     <div class="row">
-      <app-country-select [(country)]="selectedCountry"></app-country-select>
-      <app-phone-select></app-phone-select>
+      <app-country-select [(country)]="selectedCountry"/>
+      <app-phone-select [(phone)]="phoneNumber" (phoneChange)="UpdateCountry($event)"/>
     </div>
   </form>
 </div>

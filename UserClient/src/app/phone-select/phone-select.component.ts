@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-phone-select',
@@ -6,7 +6,12 @@ import { Component } from '@angular/core';
 })
 export class PhoneSelectComponent {
   phonePrefixElement: intlTelInput.Plugin | null = null;
+
+  @Input()
   phone: string = null!;
+
+  @Output()
+  phoneChange = new EventEmitter<string>();
 
   ngOnInit() {
     const input = document.querySelector('#phoneNumber');
@@ -17,8 +22,13 @@ export class PhoneSelectComponent {
         initialCountry: 'auto',
         dropdownContainer: document.body,
       });
+      
       input.addEventListener('countrychange', () => {
         this.UpdatePhonePrefix(this.phonePrefixElement);
+        this.phone =
+          (this.phonePrefixElement?.getSelectedCountryData()?.dialCode ?? '') +
+          (this.phonePrefixElement?.getNumber() ?? '');
+        this.phoneChange.emit(this.phone);
       });
     }
   }

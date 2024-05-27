@@ -1,33 +1,7 @@
-import {
-  Component,
-  Input,
-  ViewChild,
-} from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import intlTelInput from 'intl-tel-input';
 import { CountriesNoPhonesSorted } from '../register/RegisterRawData';
-import { PhoneSelectComponent } from 'src/app/phone-select/phone-select.component';
-import { CountrySelectComponent } from 'src/app/country-select/country-select.component';
-
-@Component({
-  selector: 'app-checkout',
-  templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.scss'],
-})
-export class CheckoutComponent {
-  product: Product = null!;
-
-  constructor() {
-    this.product = {
-      id: 5,
-      categoryId: 3,
-      name: 'Product E',
-      description: 'Description for Product E',
-      price: 12.99,
-      quantity: 12,
-    };
-  }
-}
 
 @Component({
   selector: 'app-checkout1',
@@ -44,20 +18,12 @@ export class CheckoutComponent1 {
 
   countriesNoPhonesSorted: string[] = CountriesNoPhonesSorted;
 
-  @ViewChild(CountrySelectComponent)
-  country!: CountrySelectComponent;
-  @ViewChild(PhoneSelectComponent)
-  phoneInput!: PhoneSelectComponent;
-
   selectedCountry: string = null!;
-
+  phoneNumber: string = null!;
 
   UpdateCountry(country: string) {
-    console.info("Got new country value: " + country);
-    console.info(this.phoneInput.phonePrefixElement?.getNumber());
-    
+    console.info('Got new country value: ' + country);
   }
-
 }
 
 @Component({
@@ -66,3 +32,29 @@ export class CheckoutComponent1 {
   styleUrls: ['./checkout.component.scss'],
 })
 export class CheckoutComponent2 {}
+
+@Component({
+  selector: 'app-checkout',
+  templateUrl: './checkout.component.html',
+  styleUrls: ['./checkout.component.scss'],
+})
+export class CheckoutComponent {
+  product: Product = null!;
+
+  @ViewChild(CheckoutComponent1)
+  deliveryForm!: CheckoutComponent1;
+
+  @ViewChild(CheckoutComponent2)
+  paymentSelection!: CheckoutComponent2;
+
+  constructor() {
+    this.product = {
+      id: 5,
+      categoryId: 3,
+      name: 'Product E',
+      description: 'Description for Product E',
+      price: 12.99,
+      quantity: 12,
+    };
+  }
+}

@@ -1,6 +1,6 @@
 <mat-form-field class="inputs">
   <mat-label>Country</mat-label>
-  <mat-select id="country" [(value)]="selectedCountry">
+  <mat-select id="country" >
     <mat-option
       *ngFor="let country of countriesNoPhonesSorted"
       value="{{ country }}"
