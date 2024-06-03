@@ -34,6 +34,7 @@ import { CheckoutComponent1 } from './components/checkout/checkout.component';
 import { CheckoutComponent2 } from './components/checkout/checkout.component';
 import { CountrySelectComponent } from './country-select/country-select.component';
 import { PhoneSelectComponent } from './phone-select/phone-select.component';
+import { NgxStripeModule, provideNgxStripe } from 'ngx-stripe';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { PhoneSelectComponent } from './phone-select/phone-select.component';
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatStepperModule,
+    NgxStripeModule.forRoot(),
   ],
-  providers: [provideHttpClient(withInterceptorsFromDi())],
+  providers: [provideHttpClient()],
 })
 export class AppModule {}
