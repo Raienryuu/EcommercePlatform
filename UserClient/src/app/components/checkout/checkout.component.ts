@@ -11,6 +11,7 @@ import {
 import {
   PaymentIntent,
   StripeElementsOptions,
+  StripeExpressCheckoutElementOptions,
   StripePaymentElementOptions,
 } from '@stripe/stripe-js';
 import { HttpClient } from '@angular/common/http';
@@ -47,22 +48,22 @@ export class CheckoutComponent1 {
 export class CheckoutComponent2 {
   stripe = this.factoryService.create(environment.stripeApiKey);
   YOUR_CLIENT_SECRET: string | null =
-    'pi_3PNYVxC7yfdpfbDs1hlzG3Gv_secret_tOHGHXP3yFaMyUSCaXbAoCNc6';
+    'pi_3POFD5C7yfdpfbDs1K4y1MF5_secret_mbpshCsI0kRJtroB8J1zNQXNm';
   elementsOptions!: StripeElementsOptions;
   paymentIntent: any;
 
-  constructor(
-    private factoryService: StripeFactoryService,
-    private httpClient: HttpClient
-  ) {
+  constructor(private factoryService: StripeFactoryService) {
     this.elementsOptions = {
       locale: 'en',
       clientSecret: this.YOUR_CLIENT_SECRET!,
       appearance: {
-        theme: 'flat',
-        variables: {
-          colorBackground: 'black',
+        theme: 'stripe',
+        variables: {          
+          colorBackground: '#F0F2FF',
+          colorText: '#000000de',
+          fontSizeBase: '20px'
         },
+        labels: 'floating',
       },
     };
   }
@@ -71,10 +72,9 @@ export class CheckoutComponent2 {
     layout: {
       type: 'tabs',
       defaultCollapsed: false,
-      radios: false,
-      spacedAccordionItems: false,
-    },
+    }
   };
+
 
   @ViewChild(StripePaymentElementComponent)
   paymentElement!: StripePaymentElementComponent;
@@ -82,23 +82,15 @@ export class CheckoutComponent2 {
   private readonly fb = inject(UntypedFormBuilder);
 
   paymentElementForm = this.fb.group({
-    name: ['John doe', [Validators.required]],
-    email: ['support@ngx-stripe.dev', [Validators.required]],
-    address: [''],
-    zipcode: [''],
-    city: [''],
-    amount: ['2000', [Validators.required]],
+    email: ['support@ngx-stripe.dev', [Validators.required, Validators.email]],
   });
 
   paying = signal(false);
   pay() {
-    console.debug(this.paymentElementForm);
     if (this.paying() || this.paymentElementForm.invalid) return;
-    console.debug('Pay started!');
     this.paying.set(true);
 
-    const { name, email, address, zipcode, city } =
-      this.paymentElementForm.getRawValue();
+    const { email } = this.paymentElementForm.getRawValue();
 
     this.stripe
       .confirmPayment({
@@ -106,13 +98,7 @@ export class CheckoutComponent2 {
         confirmParams: {
           payment_method_data: {
             billing_details: {
-              name: name as string,
               email: email as string,
-              address: {
-                line1: address as string,
-                postal_code: zipcode as string,
-                city: city as string,
-              },
             },
           },
         },
