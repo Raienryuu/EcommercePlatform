@@ -2,7 +2,7 @@
   <mat-stepper #stepper>
     <mat-step label="Delivery">
       <form>
-          <app-checkout1 />
+        <app-checkout2></app-checkout2>
         <div class="control-wrapper">
           <button mat-stroked-button matStepperNext class="cancel">
             Cancel
@@ -14,8 +14,8 @@
     <mat-step>
       <form>
         <ng-template matStepLabel>Fill out your name</ng-template>
-        <app-checkout2></app-checkout2>
-
+        <app-checkout1 />
+        
         <div>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button matStepperNext>Next</button>

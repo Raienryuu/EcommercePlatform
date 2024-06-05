@@ -61,9 +61,15 @@ export class CheckoutComponent2 {
         variables: {          
           colorBackground: '#F0F2FF',
           colorText: '#000000de',
-          fontSizeBase: '20px'
+          fontLineHeight: '50px'
+          // fontSizeBase: '20px'
         },
         labels: 'floating',
+        rules: {
+          '.Input' : {
+            'lineHeight': '1.5rem',
+          }
+        }
       },
     };
   }

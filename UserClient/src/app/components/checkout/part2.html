@@ -1,7 +1,7 @@
 <div [formGroup]="paymentElementForm" class="paymentStripe">
   @if (elementsOptions.clientSecret) {
   <ngx-stripe-elements [stripe]="stripe" [elementsOptions]="elementsOptions">
-    <ngx-stripe-payment [options]="paymentElementOptions"/>
+    <ngx-stripe-payment [options]="paymentElementOptions" />
   </ngx-stripe-elements>
   <button mat-flat-button color="primary" (click)="pay()">PAY</button>
   } @else {
