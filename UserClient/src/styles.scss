@@ -6,7 +6,7 @@ body {
   height: 100%;
 }
 
-$font-size: clamp(16px, calc(0.9svw + 0.5svh), 18px);
+$font-size: clamp(12px, calc(0.9svw + 0.8svh), 18px);
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -146,4 +146,8 @@ app-checkout {
 
 .iti__country-list {
   max-width: fit-content(20%);
+}
+
+.mat-mdc-radio-button {
+  --mat-radio-label-text-size: $font-size;
 }

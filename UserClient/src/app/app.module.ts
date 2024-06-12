@@ -8,10 +8,7 @@ import { CatalogComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
-import {
-  provideHttpClient,
-  withInterceptorsFromDi,
-} from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -34,7 +31,10 @@ import { CheckoutComponent1 } from './components/checkout/checkout.component';
 import { CheckoutComponent2 } from './components/checkout/checkout.component';
 import { CountrySelectComponent } from './country-select/country-select.component';
 import { PhoneSelectComponent } from './phone-select/phone-select.component';
-import { NgxStripeModule, provideNgxStripe } from 'ngx-stripe';
+import { NgxStripeModule } from 'ngx-stripe';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio'
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -71,6 +71,9 @@ import { NgxStripeModule, provideNgxStripe } from 'ngx-stripe';
     MatPaginatorModule,
     MatStepperModule,
     NgxStripeModule.forRoot(),
+    MatCardModule,
+    MatRadioModule,
+    MatCheckboxModule,
   ],
   providers: [provideHttpClient()],
 })

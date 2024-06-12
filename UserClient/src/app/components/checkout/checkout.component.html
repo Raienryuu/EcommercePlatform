@@ -1,34 +1,183 @@
 <body>
-  <mat-stepper #stepper>
-    <mat-step label="Delivery">
-      <form>
-        <app-checkout2></app-checkout2>
-        <div class="control-wrapper">
-          <button mat-stroked-button matStepperNext class="cancel">
-            Cancel
-          </button>
-          <button mat-flat-button matStepperNext class="continue">Next</button>
+  <span class="list">
+    <div id="products">
+      <span>
+        <div class="header">Products</div>
+        <div class="content">
+          <div class="product" *ngFor="let product of products">
+            <img
+              alt="productImg"
+              height="120"
+              width="170"
+              ngSrc="assets/garnek"
+              priority="true"
+              style="float: left"
+            />
+            <span class="product-property name">
+              {{ product.name }}
+            </span>
+            <span class="product-property name">
+              {{ currencySymbol }}{{ product.price }}
+            </span>
+            <span class="product-property name">
+              {{ product.quantity }}
+            </span>
+            <span class="product-property name">
+              {{ currencySymbol }}{{ product.price * product.quantity }}
+            </span>
+          </div>
         </div>
-      </form>
-    </mat-step>
-    <mat-step>
-      <form>
-        <ng-template matStepLabel>Fill out your name</ng-template>
-        <app-checkout1 />
-        
-        <div>
-          <button mat-button matStepperPrevious>Back</button>
-          <button mat-button matStepperNext>Next</button>
-        </div>
-      </form>
-    </mat-step>
-    <mat-step>
-      <ng-template matStepLabel>Done</ng-template>
-      <p>part 3 - summary</p>
-      <div>
-        <button mat-button matStepperPrevious>Back</button>
-        <button mat-button (click)="stepper.reset()">Reset</button>
+      </span>
+    </div>
+    <div id="addresses">
+      <div class="header">
+        <span> Customer details </span>
+        <!-- <button mat-icon-button >
+          <mat-icon class="add" fontIcon="add" />
+        </button> -->
       </div>
-    </mat-step>
-  </mat-stepper>
+      <div class="customer-details content">
+        <mat-card
+          *ngFor="let address of customerAddresses; index as i"
+          (click)="SelectAddress(i)"
+          [ngClass]="{ selected: i === activeSelection }"
+        >
+          <mat-card-content>
+            <button mat-icon-button class="edit">
+              <mat-icon [ngClass]="{ selected: i === activeSelection }">
+                edit
+              </mat-icon>
+            </button>
+            <tr>
+              {{
+                address.Name + " " + address.Lastname
+              }}
+            </tr>
+            <tr>
+              {{
+                address.Address
+              }}
+            </tr>
+            <tr>
+              {{
+                address.City + " " + address.ZIPCode
+              }}
+            </tr>
+            <tr>
+              {{
+                address.PhonePrefix + " " + address.PhoneNumber
+              }}
+            </tr>
+            <tr>
+              {{
+                address.Email
+              }}
+            </tr>
+          </mat-card-content>
+        </mat-card>
+        <mat-card>
+          <mat-card-content class="center">
+            <button mat-icon-button>
+              <mat-icon class="add" fontIcon="add" />
+            </button>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+    <div id="payment" *ngIf="true">
+      <div class="header">Payment method</div>
+      <div class="content">
+        <ngx-stripe-elements
+          [stripe]="stripe"
+          [elementsOptions]="elementsOptions"
+        >
+          <ngx-stripe-payment [options]="paymentElementOptions" />
+        </ngx-stripe-elements>
+      </div>
+    </div>
+    <div id="delivery">
+      <div class="header">Delivery</div>
+      <div class="content">
+        <mat-radio-group aria-label="Select an option">
+          <span class="delivery-type-description">Pay now</span>
+          <div class="delivery-method">
+            <mat-radio-button value="1">
+              Standard
+            </mat-radio-button>
+           <span> €10 </span>
+          </div>
+          <div class="delivery-method">
+            <mat-radio-button value="2">
+              <span> Express </span>
+            </mat-radio-button>
+            <span> €10 </span>
+          </div>
+          <div class="delivery-method">
+            <mat-radio-button value="3">
+              <span> Parcel locker </span> 
+            </mat-radio-button>
+            <span> €10 </span>
+          </div>
+          <span class="delivery-type-description">Pay on delivery</span>
+          <div class="delivery-method">
+            <mat-radio-button value="4">
+               Standard  
+            </mat-radio-button>
+            <span> €8 </span>
+          </div>
+          <div class="delivery-method">
+            <mat-radio-button value="5">
+              <span> Express </span> 
+            </mat-radio-button>
+            <span> €12 </span>
+          </div>
+        </mat-radio-group>
+      </div>
+    </div>
+  </span>
+
+  <div class="summary">
+    <span class="sticky">
+      <div class="header">Summary</div>
+      <div class="content">
+        <div class="promo-codes">
+          <span *ngIf="!promoCodes" class="empty-codes">
+            No active promo codes
+          </span>
+        </div>
+        <div class="total">
+          <table>
+            <tr>
+              <td>Items</td>
+              <td class="second-column">
+                {{ currencySymbol }}{{ total.base }}
+              </td>
+            </tr>
+            <!-- <tr>
+            <td>Tax</td>
+            <td class="second-column">{{ currencySymbol }}{{ total.tax }}</td>
+          </tr> -->
+            <tr>
+              <td>Delivery</td>
+              <td class="second-column">
+                {{ currencySymbol }}{{ total.delivery }}
+              </td>
+            </tr>
+            <tr>
+              <td class="total">Total</td>
+              <td class="second-total second-column">
+                {{ currencySymbol }}{{ total.total }}
+              </td>
+            </tr>
+          </table>
+          <mat-divider />
+          <mat-checkbox>I accept!</mat-checkbox>
+          <div class="cta-buttons">
+            <button mat-stroked-button class="cancel-order">Back</button>
+            <button mat-flat-button color="primary">Order</button>
+          </div>
+        </div>
+      </div>
+    </span>
+  </div>
 </body>
