@@ -229,7 +229,6 @@ mat-icon.add {
   background: $primary-500;
 }
 
-
 @media (max-width: 700px) {
   body {
     flex-direction: column;
@@ -240,7 +239,6 @@ mat-icon.add {
     max-width: 100%;
   }
 }
-
 
 .delivery-method {
   background-color: $gray-100;
@@ -265,7 +263,6 @@ mat-icon.add {
   letter-spacing: 1px;
 }
 
-
 button.cancel-order {
   background-color: $gray-100;
 }
@@ -278,3 +275,5 @@ button.cancel-order {
 .cta-buttons button {
   margin: 1vmin;
 }
+
+
