@@ -104,36 +104,38 @@
             <mat-radio-button value="1">
               Standard
             </mat-radio-button>
-           <span> €10 </span>
+           <span> {{currencySymbol}}10 </span>
           </div>
           <div class="delivery-method">
             <mat-radio-button value="2">
               <span> Express </span>
             </mat-radio-button>
-            <span> €10 </span>
+            <span> {{currencySymbol}}10 </span>
           </div>
           <div class="delivery-method">
             <mat-radio-button value="3">
               <span> Parcel locker </span> 
+              <span (click)="openDialog()" style="text-decoration: underline;"> Select locker </span>
             </mat-radio-button>
-            <span> €10 </span>
+            <span> {{currencySymbol}}0 </span>
           </div>
           <span class="delivery-type-description">Pay on delivery</span>
           <div class="delivery-method">
             <mat-radio-button value="4">
                Standard  
             </mat-radio-button>
-            <span> €8 </span>
+            <span> {{currencySymbol}}8 </span>
           </div>
           <div class="delivery-method">
             <mat-radio-button value="5">
               <span> Express </span> 
             </mat-radio-button>
-            <span> €12 </span>
+            <span> {{currencySymbol}}12 </span>
           </div>
         </mat-radio-group>
       </div>
     </div>
+
   </span>
 
   <div class="summary">

@@ -5,6 +5,7 @@ body {
   justify-content: center;
   margin: 0 3vh;
   max-width: 1800;
+  overflow: visible;
 }
 
 mat-stepper {
@@ -276,4 +277,9 @@ button.cancel-order {
   margin: 1vmin;
 }
 
-
+.map {
+  width: 60vmax;
+  height: 90vmin;
+  border-radius: 10px;
+  overflow:visible !important;
+}

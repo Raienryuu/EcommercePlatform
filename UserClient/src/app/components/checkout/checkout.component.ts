@@ -1,22 +1,40 @@
-import { Component, Input, ViewChild, inject, signal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  HostListener,
+  Inject,
+  Input,
+  Output,
+  ViewChild,
+  inject,
+  signal,
+} from '@angular/core';
 import { Product } from 'src/app/models/product';
 import intlTelInput from 'intl-tel-input';
 import { CountriesNoPhonesSorted } from '../register/RegisterRawData';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
 import {
   StripeFactoryService,
   StripePaymentElementComponent,
-  injectStripe,
 } from 'ngx-stripe';
 import {
-  PaymentIntent,
   StripeElementsOptions,
-  StripeExpressCheckoutElementOptions,
   StripePaymentElementOptions,
 } from '@stripe/stripe-js';
-import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
+import { MatButtonModule } from '@angular/material/button';
+import {
+  MatDialog,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+} from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-checkout1',
@@ -168,7 +186,10 @@ export class CheckoutComponent {
   @ViewChild(CheckoutComponent2)
   paymentSelection!: CheckoutComponent2;
 
-  constructor(private factoryService: StripeFactoryService) {
+  constructor(
+    private factoryService: StripeFactoryService,
+    public dialog: MatDialog
+  ) {
     this.products = [
       {
         id: 5,
@@ -220,4 +241,65 @@ export class CheckoutComponent {
     this.activeSelection = id;
     console.log(id);
   }
+
+  dhlAddress!: DhlAddress;
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(LockerSelectorDialog);
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.dhlAddress = result;
+      console.log(result);
+    });
+  }
+
+}
+
+@Component({
+  selector: 'locker-selctor',
+  templateUrl: 'map.html',
+  styleUrls: ['./checkout.component.scss'],
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+  ],
+})
+export class LockerSelectorDialog {
+  constructor(
+    public dialogRef: MatDialogRef<LockerSelectorDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
+  ) {}
+
+  onNoClick(): void {
+    
+  }
+
+  @HostListener('window:message', ['$event'])
+  relayMessage(event: any) : DhlAddress {
+    let parseRes: DhlAddress;
+    try {
+      parseRes = JSON.parse(event.data);
+      if (parseRes.sap !== undefined) {
+        this.dialogRef.close(parseRes);
+      }
+    } catch {
+    }
+    return null!;
+  }
+}
+interface DhlAddress {
+  sap: Number;
+  name: String;
+  zip: String;
+  city: String;
+  street: String;
+  streetNo: String;
+  houseNo: String;
 }
