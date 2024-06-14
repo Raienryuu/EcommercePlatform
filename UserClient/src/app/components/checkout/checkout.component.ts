@@ -247,12 +247,10 @@ export class CheckoutComponent {
   openDialog(): void {
     const dialogRef = this.dialog.open(LockerSelectorDialog);
 
-    dialogRef.afterClosed().subscribe(result => {
-      this.dhlAddress = result;
-      console.log(result);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) this.dhlAddress = result;
     });
   }
-
 }
 
 @Component({
@@ -274,23 +272,20 @@ export class CheckoutComponent {
 export class LockerSelectorDialog {
   constructor(
     public dialogRef: MatDialogRef<LockerSelectorDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
+    @Inject(MAT_DIALOG_DATA) public data: DhlAddress
   ) {}
 
-  onNoClick(): void {
-    
-  }
+  onNoClick(): void {}
 
   @HostListener('window:message', ['$event'])
-  relayMessage(event: any) : DhlAddress {
+  relayMessage(event: any): DhlAddress {
     let parseRes: DhlAddress;
     try {
       parseRes = JSON.parse(event.data);
       if (parseRes.sap !== undefined) {
         this.dialogRef.close(parseRes);
       }
-    } catch {
-    }
+    } catch {}
     return null!;
   }
 }
