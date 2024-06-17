@@ -21,8 +21,10 @@ RUN dotnet build "OrderService/OrderService.csproj" -c $BUILD_CONFIGURATION -o /
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "OrderService/OrderService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet dev-certs https
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/ /root/.dotnet/corefx/cryptography/x509stores/my/
 ENTRYPOINT ["dotnet", "OrderService.dll"]

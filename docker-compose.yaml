@@ -10,6 +10,8 @@ services:
       - ConnectionStrings__User=user=orderManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - MongoDb__HostAddress=mongodb://mongodb
+      - ASPNETCORE_URLS=https://+:8080;
+
 
     ports:
       - 5138:8080
@@ -30,7 +32,7 @@ services:
       - ConnectionStrings__Host=Server=sqlserver;
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
-      #- ASPNETCORE_URLS=https://+:8080;
+      - ASPNETCORE_URLS=https://+:8080;
       
     depends_on:
       - rabbitmq
