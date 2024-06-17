@@ -278,8 +278,24 @@ button.cancel-order {
 }
 
 .map {
+  border-radius: 10px;
+  overflow: visible;
+}
+
+.map {
   width: 60vw;
   height: 90vh;
-  border-radius: 10px;
-  overflow:visible !important;
+}
+
+@media (max-aspect-ratio: 1) {
+  .map {
+    width: 85vw;
+    height: 60vh;
+  }
+}
+
+.locker-selection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }

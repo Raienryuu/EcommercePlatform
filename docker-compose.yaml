@@ -9,14 +9,14 @@ services:
       - ConnectionStrings__Host=Server=sqlserver;
       - ConnectionStrings__User=user=orderManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
-      - MongoDb__HostAddress=mongo-db
+      - MongoDb__HostAddress=mongodb://mongodb
 
     ports:
       - 5138:8080
     depends_on:
       - rabbitmq
       - sqlserver
-      - mongo-db
+      - mongodb
 
   productservice:
     build:
@@ -30,11 +30,12 @@ services:
       - ConnectionStrings__Host=Server=sqlserver;
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
-      # - ASPNETCORE_URLS=https://+:8080;
+      #- ASPNETCORE_URLS=https://+:8080;
       
     depends_on:
       - rabbitmq
       - sqlserver
+      - mongodb
 
   rabbitmq:
     image: rabbitmq
@@ -53,7 +54,7 @@ services:
     ports: 
       - 1434:1433
 
-  mongo-db:
+  mongodb:
     image: mongo:7.0.9
     ports:
       - 27017:27017
