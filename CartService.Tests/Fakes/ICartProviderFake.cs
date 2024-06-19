@@ -2,7 +2,7 @@ using System.Text.Json;
 using CartService.Requests;
 using CartService.Services;
 
-public class FakeCartProvider : ICartRepository
+public class FakeCartRepository : ICartRepository
   {
 
     private Dictionary<Guid, Cart> _products = [];

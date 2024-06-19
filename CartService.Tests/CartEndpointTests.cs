@@ -20,7 +20,7 @@ namespace CartService.Tests
 		}]
 	  };
 
-	  var cut = Factory.Create<CreateNewCartEndpoint>(new FakeCartProvider());
+	  var cut = Factory.Create<CreateNewCartEndpoint>(new FakeCartRepository());
 
 	  await cut.HandleAsync(cart, CancellationToken.None);
 	  var res = cut.Response;
@@ -29,15 +29,14 @@ namespace CartService.Tests
 	}
 
 	[Fact]
-	public async void CreateNewCart_EmptyCart_Error()
+	public async void CreateNewCart_EmptyCart_ErrorCode()
 	{
 	  var cart = new Cart
 	  {
 		Products = []
 	  };
 
-	  var (rsp, res) = await App.Client.POSTAsync<CreateNewCartEndpoint, Cart, Exception>(cart);
-
+	  var (rsp, _) = await App.Client.POSTAsync<CreateNewCartEndpoint, Cart, Exception>(cart);
 
 	  Assert.False(rsp.IsSuccessStatusCode);
 	}
