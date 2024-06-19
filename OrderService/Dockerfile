@@ -1,4 +1,3 @@
-#Set context inside main directory instead of single project directory
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app

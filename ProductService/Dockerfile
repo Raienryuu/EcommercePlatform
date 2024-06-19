@@ -1,4 +1,3 @@
-#Set context inside main directory instead of single project directory
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
@@ -24,9 +23,7 @@ RUN dotnet publish "ProductService/ProductService.csproj" -c $BUILD_CONFIGURATIO
 RUN dotnet dev-certs https
 
  FROM base AS final
- WORKDIR /app
- COPY --from=publish /app/publish .
+WORKDIR /app
+COPY --from=publish /app/publish .
 COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/ /root/.dotnet/corefx/cryptography/x509stores/my/
- ENTRYPOINT ["dotnet", "ProductService.dll"]
-#ENTRYPOINT ["tail"]
-#CMD ["-f","/dev/null"]
+ENTRYPOINT ["dotnet", "ProductService.dll"]

@@ -61,4 +61,9 @@ services:
     ports:
       - 27017:27017
     # environment:
+
+  valkey:
+    image: valkey/valkey:7.2.5
+    ports:
+      - 6379:6379
     
