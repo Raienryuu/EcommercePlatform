@@ -3,6 +3,7 @@ using CartService.Requests;
 using CartService.Tests.Fixtures;
 using FastEndpoints;
 using FastEndpoints.Testing;
+using FluentValidation;
 
 namespace CartService.Tests
 {
@@ -19,12 +20,11 @@ namespace CartService.Tests
 		  Amount = 5
 		}]
 	  };
-
 	  var cut = Factory.Create<CreateNewCartEndpoint>(new FakeCartRepository());
 
 	  await cut.HandleAsync(cart, CancellationToken.None);
-	  var res = cut.Response;
 
+	  var res = cut.Response;
 	  Assert.IsType<Guid>(res);
 	}
 
@@ -36,9 +36,9 @@ namespace CartService.Tests
 		Products = []
 	  };
 
-	  var (rsp, _) = await App.Client.POSTAsync<CreateNewCartEndpoint, Cart, Exception>(cart);
+	  var (httpRes, _) = await App.Client.POSTAsync<CreateNewCartEndpoint, Cart, Guid>(cart);
 
-	  Assert.False(rsp.IsSuccessStatusCode);
+	  Assert.False(httpRes.IsSuccessStatusCode);
 	}
   }
 }

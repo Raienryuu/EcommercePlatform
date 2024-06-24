@@ -25,7 +25,7 @@ namespace CartService.Endpoints
 	public override async Task HandleAsync(Cart req, CancellationToken ct)
 	{
 	  var newId = _cartProvider.CreateNewCart(req);
-	  await SendAsync(newId, cancellation: ct);
+	  await SendAsync(newId, cancellation: CancellationToken.None);
 	}
   }
 }
