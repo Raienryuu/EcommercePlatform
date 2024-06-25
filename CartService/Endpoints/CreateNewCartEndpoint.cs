@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace CartService.Endpoints
 {
-  public class CreateNewCartEndpoint : Endpoint<Cart, Guid>
+  public class CreateNewCartEndpoint : Endpoint<Cart>
   {
 	private readonly ICartRepository _cartProvider;
 	public CreateNewCartEndpoint(ICartRepository cartProvider)
@@ -20,13 +20,12 @@ namespace CartService.Endpoints
 	{
 	  Post("api/cart/create");
 	  AllowAnonymous();
-	  Validator<CartValidator>();
 	}
 
 	public override async Task HandleAsync(Cart req, CancellationToken ct)
 	{
-	  var newId = _cartProvider.CreateNewCart(req);
-	  await SendAsync(newId, cancellation: CancellationToken.None);
+	  var newId = await _cartProvider.CreateNewCart(req);
+	  await SendCreatedAtAsync("GetCartEndpoint/{guid}", newId, newId, cancellation: CancellationToken.None);
 	}
   }
 }

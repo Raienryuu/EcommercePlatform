@@ -4,6 +4,7 @@ namespace CartService.Services
 {
   public interface ICartRepository
   {
-	public Guid CreateNewCart(Cart c);
+	public Task<Guid> CreateNewCart(Cart c);
+	public Task<Guid> AddNewItem(UpdateCart c);
   }
 }

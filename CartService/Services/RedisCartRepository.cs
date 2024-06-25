@@ -1,6 +1,7 @@
 ﻿using CartService.Requests;
 using MassTransit;
 using StackExchange.Redis;
+using System.Text;
 using System.Text.Json;
 
 namespace CartService.Services
@@ -12,10 +13,28 @@ namespace CartService.Services
 	{
 	  _db = dbFactory.connection.GetDatabase();
 	}
-	public Guid CreateNewCart(Cart c)
+
+	public async Task<Guid> AddNewItem(UpdateCart c)
+	{
+	  var cartJson = await _db.StringGetAsync(c.CartGuid.ToString());
+
+	  if (cartJson.IsNullOrEmpty)
+	  {
+		var newCartId = await CreateNewCart(c.Cart);
+		return newCartId;
+	  }
+
+	  var cart = JsonSerializer.Deserialize<Cart>(cartJson!);
+	  cart!.Products.AddRange(c.Cart.Products);
+
+	  await _db.StringSetAsync(c.CartGuid.ToString(), JsonSerializer.Serialize(c));
+	  return c.CartGuid;
+	}
+
+	public async Task<Guid> CreateNewCart(Cart c)
 	{
 	  var newId = NewId.NextSequentialGuid();
-	  _db.StringSet(newId.ToString(), JsonSerializer.Serialize(c));
+	  await _db.StringSetAsync(newId.ToString(), JsonSerializer.Serialize(c));
 	  return newId;
 	}
   }

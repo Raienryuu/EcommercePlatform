@@ -21,9 +21,9 @@ namespace CartService.Tests
 	  };
 	  var cut = Factory.Create<CreateNewCartEndpoint>(new FakeCartRepository());
 
-	  await cut.HandleAsync(cart, CancellationToken.None);
+	  await cut.HandleAsync(cart, default);
+	  var res = (Guid)cut.Response!;
 
-	  var res = cut.Response;
 	  Assert.IsType<Guid>(res);
 	}
 
@@ -58,5 +58,38 @@ namespace CartService.Tests
 
 	  Assert.Contains("greater than '0'", res.Errors.ElementAt(0).Value.ElementAt(0));
 	}
+
+	[Fact]
+	public async void AddCartItem_ValidItem_CartId()
+	{
+	  var cart = new Cart
+	  {
+		Products = [
+		new() {
+		  Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
+		  Amount = 5
+		}]
+	  };
+	  var (_, res) = await App.Client
+		.POSTAsync<CreateNewCartEndpoint, Cart, Guid>(cart);
+	  var updateCart = new UpdateCart
+	  {
+		CartGuid = res,
+		Cart = new Cart
+		{
+		  Products = [new()
+		  {
+			Id = Guid.Parse("11187665-97a9-4200-a354-f1c2cbcb63e0"),
+			Amount = 2
+		  } ]
+		}
+	  };
+
+	  var (httpRes, _) = await App.Client
+		.PATCHAsync<AddCartItemEndpoint, UpdateCart, Guid>(updateCart);
+
+	  Assert.True(httpRes.IsSuccessStatusCode);
+	}
+
   }
 }
