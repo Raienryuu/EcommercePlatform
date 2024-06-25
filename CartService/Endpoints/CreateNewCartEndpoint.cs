@@ -20,6 +20,7 @@ namespace CartService.Endpoints
 	{
 	  Post("api/cart/create");
 	  AllowAnonymous();
+	  Validator<CartValidator>();
 	}
 
 	public override async Task HandleAsync(Cart req, CancellationToken ct)
