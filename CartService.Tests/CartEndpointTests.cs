@@ -1,8 +1,10 @@
 using CartService.Endpoints;
 using CartService.Requests;
+using CartService.Tests.Fakes;
 using CartService.Tests.Fixtures;
 using FastEndpoints;
 using FastEndpoints.Testing;
+using MassTransit;
 
 namespace CartService.Tests
 {
@@ -91,5 +93,35 @@ namespace CartService.Tests
 	  Assert.True(httpRes.IsSuccessStatusCode);
 	}
 
+	[Fact]
+	public async void DeleteCart_ExistingCartId_OKResponse()
+	{
+	  var cart = new Cart
+	  {
+		Products = [
+		new() {
+		  Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
+		  Amount = 5
+		}]
+	  };
+	  var (_, res) = await App.Client
+		.POSTAsync<CreateNewCartEndpoint, Cart, Guid>(cart);
+
+	  var httpRes = await App.Client
+		.DELETEAsync<DeleteCartEndpoint, string>(res.ToString());
+
+	  Assert.True(httpRes.IsSuccessStatusCode);
+	}
+
+	[Fact]
+	public async void DeleteCart_NonExistentCartId_OKResponse()
+	{
+	  var guid = NewId.NextGuid().ToString();
+
+	  var httpRes = await App.Client
+		.DELETEAsync<DeleteCartEndpoint, string>(guid);
+	  
+	  Assert.True(httpRes.IsSuccessStatusCode);
+	}
   }
 }
