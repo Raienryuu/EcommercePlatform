@@ -43,5 +43,11 @@ namespace CartService.Services
 	  var idString = c.ToString();
 	  await _db.KeyDeleteAsync(idString);
 	}
+
+	public async Task<Cart?> GetCart(Guid c)
+	{
+	  var objectJson = await _db.StringGetAsync(c.ToString());
+	  return JsonSerializer.Deserialize<Cart>(objectJson);
+	}
   }
 }

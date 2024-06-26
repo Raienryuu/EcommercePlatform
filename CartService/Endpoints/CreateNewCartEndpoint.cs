@@ -18,14 +18,14 @@ namespace CartService.Endpoints
 
 	public override void Configure()
 	{
-	  Post("api/cart/create");
+	  Post("api/cart");
 	  AllowAnonymous();
 	}
 
 	public override async Task HandleAsync(Cart req, CancellationToken ct)
 	{
 	  var newId = await _cartProvider.CreateNewCart(req);
-	  await SendCreatedAtAsync("GetCartEndpoint/{guid}", newId, newId, cancellation: CancellationToken.None);
+	  await SendCreatedAtAsync("api/cart/{guid}", newId, newId, cancellation: CancellationToken.None);
 	}
   }
 }

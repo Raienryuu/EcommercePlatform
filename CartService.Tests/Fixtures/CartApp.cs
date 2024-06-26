@@ -15,7 +15,7 @@ namespace CartService.Tests.Fixtures
 	protected override void ConfigureServices(IServiceCollection s)
 	{
 	  s.RemoveAll<RedisCartRepository>();
-	  s.AddScoped<ICartRepository, FakeCartRepository>();
+	  s.AddSingleton<ICartRepository, FakeCartRepository>();
 	}
 
   }

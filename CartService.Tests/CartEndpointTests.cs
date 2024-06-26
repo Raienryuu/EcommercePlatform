@@ -123,5 +123,36 @@ namespace CartService.Tests
 	  
 	  Assert.True(httpRes.IsSuccessStatusCode);
 	}
+
+	[Fact]
+	public async void GetCart_ExistingCardId_Cart()
+	{
+	  var newCart = new Cart
+	  {
+		Products = [
+		new() {
+		  Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
+		  Amount = 5
+		}]
+	  };
+	  var (_, res) = await App.Client
+		.POSTAsync<CreateNewCartEndpoint, Cart, Guid>(newCart);
+
+	  var (httpRes, cart) = await App.Client
+		.GETAsync<GetCartEndpoint, string, Cart>(res.ToString());
+
+	  Assert.True(cart.Products.Count > 0);
+	}
+	
+	[Fact]
+	public async void GetCart_NonExistentCardId_Cart()
+	{
+	  var idString = Guid.NewGuid().ToString();
+
+	  var (_, cart) = await App.Client
+		.GETAsync<GetCartEndpoint, string, Cart>(idString);
+
+	  Assert.True(cart is null);
+	}
   }
 }

@@ -20,17 +20,23 @@ namespace CartService.Tests.Fakes
 	  return cart.Key;
 	}
 
-	public async Task<Guid> CreateNewCart(Cart c)
+	public Task<Guid> CreateNewCart(Cart c)
 	{
 	  var newId = MassTransit.NewId.NextSequentialGuid();
 	  _products.Add(newId, c);
-	  return newId;
+	  return Task.FromResult(newId);
 	}
 
 	public Task DeleteCart(Guid c)
 	{
 	  _products.Remove(c);
 	  return Task.CompletedTask;
+	}
+
+	public Task<Cart?> GetCart(Guid c)
+	{
+	  _products.TryGetValue(c, out Cart? cart);
+	  return Task.FromResult(cart);
 	}
   }
 }

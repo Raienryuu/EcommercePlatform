@@ -4,27 +4,25 @@ using FastEndpoints;
 
 namespace CartService.Endpoints
 {
-  public class DeleteCartEndpoint : Endpoint<string>
+  public class GetCartEndpoint : Endpoint<string, Cart?>
   {
 	private readonly ICartRepository _cartProvider;
 
-	public DeleteCartEndpoint(ICartRepository cartProvider)
+	public GetCartEndpoint(ICartRepository cartProvider)
 	{
 	  _cartProvider = cartProvider;
 	}
 	public override void Configure()
 	{
-	  Delete("api/cart/{CartId}");
+	  Get("api/cart/{cartGuid}");
 	  AllowAnonymous();
 	}
 
-	
-
 	public override async Task HandleAsync(string req, CancellationToken ct)
 	{
-	  Guid id = Guid.Parse(req);
-	  await _cartProvider.DeleteCart(id);
-	  await SendAsync(null, cancellation: CancellationToken.None);
+	  var idAsGuid = Guid.Parse(req);
+	  var cart = await _cartProvider.GetCart(idAsGuid);
+	  await SendAsync(cart, cancellation: CancellationToken.None);
 	}
   }
 }
