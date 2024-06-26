@@ -8,7 +8,7 @@ namespace CartService.Tests.Fakes
 
 	private Dictionary<Guid, Cart> _products = [];
 
-	public async Task<Guid> AddNewItem(UpdateCart c)
+	public async Task<Guid> UpdateCart(UpdateCart c)
 	{
 	  var cart = _products.FirstOrDefault(x => x.Key == c.CartGuid);
 	  if (cart.Key == Guid.Empty)
@@ -16,7 +16,24 @@ namespace CartService.Tests.Fakes
 		var cartId = await CreateNewCart(c.Cart);
 		return cartId;
 	  }
-	  cart.Value.Products.AddRange(c.Cart.Products);
+
+	  foreach (var newProduct in c.Cart.Products)
+	  {
+		var oldProduct = cart.Value.Products
+		  .FirstOrDefault(p => p.Id == newProduct.Id);
+		if (oldProduct != null)
+		{
+		  oldProduct.Amount = newProduct.Amount;
+		}
+		else
+		{
+		  cart.Value.Products.Add(newProduct);
+		}
+
+		cart.Value.Products = cart.Value.Products
+		  .Where(p => p.Amount > 0).ToList();
+	  }
+
 	  return cart.Key;
 	}
 

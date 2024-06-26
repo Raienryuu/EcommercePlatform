@@ -7,6 +7,6 @@ namespace CartService.Services
 	public Task<Guid> CreateNewCart(Cart c);
 	public Task<Cart?> GetCart(Guid c);
 	public Task DeleteCart(Guid c);
-	public Task<Guid> AddNewItem(UpdateCart c);
+	public Task<Guid> UpdateCart(UpdateCart c);
   }
 }

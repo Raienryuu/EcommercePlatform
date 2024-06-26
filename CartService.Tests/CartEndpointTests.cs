@@ -62,7 +62,7 @@ namespace CartService.Tests
 	}
 
 	[Fact]
-	public async void AddCartItem_ValidItem_CartId()
+	public async void UpdateCart_ValidItem_CartId()
 	{
 	  var cart = new Cart
 	  {
@@ -87,10 +87,11 @@ namespace CartService.Tests
 		}
 	  };
 
-	  var (httpRes, _) = await App.Client
-		.PATCHAsync<AddCartItemEndpoint, UpdateCart, Guid>(updateCart);
+	  await App.Client
+		.PATCHAsync<UpdateCartEndpoint, UpdateCart, Guid>(updateCart);
 
-	  Assert.True(httpRes.IsSuccessStatusCode);
+	  var (_, finalCart) = await App.Client.GETAsync<GetCartEndpoint, string, Cart>(res.ToString());
+	  Assert.True(finalCart.Products.Count == 2);
 	}
 
 	[Fact]

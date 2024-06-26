@@ -4,11 +4,11 @@ using FastEndpoints;
 
 namespace CartService.Endpoints
 {
-  public class AddCartItemEndpoint : Endpoint<UpdateCart>
+  public class UpdateCartEndpoint : Endpoint<UpdateCart>
   {
 	private readonly ICartRepository _cartProvider;
 
-	public AddCartItemEndpoint(ICartRepository cartProvider)
+	public UpdateCartEndpoint(ICartRepository cartProvider)
 	{
 	  _cartProvider = cartProvider;
 	}
@@ -21,7 +21,7 @@ namespace CartService.Endpoints
 
 	public override async Task HandleAsync(UpdateCart req, CancellationToken ct)
 	{
-	  var cartGuid = await _cartProvider.AddNewItem(req);
+	  var cartGuid = await _cartProvider.UpdateCart(req);
 	  await SendAsync(cartGuid, cancellation: CancellationToken.None);
 	}
   }

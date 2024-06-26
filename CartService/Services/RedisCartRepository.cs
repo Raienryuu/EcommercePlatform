@@ -14,7 +14,7 @@ namespace CartService.Services
 	  _db = dbFactory.connection.GetDatabase();
 	}
 
-	public async Task<Guid> AddNewItem(UpdateCart c)
+	public async Task<Guid> UpdateCart(UpdateCart c)
 	{
 	  var cartJson = await _db.StringGetAsync(c.CartGuid.ToString());
 
