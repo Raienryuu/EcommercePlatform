@@ -19,7 +19,6 @@ public class Program
 	builder.Services.AddDbContext<OrderDbContext>(o =>
 	{
 	  o.UseSqlServer(connectionString);
-
 	});
 
 	MessageQueueUtils.Configure(builder.Configuration, builder.Services);
