@@ -3,22 +3,14 @@ using OrderService.Models;
 
 namespace OrderService.Tests.Fakes
 {
-  public class FakeOrderDbContextBuilder : IDbContextFactory<OrderDbContext>
+  public static class FakeOrderDbContextBuilder
   {
-	private static readonly DbContextOptionsBuilder<FakeOrderDbContext> optionsBuilder = new DbContextOptionsBuilder<FakeOrderDbContext>().UseInMemoryDatabase("tempOrders");
+	private static readonly DbContextOptionsBuilder<FakeOrderDbContext> optionsBuilder = new DbContextOptionsBuilder<FakeOrderDbContext>().UseInMemoryDatabase($"tempOrders-{Guid.NewGuid()}");
 
-	private FakeOrderDbContext _db = new FakeOrderDbContext(optionsBuilder.Options);
 
-	public OrderDbContext CreateDbContext()
+	public static void FillData(OrderDbContext ctx)
 	{
-	  FillData();
-	  _db.SaveChanges();
-	  return (OrderDbContext)_db;
-	}
-
-	public FakeOrderDbContextBuilder FillData()
-	{
-	  _db.Orders.Add(new Order
+	  ctx.Orders.Add(new Order
 	  {
 		OrderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7"),
 		UserId = 1,
@@ -28,7 +20,7 @@ namespace OrderService.Tests.Fakes
 			Quantity = 5,
 		  }]
 	  });
-	  return this;
+	  ctx.SaveChanges();
 	}
   }
 }

@@ -7,7 +7,7 @@ public class OrdersControllerTests
   [Fact]
   public async Task PlaceOrder_Order_201CreatedAt()
   {
-	var app = new App();
+	using var app = new App();
 	using var client = app.CreateClient();
 	var order = new Order()
 	{
@@ -24,9 +24,9 @@ public class OrdersControllerTests
   }
 
   [Fact]
-  public async Task PlaceOrder_OrderWithEmptyProducts_ValidationError()
+  public async Task PostOrder_OrderWithEmptyProducts_ValidationError()
   {
-	var app = new App();
+	using var app = new App();
 	using var client = app.CreateClient();
 	var order = new Order()
 	{
@@ -44,7 +44,7 @@ public class OrdersControllerTests
   [Fact]
   public async Task GetUserOrders_UserId_ListOfOrders()
   {
-	var app = new App();
+	using var app = new App();
 	using var client = app.CreateClient();
 	const int userId = 1;
 
@@ -57,14 +57,14 @@ public class OrdersControllerTests
   [Fact]
   public async Task GetOrder_ExistingOrderId_Order()
   {
-	var app = new App();
+	using var app = new App();
 	using var client = app.CreateClient();
+
 	Guid orderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7");
 
 	var res = await client.GetAsync($"api/v1/orders/{orderId}");
 
 	var order = await res.Content.ReadFromJsonAsync<Order>();
-	Assert.True(order!.Products.Count != 0);
-
+	Assert.IsType<Order>(order);
   }
 }

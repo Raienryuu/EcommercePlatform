@@ -4,9 +4,8 @@ using MessageQueue.Contracts;
 using MessageQueue.DTOs;
 using OrderService.MessageQueue.Sagas;
 using OrderService.MessageQueue.Sagas.SagaStates;
-using OrderService.Models;
-namespace OrderService.Tests;
 
+namespace OrderService.Tests;
 public class NewOrderSagaTests
 {
   [Fact]
@@ -16,8 +15,6 @@ public class NewOrderSagaTests
 	  .AddMassTransitTestHarness(o =>
 	  {
 		o.AddSagaStateMachine<NewOrderSaga, OrderState>().InMemoryRepository();
-		//o.AddSagaStateMachineContainerTestHarness<NewOrderSaga, OrderState>();
-
 		o.UsingInMemory((context, cfg) =>
 		  cfg.ConfigureEndpoints(context));
 	  })
@@ -39,7 +36,6 @@ public class NewOrderSagaTests
 
 	var doesInstanceExists = await sagasHarness.Sagas
 	  .Any(s => s.CorrelationId == orderId);
-
 	Assert.True(doesInstanceExists);
   }
 }
