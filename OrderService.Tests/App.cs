@@ -21,9 +21,6 @@ public class App : WebApplicationFactory<Program>
 
 	  services.RemoveAll<OrderDbContext>();
 	  services.AddDbContext<OrderDbContext, FakeOrderDbContext>();
-	  var provider = services.BuildServiceProvider();
-	  var db = provider.GetRequiredService<OrderDbContext>();
-	  FakeOrderDbContextBuilder.FillData(db);
 	});
   }
 }

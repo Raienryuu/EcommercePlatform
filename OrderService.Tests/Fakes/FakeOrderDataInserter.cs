@@ -3,16 +3,14 @@ using OrderService.Models;
 
 namespace OrderService.Tests.Fakes
 {
-  public static class FakeOrderDbContextBuilder
+  public static class FakeOrderDataInserter
   {
-	private static readonly DbContextOptionsBuilder<FakeOrderDbContext> optionsBuilder = new DbContextOptionsBuilder<FakeOrderDbContext>().UseInMemoryDatabase($"tempOrders-{Guid.NewGuid()}");
-
-
 	public static void FillData(OrderDbContext ctx)
 	{
+	  var id = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7");
 	  ctx.Orders.Add(new Order
 	  {
-		OrderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7"),
+		OrderId = id,
 		UserId = 1,
 		Products = [
 		  new OrderProduct{

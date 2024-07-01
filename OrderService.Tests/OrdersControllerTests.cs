@@ -1,4 +1,5 @@
 using OrderService.Models;
+using OrderService.Tests.Fakes;
 
 namespace OrderService.Tests;
 
@@ -58,6 +59,8 @@ public class OrdersControllerTests
   public async Task GetOrder_ExistingOrderId_Order()
   {
 	using var app = new App();
+	var dbContext = app.Services.CreateScope().ServiceProvider.GetService<OrderDbContext>();
+	FakeOrderDataInserter.FillData(dbContext!);
 	using var client = app.CreateClient();
 
 	Guid orderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7");
