@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderService.Models;
 
 namespace OrderService.Tests.Fakes
 {

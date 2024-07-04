@@ -21,7 +21,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
 	  {
 		await _db.SaveChangesAsync();
 	  }
-	  catch (Exception ex) 
+	  catch (Exception ex)
 	  {
 		throw new Exception("Unable to save changes to storage.", ex);
 	  }

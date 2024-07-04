@@ -1,6 +1,4 @@
-﻿using MassTransit;
-
-namespace OrderService.Models
+﻿namespace OrderService.Models
 {
   public static class OrderStatus
   {

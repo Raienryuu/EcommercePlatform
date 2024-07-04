@@ -1,10 +1,7 @@
-﻿using System.Diagnostics;
-using MassTransit;
+﻿using MassTransit;
 using MessageQueue.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using OrderService;
-using MessageQueue.DTOs;
 using OrderService.Models;
 
 
@@ -88,7 +85,7 @@ namespace OrderService.Controllers
 	  var newId = NewId.NextGuid();
 	  order.OrderId = newId;
 
-	  _context.Orders.Add(order);
+	  await _context.Orders.AddAsync(order);
 	  await _context.SaveChangesAsync();
 
 	  await _publisher.Publish<IOrderSubmitted>(new

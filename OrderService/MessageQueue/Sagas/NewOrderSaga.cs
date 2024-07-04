@@ -22,7 +22,7 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 
 	Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
 
-	Event(() => OrderProductsNotAvaiable, x => x.CorrelateById(context => context.Message.OrderId));
+	Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
 
 	Initially(
 	 When(OrderSubmitted)
@@ -40,19 +40,19 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 	.TransitionTo(Confirmed));
 
 	During(Pending,
-	When(OrderProductsNotAvaiable)
+	When(OrderProductsNotAvailable)
 	.Activity(x => x.OfType<OrderProductsNotAvaiableActivity>())
 	.TransitionTo(Cancelled));
   }
 
   public Event<IOrderSubmitted> OrderSubmitted { get; set; }
   public Event<IOrderReserved> OrderReserved { get; set; }
-  public Event<IOrderProductsNotAvaiable> OrderProductsNotAvaiable { get; set; }
+  public Event<IOrderProductsNotAvaiable> OrderProductsNotAvailable { get; set; }
 
   public State Pending { get; set; }
   public State Confirmed { get; set; }
-  public State Shipped { get; set; }
   public State ReadyToShip { get; set; }
+  public State Shipped { get; set; }
   public State Cancelled { get; set; }
 
 }

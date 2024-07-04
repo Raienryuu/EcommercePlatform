@@ -362,3 +362,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/CartService/.idea/.idea.CartService/.idea
+/CartService.Tests/.idea/.idea.CartService.Tests/.idea
