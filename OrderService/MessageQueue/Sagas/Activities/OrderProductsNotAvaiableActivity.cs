@@ -16,9 +16,9 @@ namespace OrderService.MessageQueue.Sagas.Activities
 	public async Task Execute(BehaviorContext<OrderState, IOrderProductsNotAvaiable> context, IBehavior<OrderState, IOrderProductsNotAvaiable> next)
 	{
 	  var order = await _db.Orders.FindAsync(context.Message.OrderId);
-	  order!.Status = Models.OrderStatus.Type.Cancelled;
 	  try
 	  {
+		order!.Status = Models.OrderStatus.Type.Cancelled;
 		await _db.SaveChangesAsync();
 	  }
 	  catch (Exception ex)
