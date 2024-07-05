@@ -15,17 +15,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
 
 	public async Task Execute(BehaviorContext<OrderState, IOrderProductsNotAvaiable> context, IBehavior<OrderState, IOrderProductsNotAvaiable> next)
 	{
-	  var order = await _db.Orders.FindAsync(context.Message.OrderId);
-	  try
-	  {
-		order!.Status = Models.OrderStatus.Type.Cancelled;
-		await _db.SaveChangesAsync();
-	  }
-	  catch (Exception ex)
-	  {
-		throw new Exception("Unable to save changes to storage.", ex);
-	  }
-
+	  SetOrderAsCancelled(context);
 	  await next.Execute(context).ConfigureAwait(false);
 	}
 
@@ -37,6 +27,20 @@ namespace OrderService.MessageQueue.Sagas.Activities
 	public void Probe(ProbeContext context)
 	{
 	  context.CreateMessageScope(nameof(IOrderProductsNotAvaiable));
+	}
+
+	private async void SetOrderAsCancelled(BehaviorContext<OrderState, IOrderProductsNotAvaiable> context)
+	{
+	  var order = await _db.Orders.FindAsync([context.Message.OrderId], cancellationToken: CancellationToken.None);
+	  try
+	  {
+		order!.Status = Models.OrderStatus.Type.Cancelled;
+		await _db.SaveChangesAsync(CancellationToken.None);
+	  }
+	  catch (Exception ex)
+	  {
+		throw new Exception("Unable to save changes to storage.", ex);
+	  }
 	}
   }
 }
