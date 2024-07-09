@@ -60,21 +60,7 @@ namespace OrderService.Controllers
 
 	  _context.Entry(order).State = EntityState.Modified;
 
-	  try
-	  {
-		await _context.SaveChangesAsync();
-	  }
-	  catch (DbUpdateConcurrencyException)
-	  {
-		if (!OrderExists(id))
-		{
-		  return NotFound();
-		}
-		else
-		{
-		  throw;
-		}
-	  }
+	  await _context.SaveChangesAsync();
 
 	  return NoContent();
 	}
@@ -101,7 +87,7 @@ namespace OrderService.Controllers
 	public async Task<IActionResult> DeleteOrder(Guid id)
 	{
 	  var order = await _context.Orders.FindAsync(id);
-	  if (order == null)
+	  if (order is null)
 	  {
 		return NotFound();
 	  }
@@ -110,11 +96,6 @@ namespace OrderService.Controllers
 	  await _context.SaveChangesAsync();
 
 	  return NoContent();
-	}
-
-	private bool OrderExists(Guid id)
-	{
-	  return _context.Orders.Any(e => e.OrderId == id);
 	}
   }
 }
