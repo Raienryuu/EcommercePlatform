@@ -6,7 +6,7 @@ namespace OrderService.Tests.Fakes
   {
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-	  optionsBuilder.UseInMemoryDatabase($"tempOrders-{Guid.NewGuid()}");
+	  base.OnConfiguring(optionsBuilder);
 	}
 
   }
