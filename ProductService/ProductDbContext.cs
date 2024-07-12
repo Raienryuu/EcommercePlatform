@@ -13,17 +13,22 @@ public class ProductDbContext : DbContext
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
 	modelBuilder.Entity<Product>().Property(p => p.Price).HasColumnType("decimal(18,2)");
-	modelBuilder.Entity<ProductCategory>().HasData(
-	  new ProductCategory { Id = 1, CategoryName = "Tableware", ParentCategory = null },
-	  new ProductCategory() { ParentCategory = null, Id = 2, CategoryName = "Mugs" },
-	  new ProductCategory() { ParentCategory = null, Id = 3, CategoryName = "Cups" },
-	  new ProductCategory { Id = 4, CategoryName = "Electronics", ParentCategory = null },
-	  new ProductCategory { Id = 5, CategoryName = "Laptops", ParentCategory = null }
-	  );
 	modelBuilder.Entity<Product>().HasOne(p => p.Category)
 	  .WithMany()
 	  .HasForeignKey(p => p.CategoryId);
 
+	FillWithDevelData(modelBuilder);
+  }
+
+  private static void FillWithDevelData(ModelBuilder modelBuilder)
+  {
+	modelBuilder.Entity<ProductCategory>().HasData(
+	  new ProductCategory { Id = 1, CategoryName = "Mugs", ParentCategory = null },
+	  new ProductCategory() { ParentCategory = null, Id = 2, CategoryName = "Tableware" },
+	  new ProductCategory() { ParentCategory = null, Id = 3, CategoryName = "Cups" },
+	  new ProductCategory { Id = 4, CategoryName = "Electronics", ParentCategory = null },
+	  new ProductCategory { Id = 5, CategoryName = "Laptops", ParentCategory = null }
+	  );
 	modelBuilder.Entity<Product>().HasData(
 	new Product
 	{
@@ -62,6 +67,7 @@ public class ProductDbContext : DbContext
 	  CategoryId = 4
 	});
   }
+
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
 	base.OnConfiguring(optionsBuilder);

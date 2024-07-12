@@ -3,9 +3,11 @@ using ProductService;
 
 namespace ProductServiceTests.Fakes;
 
-public class ProductDbContextFake : ProductDbContext
+public class ProductDbContextFake(DbContextOptions<ProductDbContext> options) : ProductDbContext(options)
 {
-  public ProductDbContextFake() : base(new DbContextOptionsBuilder<ProductDbContext>()
-        .UseInMemoryDatabase(databaseName: $"ProductsTest-{Guid.NewGuid()}")
-        .Options) {}
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+	base.OnConfiguring(optionsBuilder);
+	optionsBuilder.EnableSensitiveDataLogging(true);
+  }
 } 

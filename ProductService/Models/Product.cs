@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace ProductService.Models;
 
@@ -23,15 +24,17 @@ public class Product
 	ErrorMessage = "Quantity must be a non-negative value.")]
   public required int Quantity { get; set; }
 
-  [ConcurrencyCheck] public byte[]? ConcurrencyStamp { get; private set; }
+  [ConcurrencyCheck]
+  //[JsonProperty("concurrencyStamp")]
+  public int ConcurrencyStamp { get; set; }
 
   public void RefreshConcurrencyStamp()
   {
-	ConcurrencyStamp = Guid.NewGuid().ToByteArray()[..4];
+	ConcurrencyStamp += 1;
   }
 
   public Product()
   {
-	RefreshConcurrencyStamp();
+	//RefreshConcurrencyStamp();
   }
 }

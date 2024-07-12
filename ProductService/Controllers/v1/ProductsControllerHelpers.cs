@@ -20,15 +20,5 @@ internal static class ProductsControllerHelpers
   {
 	return $"\"type\": \"error\", \"message\": \"{message}\"";
   }
-  public static bool IsConcurrencyStampEqual(Product updatedProduct, Product oldProduct)
-  {
-	if (oldProduct.ConcurrencyStamp is null ||
-	  updatedProduct.ConcurrencyStamp is null)
-	  return false;
 
-	if (oldProduct.ConcurrencyStamp != updatedProduct.ConcurrencyStamp)
-	  return false;
-
-	return true;
-  }
 }

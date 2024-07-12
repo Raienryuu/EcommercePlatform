@@ -62,15 +62,19 @@ public class ProductsController(
   public async Task<ActionResult<IEnumerable<Product>>> GetNextPage(
 	int pageSize,
 	[FromQuery] SearchFilters filters,
-	[FromBody] Product product)
+	[FromBody] Product referenceProduct)
   {
+
+	System.Diagnostics.Debug.WriteLine(referenceProduct);
+	System.Diagnostics.Debug.WriteLine(filters is null);
+
 	if (pageSize < 1 || pageSize > 200)
 	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
 		"PageSize greater than 1, and PageSize less " +
 		"than 200"));
 
 	var query = new ProductsPagination(filters, db)
-	  .GetNextPageQuery(pageSize, product);
+	  .GetNextPageQuery(pageSize, referenceProduct);
 
 	var s = query.ToQueryString();
 	Console.WriteLine(s);
@@ -86,7 +90,7 @@ public class ProductsController(
   public async Task<ActionResult<IEnumerable<Product>>> GetPreviousPage(
 	int pageSize,
 	[FromQuery] SearchFilters filters,
-	[FromBody] Product product)
+	[FromBody] Product referenceProduct)
   {
 	if (pageSize < 1 || pageSize > 200)
 	  return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
@@ -94,7 +98,7 @@ public class ProductsController(
 		"than 200"));
 
 	var query = new ProductsPagination(filters, db)
-	  .GetPreviousPageQuery(pageSize, product);
+	  .GetPreviousPageQuery(pageSize, referenceProduct);
 
 	var s = query.ToQueryString();
 	Console.WriteLine(s);
@@ -116,11 +120,6 @@ public class ProductsController(
 	newProduct.RefreshConcurrencyStamp();
 	db.Products.Add(newProduct);
 	await db.SaveChangesAsync();
-
-	var createdUri = Url.Action(
-	  "GetProduct",
-	  "Products",
-	  new { id = newProduct.Id });
 
 	return CreatedAtAction("GetProduct", new { id = newProduct.Id }, newProduct);
   }
@@ -151,7 +150,7 @@ public class ProductsController(
 	if (!await DoesCategoryExists(updatedProduct.CategoryId))
 	  return NotFound(ProductsControllerHelpers.CreateErrorResponse("Given category does not exists"));
 
-	if (!ProductsControllerHelpers.IsConcurrencyStampEqual(updatedProduct, oldProduct))
+	if (updatedProduct.ConcurrencyStamp != oldProduct.ConcurrencyStamp)
 	  return UnprocessableEntity(
 		ProductsControllerHelpers
 		.CreateErrorResponse("ConcurrencyStamp mismatch"));
@@ -160,6 +159,8 @@ public class ProductsController(
 	  .AssignNewValuesToProduct(db, updatedProduct, oldProduct);
 
 	oldProduct.RefreshConcurrencyStamp();
+	System.Diagnostics.Debug.WriteLine(oldProduct.ConcurrencyStamp);
+
 	await db.SaveChangesAsync();
 
 	return Ok(oldProduct);

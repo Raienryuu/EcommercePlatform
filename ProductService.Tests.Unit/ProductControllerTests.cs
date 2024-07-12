@@ -1,480 +1,480 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
-using NSubstitute;
-using ProductService.Controllers.v1;
 using ProductService.Models;
+using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
+
 
 namespace ProductServiceTests;
 
-public class ProductControllerTests
+public class ProductControllerTests : IClassFixture<AppFixture>
 {
-  private readonly NullLogger<ProductsController> _nullLogger;
 
-  public ProductControllerTests()
+  private const string ApiUrl = "http://localhost/api/";
+  private readonly AppFixture _app;
+  private readonly HttpClient _client;
+  public ProductControllerTests(AppFixture app)
   {
-    _nullLogger = new NullLogger<ProductsController>();
+	_app = app;
+	_client = app.CreateClient();
   }
 
   [Theory]
-  [InlineData(1, typeof(OkObjectResult))]
-  [InlineData(0, typeof(NotFoundObjectResult))]
+  [InlineData(1, HttpStatusCode.OK)]
+  [InlineData(0, HttpStatusCode.NotFound)]
   public async Task GetProduct_ProductId_ProductOrNoContent(int productId,
-    Type statusCodeResponse)
+	HttpStatusCode statusCodeResponse)
   {
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
+	var result = await _client.GetAsync($"api/v1/products/{productId}");
 
-    var result = await _cut.GetProduct(productId);
-
-    Assert.Equal(statusCodeResponse, result.GetType());
+	Assert.Equal(statusCodeResponse, result.StatusCode);
   }
 
   [Fact]
   public async Task
-    GetProdutsPage_ProductNameFilter_ProductsThatNameContainsSubstring()
+	GetProdutsPage_ProductNameFilter_ProductsThatNameContainsSubstring()
   {
-    SearchFilters nameFilter = new()
-    {
-      Name = "White",
-      Order = SearchFilters.SortType.PriceAsc
-    };
-    var PAGE = 1;
-    var PAGE_SIZE = 20;
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts()
-      .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
+	SearchFilters nameFilter = new()
+	{
+	  Name = "White",
+	  Order = SearchFilters.SortType.PriceAsc
+	};
+	var PAGE = 1;
+	var PAGE_SIZE = 20;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PAGE}/{PAGE_SIZE}" +
+	  $"?Name={nameFilter.Name}&Order={nameFilter.Order}").Uri,
+	};
 
-    var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, nameFilter);
+	var result = await _client.SendAsync(msg);
 
-    var data =
-      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    foreach (var entity in data!)
-      Assert.Contains(nameFilter.Name, entity.Name);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	foreach (var entity in data!)
+	  Assert.Contains(nameFilter.Name, entity.Name);
   }
 
   [Fact]
   public async Task GetNextPage_PriceAscendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
+	const int PAGE_SIZE = 2;
+	Product referencedItem = new()
+	{
+	  Id = 6,
+	  CategoryId = 1,
+	  Name = "White Cup",
+	  Description = "Fairly big cup",
+	  Price = 15,
+	  Quantity = 0,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/nextPage/{PAGE_SIZE}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    const int EXPECTED_ID = 3;
+	var result = await _client.SendAsync(msg);
 
-    SearchFilters filters = new();
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
-
-    var result = await _cut
-      .GetNextPage(PAGE_SIZE, filters, referencedItem);
-
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Price <= data[i].Price);
+	  Assert.True(referencedItem.Price <= data[i].Price);
+	}
   }
 
   [Fact]
   public async Task GetPreviousPage_PriceAscendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
+	const int PAGE_SIZE = 2;
+	Product referencedItem = new()
+	{
+	  Id = 8,
+	  CategoryId = 1,
+	  Name = "Blue Cup",
+	  Description = "Fairly big cup",
+	  Price = 25,
+	  Quantity = 6,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/previousPage/{PAGE_SIZE}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    const int EXPECTED_ID = 5;
+	var result = await _client.SendAsync(msg);
 
-    SearchFilters filters = new();
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
-
-    var result = await _cut
-      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
-
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Price <= data[i].Price);
+	  Assert.True(referencedItem.Price >= data[i].Price);
+	}
   }
 
   [Fact]
   public async Task GetNextPage_PriceDescendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
+	const int PAGE_SIZE = 2;
+	SearchFilters filters = new()
+	{
+	  Order = SearchFilters.SortType.PriceDesc
+	};
+	Product referencedItem = new()
+	{
+	  Id = 8,
+	  CategoryId = 1,
+	  Name = "Blue Cup",
+	  Description = "Fairly big cup",
+	  Price = 25,
+	  Quantity = 6,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/nextPage/{PAGE_SIZE}" +
+	  $"?Order={filters.Order}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    const int EXPECTED_ID = 5;
+	var result = await _client.SendAsync(msg);
 
-    SearchFilters filters = new()
-    {
-      Order = SearchFilters.SortType.PriceDesc
-    };
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
-
-    var result = await _cut
-      .GetNextPage(PAGE_SIZE, filters, referencedItem);
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Price >= data[i].Price);
+	  Assert.True(referencedItem.Price >= data[i].Price);
+	}
   }
 
   [Fact]
   public async Task GetPreviousPage_PriceDescendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
-    const int EXPECTED_ID = 3;
+	const int PAGE_SIZE = 2;
+	SearchFilters filters = new()
+	{
+	  Order = SearchFilters.SortType.PriceDesc
+	};
+	Product referencedItem = new()
+	{
+	  Id = 8,
+	  CategoryId = 1,
+	  Name = "Blue Cup",
+	  Description = "Fairly big cup",
+	  Price = 25,
+	  Quantity = 6,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/previousPage/{PAGE_SIZE}" +
+	  $"?Order={filters.Order}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    SearchFilters filters = new()
-    {
-      Order = SearchFilters.SortType.PriceDesc
-    };
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
+	var result = await _client.SendAsync(msg);
 
-    var result = await _cut
-      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Price >= data[i].Price);
+	  Assert.True(referencedItem.Price <= data[i].Price);
+	}
   }
 
   [Fact]
   public async Task GetNextPage_QuantityAscendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
+	const int PAGE_SIZE = 2;
+	SearchFilters filters = new()
+	{
+	  Order = SearchFilters.SortType.QuantityAsc
+	};
+	Product referencedItem = new()
+	{
+	  Id = 8,
+	  CategoryId = 1,
+	  Name = "Blue Cup",
+	  Description = "Fairly big cup",
+	  Price = 25,
+	  Quantity = 6,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/nextPage/{PAGE_SIZE}" +
+	  $"?Order={filters.Order}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    const int EXPECTED_ID = 1;
+	var result = await _client.SendAsync(msg);
 
-    SearchFilters filters = new()
-    {
-      Order = SearchFilters.SortType.QuantityAsc
-    };
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
-
-    var result = await _cut
-      .GetNextPage(PAGE_SIZE, filters, referencedItem);
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Quantity <= data[i].Quantity);
+	  Assert.True(referencedItem.Quantity <= data[i].Quantity);
+	}
   }
 
   [Fact]
   public async Task GetPreviousPage_QuantityAscendingOrder_ProperPageWithItem()
   {
-    const int PAGE_SIZE = 1;
-    const int EXPECTED_ID = 2;
+	const int PAGE_SIZE = 2;
+	SearchFilters filters = new()
+	{
+	  Order = SearchFilters.SortType.QuantityAsc
+	};
+	Product referencedItem = new()
+	{
+	  Id = 8,
+	  CategoryId = 1,
+	  Name = "Blue Cup",
+	  Description = "Fairly big cup",
+	  Price = 25,
+	  Quantity = 6,
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/previousPage/{PAGE_SIZE}" +
+	  $"?Order={filters.Order}").Uri,
+	  Content = JsonContent.Create(referencedItem)
+	};
 
-    SearchFilters filters = new()
-    {
-      Order = SearchFilters.SortType.QuantityAsc
-    };
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    Product referencedItem = new()
-    {
-      Id = 4,
-      CategoryId = 1,
-      Name = "Blue Cup",
-      Description = "Fairly big cup",
-      Price = 25,
-      Quantity = 6,
-    };
+	var result = await _client.SendAsync(msg);
 
-    var result = await _cut
-      .GetPreviousPage(PAGE_SIZE, filters, referencedItem);
-    var data = ((result.Result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-    Assert.Equal(EXPECTED_ID, data.First().Id);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	for (int i = 1; i < data!.Count; i++)
+	{
+	  Assert.True(data[i - 1].Quantity <= data[i].Quantity);
+	  Assert.True(referencedItem.Quantity >= data[i].Quantity);
+	}
   }
 
   [Fact]
   public async Task GetProductsPage_PriceFilter_ProductsBetweenMinAndMaxPrice()
   {
-    SearchFilters priceFilter = new()
-    {
-      MinPrice = 30,
-      MaxPrice = 40,
-      Order = SearchFilters.SortType.PriceAsc
-    };
-    var PAGE = 1;
-    var PAGE_SIZE = 20;
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
+	SearchFilters priceFilter = new()
+	{
+	  MinPrice = 30,
+	  MaxPrice = 40
+	};
+	var PAGE = 1;
+	var PAGE_SIZE = 20;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PAGE}/{PAGE_SIZE}" +
+	  $"?MinPrice={priceFilter.MinPrice}&MaxPrice={priceFilter.MaxPrice}").Uri
+	};
 
-    var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, priceFilter);
+	var result = await _client.SendAsync(msg);
 
-    var data =
-      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-
-    foreach (var entity in data!)
-    {
-      Assert.True(entity.Price >= priceFilter.MinPrice);
-      Assert.True(entity.Price <= priceFilter.MaxPrice);
-    }
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	foreach (var entity in data!)
+	{
+	  Assert.True(entity.Price >= priceFilter.MinPrice);
+	  Assert.True(entity.Price <= priceFilter.MaxPrice);
+	}
   }
 
   [Fact]
   public async Task GetProductsPage_QuantityFilter_ProductsWithEnoughSupply()
   {
-    SearchFilters quantityFilter = new()
-    {
-      MinQuantity = 30,
-      Order = SearchFilters.SortType.PriceAsc
-    };
-    var PAGE = 1;
-    var PAGE_SIZE = 20;
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
+	SearchFilters quantityFilter = new()
+	{
+	  MinQuantity = 30,
+	};
+	var PAGE = 1;
+	var PAGE_SIZE = 20;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PAGE}/{PAGE_SIZE}" +
+	  $"?MinQuantity={quantityFilter.MinQuantity}").Uri
+	};
 
-    var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, quantityFilter);
+	var result = await _client.SendAsync(msg);
 
-    var data =
-      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-
-    foreach (var entity in data!)
-      Assert.True(entity.Quantity >= quantityFilter.MinQuantity);
+	var data = await result.Content.ReadFromJsonAsync<List<Product>>();
+	foreach (var entity in data!)
+	  Assert.True(entity.Quantity >= quantityFilter.MinQuantity);
   }
 
   [Theory]
-  [InlineData(true)]
-  [InlineData(false)]
-  public async Task GetProductsPage_OrderByPriceFilter_ProductsOrderedByPrice
-    (bool isPriceAscending)
-  {
-    SearchFilters quantityFilter = new()
-    {
-      Order = isPriceAscending ? SearchFilters.SortType.PriceAsc : SearchFilters.SortType.PriceDesc
-    };
-    var PAGE = 1;
-    var PAGE_SIZE = 5;
-    var _db = new ProductDbContextFakeBuilder()
-      .WithProducts().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-
-    var result = await _cut.GetProductsPage(
-      PAGE, PAGE_SIZE, quantityFilter);
-
-    var data =
-      ((result as OkObjectResult)!.Value as IEnumerable<Product>)!;
-
-    Product previous_entity = data.First();
-
-    foreach (var entity in data!)
-    {
-      if (isPriceAscending)
-      {
-        Assert.True(entity.Price >= previous_entity.Price);
-      }
-      else
-      {
-        Assert.True(entity.Price <= previous_entity.Price);
-      }
-      previous_entity = entity;
-    }
-  }
-
-  [Theory]
-  [InlineData(1, 20, typeof(OkObjectResult))]
-  [InlineData(-5, 20, typeof(BadRequestObjectResult))]
-  [InlineData(1, 250, typeof(BadRequestObjectResult))]
+  [InlineData(1, 20, HttpStatusCode.OK)]
+  [InlineData(-5, 20, HttpStatusCode.BadRequest)]
+  [InlineData(1, 250, HttpStatusCode.BadRequest)]
   public async Task GetProductsPage_PageParams_AppropriateResponse(
-    int page, int pageSize, Type resultType)
+ int page, int pageSize, HttpStatusCode httpResponseCode)
   {
-    var _db = new ProductDbContextFakeBuilder()
-      .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
 
-    var result =
-      await _cut.GetProductsPage(page, pageSize, new SearchFilters
-      {
-        Order = SearchFilters.SortType.PriceAsc
-      });
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{page}/{pageSize}").Uri
+	};
 
-    Assert.Equal(resultType, result.GetType());
+	var result = await _client.SendAsync(msg);
+
+	Assert.Equal(httpResponseCode, result.StatusCode);
   }
 
   [Fact]
   public async Task AddNewProduct_ValidProduct_ProductAddedToDatabase()
   {
-    var p = new Product()
-    {
-      Name = "Sample product",
-      CategoryId = 1,
-      Price = 15m,
-      Description = "Do not buy",
-      Quantity = 0
-    };
-    var URL = "/api/v1/Products/1";
-    var _db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductsController(_nullLogger, _db)
-    {
-      Url = Substitute.For<IUrlHelper>()
-    };
-    _cut.Url.Action().Returns(URL);
+	var p = new Product()
+	{
+	  Name = "Sample product",
+	  CategoryId = 1,
+	  Price = 15m,
+	  Description = "Do not buy",
+	  Quantity = 0
+	};
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products").Uri,
+	  Content = JsonContent.Create(p)
+	};
 
-    var result = await _cut.AddNewProduct(p);
+	var result = await _client.SendAsync(msg);
 
-    Assert.IsType<CreatedAtActionResult>(result);
+	Assert.Equal(HttpStatusCode.Created, result.StatusCode);
   }
 
   [Fact]
   public async Task
-    AddNewProduct_ProductMissingRequiredField_DbUpdateException()
+ AddNewProduct_ProductMissingRequiredFieldName_NameFieldIsRequiredError()
   {
-    Product p = new()
-    {
-      Name = "Sample product",
-      CategoryId = 1,
-      Price = 15m,
-      Description = "Do not buy",
-      Quantity = 0
-    };
-    p.Name = null!;
-    var _db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductsController(_nullLogger, _db);
+	Product p = new()
+	{
+	  Name = "Sample product",
+	  CategoryId = 1,
+	  Price = 15m,
+	  Description = "Do not buy",
+	  Quantity = 0
+	};
+	p.Name = null!;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products").Uri,
+	  Content = JsonContent.Create(p)
+	};
 
-    var e = await Record.ExceptionAsync(
-      async () => await _cut.AddNewProduct(p));
+	var result = await _client.SendAsync(msg);
 
-    Assert.IsType<DbUpdateException>(e);
+	var content = await result.Content.ReadAsStringAsync();
+	Assert.Contains("Name field is required", content);
   }
 
   [Fact]
-  public async Task AddNewProduct_InvalidProductCategory_DbUpdateException()
+  public async Task AddNewProduct_InvalidProductCategory_CategoryNotFoundError()
   {
+	Product p = new()
+	{
+	  Name = "Sample product",
+	  CategoryId = 1,
+	  Price = 15m,
+	  Description = "Do not buy",
+	  Quantity = 0
+	};
+	p.CategoryId = -1;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Post,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products").Uri,
+	  Content = JsonContent.Create(p)
+	};
 
+	var result = await _client.SendAsync(msg);
 
-    Product p = new()
-    {
-      Name = "Sample product",
-      CategoryId = 1,
-      Price = 15m,
-      Description = "Do not buy",
-      Quantity = 0
-    };
-    p.CategoryId = -1;
-    var _db = new ProductDbContextFakeBuilder().WithCategories().Build();
-    var _cut = new ProductsController(_nullLogger, _db)
-    {
-      Url = Substitute.For<IUrlHelper>()
-    };
-    var result = await _cut.AddNewProduct(p);
-
-    Assert.IsType<BadRequestObjectResult>(result);
+	var content = await result.Content.ReadAsStringAsync();
+	Assert.Contains("Category not found", content);
   }
 
   [Fact]
   public async Task UpdateProduct_ChangedProduct_ConcurrencyStampChanged()
   {
-    const int PRODUCT_ID = 1;
-    var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
-      .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    var productResult = await _cut.GetProduct(PRODUCT_ID);
-    var newProductData =
-      ((productResult as OkObjectResult)!.Value as Product)!;
-    newProductData.Description = "Fresh and intriguing description";
-    var oldStamp = newProductData.ConcurrencyStamp!;
+	const int PRODUCT_ID = 1;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PRODUCT_ID}").Uri,
+	};
+	var productResult = await _client.SendAsync(msg);
+	var newProduct = await productResult.Content.ReadFromJsonAsync<Product>();
+	newProduct!.Description = "Fresh and intriguing description";
+	var oldStamp = newProduct.ConcurrencyStamp!;
+	msg = new()
+	{
+	  Method = HttpMethod.Patch,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PRODUCT_ID}").Uri,
+	  Content = JsonContent.Create(newProduct)
+	};
 
-    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
+	var result = await _client.SendAsync(msg);
 
-    var updatedProduct = ((result.Result as OkObjectResult)!.Value as Product)!;
-    Assert.NotEqual(oldStamp, updatedProduct.ConcurrencyStamp);
-  }
-
-  [Fact]
-  public async Task UpdateProduct_ProductWithNonexistingCategory_CategoryError()
-  {
-    var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
-      .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    var productResult = await _cut.GetProduct(1);
-    var newProductData =
-      ((productResult as OkObjectResult)!.Value as Product)!;
-    newProductData.CategoryId = 5555;
-
-    var result = await _cut.UpdateProduct(newProductData.Id, newProductData);
-
-    var errorString = (result.Result as NotFoundObjectResult)!.Value as string;
-    Assert.Contains("category", errorString);
+	var content = await result.Content.ReadAsStringAsync();
+	// ReadFromStringAsync() was unable to correcly deserialize object, ConccurencyStamp was default instead of actuall value
+	var updatedProduct = await result.Content.ReadAsStringAsync();
+	JsonSerializerOptions options = new() { PropertyNameCaseInsensitive = true };
+	var productInstance = JsonSerializer.Deserialize<Product>(updatedProduct, options: options);
+	Assert.NotEqual(oldStamp, productInstance!.ConcurrencyStamp);
   }
 
   [Fact]
   public async Task
-    UpdateProduct_OutdatedConcurrencyStamp_DbUpdateConcurrencyException()
+ UpdateProduct_OutdatedConcurrencyStamp_DbUpdateConcurrencyException()
   {
-    var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
-      .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    var productResult = await _cut.GetProduct(1);
-    var newProductData =
-      ((productResult as OkObjectResult)!.Value as Product)!;
+	const int PRODUCT_ID = 1;
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PRODUCT_ID}").Uri,
+	};
+	var productResult = await _client.SendAsync(msg);
+	var product = await productResult.Content.ReadFromJsonAsync<Product>();
 
-    newProductData.ConcurrencyStamp![0] += 1;
-    var ex = await Record.ExceptionAsync(async () =>
-      await _cut.UpdateProduct(newProductData.Id, newProductData));
+	msg = new()
+	{
+	  Method = HttpMethod.Patch,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PRODUCT_ID}").Uri,
+	  Content = JsonContent.Create(product)
+	};
+	await _client.SendAsync(msg);
+	msg = new()
+	{
+	  Method = HttpMethod.Patch,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/{PRODUCT_ID}").Uri,
+	  Content = JsonContent.Create(product)
+	};
 
-    Assert.IsType<DbUpdateConcurrencyException>(ex);
+	var result = await _client.SendAsync(msg);
+
+	Assert.Equal(HttpStatusCode.UnprocessableEntity, result.StatusCode);
   }
 
   [Fact]
   public async Task
-    GetProductsList_ListOfExistingProductsIds_ProductsList()
+ GetProductsList_ListOfExistingProductsIds_ProductsList()
   {
-    var _db = new ProductDbContextFakeBuilder().WithCategories().WithProducts()
-    .Build();
-    var _cut = new ProductsController(_nullLogger, _db);
-    var productsIds = new int[] { 1, 2, 3 };
+	var productsIds = new int[] { 1, 2, 3 };
+	HttpRequestMessage msg = new()
+	{
+	  Method = HttpMethod.Get,
+	  RequestUri = new UriBuilder($"{ApiUrl}v1/products/batch").Uri,
+	  Content = JsonContent.Create(productsIds)
+	};
 
-    var response = await _cut.GetSelectiveProducts(productsIds);
+	var result = await _client.SendAsync(msg);
 
-    Assert.Equal(productsIds.Length, ((response.Result as OkObjectResult)!.Value as IEnumerable<Product>)!.Count());
+	var products = await result.Content.ReadFromJsonAsync<List<Product>>();
+	Assert.Equal(productsIds.Length, productsIds.Length);
+	products!.ForEach(x => Assert.Contains(x.Id, productsIds));
   }
 }

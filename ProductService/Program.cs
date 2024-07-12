@@ -1,13 +1,11 @@
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.OpenApi.Models;
 
 namespace ProductService
 {
-  public static class Program
+  public class Program
   {
     public static void Main(string[] args)
     {
@@ -23,7 +21,7 @@ namespace ProductService
         {
           Version = "v1",
           Title = "Products",
-          Description = "API to manage products store in database."
+          Description = "API to manage products store."
         });
 
         var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

@@ -14,22 +14,22 @@ public class NameFilter(
   public object? FilterValue { get; set; } = filterValue;
 
   public IQueryable<Product> ApplyFilterForOffsetPage(
-    IQueryable<Product> query)
+	IQueryable<Product> query)
   {
-    if (FilterValue is not null)
-      query = query.Where(q => q.Name.Contains((string)FilterValue));
-    return query;
+	if (FilterValue is not null)
+	  query = query.Where(q => q.Name.Contains((string)FilterValue));
+	return query;
   }
 
   public Exp GetExpressionForAdjacentPage(Product refProduct)
   {
-    Exp expression = e => true;
+	Exp expression = e => true;
 
-    if (FilterValue is not null)
-      expression = EH.CombineAsAnd(
-        q => q.Name.Contains((string)FilterValue) &&
-             q.Id != refProduct.Id, expression);
+	if (FilterValue is not null)
+	  expression = EH.CombineAsAnd(
+		q => q.Name.Contains((string)FilterValue) &&
+			 q.Id != refProduct.Id, expression);
 
-    return expression;
+	return expression;
   }
 }

@@ -47,10 +47,10 @@ namespace ProductService.Controllers.v1
 	  return Ok(releatedChildCategories);
 	}
 
-	// PUT: api/ProductsCategories/5
+	// PATCH: api/ProductsCategories/5
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPatch("{id}")]
-	public async Task<ActionResult> PatchProductCategory(int id, ProductCategory productCategory)
+	public async Task<ActionResult> PatchProductCategory(int id, [FromBody] ProductCategory productCategory)
 	{
 	  if (id != productCategory.Id)
 	  {
@@ -60,7 +60,7 @@ namespace ProductService.Controllers.v1
 	  if (!ProductCategoryExists(id)) return NotFound("No category found with a given ID.");
 
 
-	  if (!AssignParent(productCategory)) return BadRequest("Parent category not found.");
+	  if (!AssignParent(productCategory)) return NotFound("Parent category not found.");
 	  var localCategory = await _context.ProductCategories.FindAsync(productCategory.Id);
 
 	  localCategory = productCategory;
@@ -73,11 +73,11 @@ namespace ProductService.Controllers.v1
 	// POST: api/ProductsCategories
 	// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 	[HttpPost]
-	public async Task<ActionResult<ProductCategory>> PostProductCategory(ProductCategory productCategory)
+	public async Task<ActionResult<ProductCategory>> PostProductCategory([FromBody] ProductCategory productCategory)
 	{
 	  var existingCategory = await _context.ProductCategories.Where(_ => _.CategoryName == productCategory.CategoryName).FirstOrDefaultAsync();
 
-	  if (existingCategory != null)
+	  if (existingCategory is not null)
 	  {
 		return Conflict("Category already exists.");
 	  }
