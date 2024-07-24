@@ -1,10 +1,8 @@
 using IdentityService;
-using IdentityService.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
-internal class Program {
+namespace IdentityService;
+public class Program
+{
     public static void Main(string[] args)
     {
         CreateHostBuilder(args).Build().Run();

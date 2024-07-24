@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace IdentityService.Tests.Unit.SampleData
 {
-    public class SampleUserData
+    public static class SampleUserData
     {
         public static readonly NewUser newUser = new()
         {
@@ -19,7 +19,20 @@ namespace IdentityService.Tests.Unit.SampleData
             ZIPCode = "76147",
             Country = "United States"
         };
-
+        public static readonly NewUser loginUser = new()
+        {
+            UserName = "loginUser",
+            Password = "passwd",
+            Name = "Alex",
+            Lastname = "Dodo",
+            Email = "newMail@mailing.com",
+            PhonePrefix = "48",
+            PhoneNumber = "755392031",
+            Address = "2232 Oliver Street",
+            City = "Fort Worth",
+            ZIPCode = "76147",
+            Country = "United States"
+        };
         public static readonly IdentityUser identityUser = new()
         {
             AccessFailedCount = 0,
@@ -30,7 +43,7 @@ namespace IdentityService.Tests.Unit.SampleData
             LockoutEnabled = true,
             NormalizedEmail = "ALIECECE@MAIL.COM",
             NormalizedUserName = "ALICE",
-            PasswordHash = "AQAAAAIAAYagAAAAENoY1Xiw34/MepI8PP5OOPRdbXcp/3U+2lVNhPKfhdW7HOg1kJGTPsl9usMff5p5Pw==",
+            PasswordHash = "AQAAAAIAAYagAAAAEEY+AZyfLRepA2qBmTlAki2N/NC2cCAiKHoxmOgzKpcTMz6VuIG2CdFTfjmwlI8MRw==",
             PhoneNumber = "857740321",
             SecurityStamp = "RWFQ2XIUX7FXAVSM4MM6OXJRE4DXP6N5",
             TwoFactorEnabled = false,
@@ -39,7 +52,7 @@ namespace IdentityService.Tests.Unit.SampleData
 
         public static readonly UserCredentials userCredentials = new()
         {
-            Login = "user111",
+            Login = "loginUser",
             Password = "passwd"
         };
     }

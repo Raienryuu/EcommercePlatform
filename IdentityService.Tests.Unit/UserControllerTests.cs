@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http.Json;
 using IdentityService.Controller;
 using IdentityService.Models;
 using IdentityService.Tests.Unit.Fakes;
@@ -8,81 +11,65 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Moq;
-using System.Collections.Immutable;
 
 namespace IdentityService.Tests.Unit;
 
-public class UserControllerTests
+public class UserControllerTests : IClassFixture<AppFixture>
 {
     private readonly UserManager<IdentityUser> _userManagerMock;
     private readonly UserController _cut;
     private readonly IConfiguration _configuration;
 
-    public UserControllerTests()
+    private readonly HttpClient _client;
+
+    public UserControllerTests(AppFixture app)
     {
-        var dbContext = new ApplicationDbContextFake();
-        var store = Mock.Of<IUserStore<IdentityUser>>();
-        var optionsAccessor = Mock.Of<IOptions<IdentityOptions>>();
-        var passwordHasher = Mock.Of<IPasswordHasher<IdentityUser>>();
-        var userValidators = Array.Empty<IUserValidator<IdentityUser>>();
-        var passwordValidators = Array.Empty<IPasswordValidator<IdentityUser>>();
-        var keyNormalizer = Mock.Of<ILookupNormalizer>();
-        var errors = Mock.Of<IdentityErrorDescriber>();
-        var services = Mock.Of<IServiceProvider>();
-        var logger = NullLogger<UserManager<IdentityUser>>.Instance;
+        _client = app.CreateClient();
+        // var dbContext = new ApplicationDbContextFake();
+        // var store = Mock.Of<IUserStore<IdentityUser>>();
+        // var optionsAccessor = Mock.Of<IOptions<IdentityOptions>>();
+        // var passwordHasher = Mock.Of<IPasswordHasher<IdentityUser>>();
+        // var userValidators = Array.Empty<IUserValidator<IdentityUser>>();
+        // var passwordValidators = Array.Empty<IPasswordValidator<IdentityUser>>();
+        // var keyNormalizer = Mock.Of<ILookupNormalizer>();
+        // var errors = Mock.Of<IdentityErrorDescriber>();
+        // var services = Mock.Of<IServiceProvider>();
+        // var logger = NullLogger<UserManager<IdentityUser>>.Instance;
 
-        _userManagerMock = new Mock<UserManager<IdentityUser>>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger).Object;
+        // _userManagerMock = new Mock<UserManager<IdentityUser>>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger).Object;
 
+        // _cut = new UserController(
+        //   dbContext,
+        //   _userManagerMock,
+        //   null!,
+        //   null!,
+        //   _configuration);
         _configuration = new ConfigurationBuilder()
             .AddJsonFile("appsettings.Unit.Tests.json")
             .Build();
-        _cut = new UserController(
-          dbContext,
-          _userManagerMock,
-          null!,
-          null!,
-          _configuration);
     }
+
 
     [Fact]
     public async Task RegisterNewUser_ValidRegistrationUserData_UserRegisteredSuccessfully()
     {
-        Mock.Get(_userManagerMock)
-          .Setup(x => x.CreateAsync(It.IsAny<IdentityUser>()))
-          .Returns(Task.FromResult(IdentityResult.Success));
+        var user = SampleUserData.newUser;
 
-        Mock.Get(_userManagerMock)
-          .Setup(x => x.AddToRoleAsync(
-        It.IsAny<IdentityUser>(),
-        It.IsAny<string>()))
-          .Returns(Task.FromResult(IdentityResult.Success));
-        NewUser user = SampleUserData.newUser;
+        var result = await _client.PostAsync("api/v1/user/register", JsonContent.Create(user));
 
-        var result = await _cut.RegisterNewUser(user);
-
-        Assert.IsType<OkResult>(result);
+        Assert.Equal(HttpStatusCode.OK, result.StatusCode);
     }
 
     [Fact]
     public async Task Login_ValidCredentials_BearerToken()
     {
-        Mock.Get(_userManagerMock)
-            .Setup(x => x.FindByNameAsync(It.IsAny<string>()))
-            .ReturnsAsync(await Task.FromResult(SampleUserData.identityUser));
-        Mock.Get(_userManagerMock)
-            .Setup(x => x.CheckPasswordAsync(
-        It.IsAny<IdentityUser>(),
-     It.IsAny<string>()))
-            .ReturnsAsync(await Task.FromResult(true));
-        Mock.Get(_userManagerMock)
-            .Setup(x => x.GetRolesAsync(It.IsAny<IdentityUser>()))
-            .ReturnsAsync(await Task.FromResult(new List<string>() { "User", "Admin" } as IList<string>));
+        var user = SampleUserData.loginUser;
+        await _client.PostAsync("api/v1/user/register", JsonContent.Create(user));
+        var userCredentials = SampleUserData.userCredentials;
 
-        UserCredentials userCredentials = SampleUserData.userCredentials;
+        var result = await _client.PostAsync("api/v1/user/login", JsonContent.Create(userCredentials));
 
-        var result = await _cut.Login(userCredentials);
-
-        string token = (string)((OkObjectResult)result).Value!;
+        string token = await result.Content.ReadAsStringAsync();
         Assert.Contains("Bearer", token);
     }
 }

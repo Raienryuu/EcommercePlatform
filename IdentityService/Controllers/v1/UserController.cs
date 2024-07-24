@@ -1,12 +1,11 @@
 ﻿using IdentityService.Data;
 using IdentityService.Models;
 using IdentityService.Models.Validators;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
+using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -16,7 +15,7 @@ using System.Text;
 
 namespace IdentityService.Controller
 {
-  [Route("api/v1/user")]
+    [Route("api/v1/user")]
   [ApiController]
   public class UserController : ControllerBase
   {
@@ -46,7 +45,7 @@ namespace IdentityService.Controller
     public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
     {
       PasswordHasher<IdentityUser> passwordHasher = new();
-
+      Debug.WriteLine(registrationData.Name);
       bool isValid = new NewUserValidator().Validate(registrationData);
 
       if (!isValid)
@@ -67,7 +66,9 @@ namespace IdentityService.Controller
 
       newUser.PasswordHash = passwordHasher.HashPassword(newUser, registrationData.Password);
       var createdSuccessfully = await _userManager.CreateAsync(newUser);
-
+      if (createdSuccessfully.Succeeded == false){
+        return BadRequest(createdSuccessfully.Errors);
+      }
       var addedToRole = await _userManager.AddToRoleAsync(newUser, "User");
 
       if (createdSuccessfully.Succeeded && addedToRole.Succeeded)
