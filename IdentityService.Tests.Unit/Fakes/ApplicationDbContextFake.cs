@@ -33,7 +33,5 @@ public class ApplicationDbContextFake : ApplicationDbContext
         };
         Users.Add(user);
         SaveChanges();
-        Debug.WriteLine("data filled!");
-
     }
 }
