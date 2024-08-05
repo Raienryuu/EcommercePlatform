@@ -31,7 +31,7 @@ public class Program
 	}
 
 	app.UseFastEndpoints();
-	app.UseHttpsRedirection();
+	// app.UseHttpsRedirection();
 
 
 	app.Run();

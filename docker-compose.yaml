@@ -1,4 +1,15 @@
 services:
+  cartservice:
+    build:
+      dockerfile: CartService/Dockerfile
+      context: .
+    ports:
+      - 7010:8080
+    environment:
+       - ASPNETCORE_ENVIRONMENT=Development
+       - ASPNETCORE_URLS=https://+:8080;
+       - RedisConfig__ConnectionString=valkey
+
   orderservice:
     build:
       dockerfile: OrderService/Dockerfile
@@ -11,8 +22,6 @@ services:
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - MongoDb__HostAddress=mongodb://mongodb
       - ASPNETCORE_URLS=https://+:8080;
-
-
     ports:
       - 5138:8080
     depends_on:
@@ -33,7 +42,6 @@ services:
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - ASPNETCORE_URLS=https://+:8080;
-      
     depends_on:
       - rabbitmq
       - sqlserver
