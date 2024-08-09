@@ -328,7 +328,7 @@ public class ProductControllerTests : IClassFixture<AppFixture>
   {
 	var p = new Product()
 	{
-	  Name = "Sample product",
+	  Name = "Sample product1",
 	  CategoryId = 1,
 	  Price = 15m,
 	  Description = "Do not buy",
@@ -352,7 +352,7 @@ public class ProductControllerTests : IClassFixture<AppFixture>
   {
 	Product p = new()
 	{
-	  Name = "Sample product",
+	  Name = "Sample product2",
 	  CategoryId = 1,
 	  Price = 15m,
 	  Description = "Do not buy",
@@ -377,7 +377,7 @@ public class ProductControllerTests : IClassFixture<AppFixture>
   {
 	Product p = new()
 	{
-	  Name = "Sample product",
+	  Name = "Sample product3",
 	  CategoryId = 1,
 	  Price = 15m,
 	  Description = "Do not buy",

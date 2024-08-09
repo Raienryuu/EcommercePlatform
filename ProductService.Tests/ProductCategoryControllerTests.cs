@@ -1,11 +1,6 @@
-using ProductService.Controllers.v1;
-using Microsoft.AspNetCore.Mvc;
 using ProductService.Models;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.CodeAnalysis;
 using System.Net.Http.Json;
 using System.Net;
-using System.Drawing.Printing;
 
 namespace ProductService.Tests;
 
@@ -14,18 +9,18 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   private const string ApiUrl = "http://localhost/api/";
   private readonly AppFixture _app;
   private readonly HttpClient _client;
-  private const int CategoryToDeleteId = 1;
+  private const int CategoryToDeleteId = 3;
   public ProductsCategoriesControllerTests(AppFixture app)
   {
-	_app = app;
-	_client = app.CreateClient();
+    _app = app;
+    _client = app.CreateClient();
   }
   [Fact]
   public async void GetProductCategory_ValidID_ProductCategory()
   {
-	const int CategoryId = 2;
+    const int CategoryId = 2;
 
-	var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
 
     var category = await result.Content.ReadFromJsonAsync<ProductCategory>();
     Assert.IsType<ProductCategory>(category);
@@ -36,7 +31,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   {
     const int CategoryId = 55555;
 
-	var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
 
     Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
@@ -44,23 +39,23 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   [Fact]
   public async void GetReleatedCategories_CategoryWithChildren_ReleatedCategories()
   {
-    const int CategoryId = 6;
+    const int CategoryId = 1;
 
-	var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
 
-	var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
+    var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
     Assert.True(children!.Count > 0);
   }
 
   [Fact]
   public async void GetReleatedCategories_CategoryWithNoChildren_EmptyList()
   {
-	const int CategoryId = 2;
+    const int CategoryId = 2;
 
-	var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
 
-	var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
-	Assert.Empty(children!);
+    var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
+    Assert.Empty(children!);
   }
 
   [Fact]
@@ -68,12 +63,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   {
     var newCategory = new ProductCategory()
     {
-      CategoryName = "Glass",
-      ParentCategory = new()
-      {
-        CategoryName = "Tableware",
-        Id = 2,
-      }
+      CategoryName = "Glass"
     };
     HttpRequestMessage msg = new()
     {
@@ -82,7 +72,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
       Content = JsonContent.Create(newCategory)
     };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
     Assert.Equal(HttpStatusCode.Created, result.StatusCode);
   }
@@ -92,18 +82,18 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   {
     var existingCategory = new ProductCategory()
     {
-      CategoryName = "Tableware",
+      CategoryName = "Sample category",
     };
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Post,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
-	  Content = JsonContent.Create(existingCategory)
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Post,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
+      Content = JsonContent.Create(existingCategory)
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.Conflict, result.StatusCode);
+    Assert.Equal(HttpStatusCode.Conflict, result.StatusCode);
   }
 
   [Fact]
@@ -114,16 +104,16 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
       CategoryName = "Newest Instant Noodles",
       ParentCategory = new() { Id = 555, CategoryName = "Food" }
     };
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Post,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
-	  Content = JsonContent.Create(newCategory)
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Post,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
+      Content = JsonContent.Create(newCategory)
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
+    Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
   }
 
   [Fact]
@@ -131,19 +121,20 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   {
     var updatedCategory = new ProductCategory()
     {
-      Id = 3,
-      CategoryName = "New category name",
+      Id = 2,
+      CategoryName = "TVs",
     };
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Patch,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-	  Content = JsonContent.Create(updatedCategory)
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Patch,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory)
+    };
 
-	var result = await _client.SendAsync(msg);
-
-	Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+    var result = await _client.SendAsync(msg);
+    var cont = await result.Content.ReadAsStringAsync();
+    System.Diagnostics.Debug.WriteLine(cont);
+    Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
   }
 
   [Fact]
@@ -154,16 +145,16 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
       Id = 66666,
       CategoryName = "PC Parts",
     };
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Patch,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-	  Content = JsonContent.Create(updatedCategory)
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Patch,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory)
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+    Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
 
   [Fact]
@@ -171,53 +162,53 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   {
     var updatedCategory = new ProductCategory()
     {
-      Id = 3,
-      CategoryName = "PC Parts",
+      Id = 2,
+      CategoryName = "Sample category",
       ParentCategory = new ProductCategory()
       {
-        Id = 2,
+        Id = 6666,
         CategoryName = "Electronics",
       }
     };
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Patch,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-	  Content = JsonContent.Create(updatedCategory)
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Patch,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory)
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+    Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
 
   [Fact]
   public async void DeleteProductCategory_ValidExistingCategory_NoContent204()
   {
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Delete,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryToDeleteId}").Uri,
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Delete,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryToDeleteId}").Uri,
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
+    Assert.Equal(HttpStatusCode.NoContent, result.StatusCode);
   }
 
   [Fact]
   public async void DeleteProductCategory_NonExistingCategory_NotFound404()
   {
     const int CategoryId = 55555;
-	HttpRequestMessage msg = new()
-	{
-	  Method = HttpMethod.Delete,
-	  RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryId}").Uri,
-	};
+    HttpRequestMessage msg = new()
+    {
+      Method = HttpMethod.Delete,
+      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryId}").Uri,
+    };
 
-	var result = await _client.SendAsync(msg);
+    var result = await _client.SendAsync(msg);
 
-	Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
+    Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
 
 

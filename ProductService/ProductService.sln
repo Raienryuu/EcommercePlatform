@@ -5,7 +5,7 @@ VisualStudioVersion = 17.6.33815.320
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService", "ProductService.csproj", "{E6869C25-26A5-4A12-92FD-0F848E39C63F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductServiceTests", "..\ProductService.Tests.Unit\ProductServiceTests.csproj", "{57FA8297-5D52-4A2B-BAE0-18A188FE64B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Tests", "..\ProductService.Tests\ProductService.Tests.csproj", "{57FA8297-5D52-4A2B-BAE0-18A188FE64B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
