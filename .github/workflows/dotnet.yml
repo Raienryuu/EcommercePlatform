@@ -18,5 +18,11 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Test
+    - name: Test Product
       run: dotnet test ProductService.Tests/ProductServiceTests.csproj --verbosity normal
+    - name: Test Identity
+      run: dotnet test IdentityService.Tests/IdentityService.Tests.csproj --verbosity normal
+    - name: Test Identity
+      run: dotnet test CartService.Tests/CartService.Tests.csproj --verbosity normal
+    - name: Test Identity
+      run: dotnet test OrderService.Tests/OrderService.Tests.csproj --verbosity normal
