@@ -7,7 +7,7 @@ using System.Net.Http.Json;
 using System.Net;
 using System.Drawing.Printing;
 
-namespace ProductServiceTests;
+namespace ProductService.Tests;
 
 public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
 {

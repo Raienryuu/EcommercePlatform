@@ -3,7 +3,7 @@ using IdentityService.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityService.Tests.Unit.Fakes;
+namespace IdentityService.Tests.Fakes;
 
 public class ApplicationDbContextFake : ApplicationDbContext
 {

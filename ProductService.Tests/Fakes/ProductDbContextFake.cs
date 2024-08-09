@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProductService;
 
-namespace ProductServiceTests.Fakes;
+namespace ProductService.Tests.Fakes;
 
 public class ProductDbContextFake(DbContextOptions<ProductDbContext> options) : ProductDbContext(options)
 {

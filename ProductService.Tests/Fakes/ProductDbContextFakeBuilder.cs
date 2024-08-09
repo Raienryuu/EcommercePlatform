@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ProductService;
 using ProductService.Models;
-using ProductServiceTests.Fakes;
+using ProductService.Tests.Fakes;
 using System.Diagnostics;
 using Testcontainers.MsSql;
 

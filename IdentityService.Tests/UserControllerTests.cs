@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Http.Json;
-using IdentityService.Tests.Unit.SampleData;
+using IdentityService.Tests.SampleData;
 
-namespace IdentityService.Tests.Unit;
+namespace IdentityService.Tests;
 
 public class UserControllerTests : IClassFixture<AppFixture>
 {

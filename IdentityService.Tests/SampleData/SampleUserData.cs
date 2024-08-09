@@ -1,7 +1,7 @@
 ﻿using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityService.Tests.Unit.SampleData
+namespace IdentityService.Tests.SampleData
 {
     public static class SampleUserData
     {

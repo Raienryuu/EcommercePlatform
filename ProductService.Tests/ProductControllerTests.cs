@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 
 
-namespace ProductServiceTests;
+namespace ProductService.Tests;
 
 public class ProductControllerTests : IClassFixture<AppFixture>
 {

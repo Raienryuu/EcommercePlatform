@@ -1,5 +1,5 @@
 ﻿using IdentityService.Data;
-using IdentityService.Tests.Unit.Fakes;
+using IdentityService.Tests.Fakes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +9,7 @@ using Testcontainers.MsSql;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityService.Tests.Unit
+namespace IdentityService.Tests
 {
   public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
   {

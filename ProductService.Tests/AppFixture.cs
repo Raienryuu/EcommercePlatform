@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using ProductService;
-using ProductServiceTests.Fakes;
+using ProductService.Tests.Fakes;
 using Testcontainers.MsSql;
 
-namespace ProductServiceTests;
+namespace ProductService.Tests;
 
 public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
