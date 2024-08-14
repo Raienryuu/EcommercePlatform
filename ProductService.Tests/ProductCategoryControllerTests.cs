@@ -1,22 +1,23 @@
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ProductService.Models;
-using System.Net.Http.Json;
+using ProductService.Tests.Fakes;
 using System.Net;
+using Testcontainers.MsSql;
 
 namespace ProductService.Tests;
 
-public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
+[Collection("Tests")]
+public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture(fixture)
 {
   private const string ApiUrl = "http://localhost/api/";
-  private readonly AppFixture _app;
-  private readonly HttpClient _client;
   private const int CategoryToDeleteId = 3;
-  public ProductsCategoriesControllerTests(AppFixture app)
-  {
-    _app = app;
-    _client = app.CreateClient();
-  }
+
+
   [Fact]
-  public async void GetProductCategory_ValidID_ProductCategory()
+  public async Task GetProductCategory_ValidID_ProductCategory()
   {
     const int CategoryId = 2;
 
@@ -27,7 +28,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void GetProductCategory_NonExistingID_NotFound()
+  public async Task GetProductCategory_NonExistingID_NotFound()
   {
     const int CategoryId = 55555;
 
@@ -37,7 +38,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void GetReleatedCategories_CategoryWithChildren_ReleatedCategories()
+  public async Task GetReleatedCategories_CategoryWithChildren_ReleatedCategories()
   {
     const int CategoryId = 1;
 
@@ -48,7 +49,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void GetReleatedCategories_CategoryWithNoChildren_EmptyList()
+  public async Task GetReleatedCategories_CategoryWithNoChildren_EmptyList()
   {
     const int CategoryId = 2;
 
@@ -59,7 +60,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PostProductCategory_ValidNewCategory_Created201()
+  public async Task PostProductCategory_ValidNewCategory_Created201()
   {
     var newCategory = new ProductCategory()
     {
@@ -78,7 +79,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PostProductCategory_ExistingCategory_Conflict409()
+  public async Task PostProductCategory_ExistingCategory_Conflict409()
   {
     var existingCategory = new ProductCategory()
     {
@@ -97,7 +98,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PostProductCategory_CategoryWithNonExistingParent_BadRequest400()
+  public async Task PostProductCategory_CategoryWithNonExistingParent_BadRequest400()
   {
     var newCategory = new ProductCategory()
     {
@@ -117,7 +118,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PatchProductCategory_ValidCategoryUpdate_NoContent204()
+  public async Task PatchProductCategory_ValidCategoryUpdate_NoContent204()
   {
     var updatedCategory = new ProductCategory()
     {
@@ -138,7 +139,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PatchProductCategory_NonExistingCategoryUpdate_NotFound404()
+  public async Task PatchProductCategory_NonExistingCategoryUpdate_NotFound404()
   {
     var updatedCategory = new ProductCategory()
     {
@@ -158,7 +159,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void PatchProductCategory_NonExistingParentCategoryUpdate_NotFound404()
+  public async Task PatchProductCategory_NonExistingParentCategoryUpdate_NotFound404()
   {
     var updatedCategory = new ProductCategory()
     {
@@ -183,7 +184,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void DeleteProductCategory_ValidExistingCategory_NoContent204()
+  public async Task DeleteProductCategory_ValidExistingCategory_NoContent204()
   {
     HttpRequestMessage msg = new()
     {
@@ -197,7 +198,7 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
   }
 
   [Fact]
-  public async void DeleteProductCategory_NonExistingCategory_NotFound404()
+  public async Task DeleteProductCategory_NonExistingCategory_NotFound404()
   {
     const int CategoryId = 55555;
     HttpRequestMessage msg = new()
@@ -210,9 +211,6 @@ public class ProductsCategoriesControllerTests : IClassFixture<AppFixture>
 
     Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
-
-
-
 
 
 

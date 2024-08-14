@@ -39,7 +39,6 @@ namespace ProductService
 
       builder.Services.AddDbContext<ProductDbContext>(options =>
         options.UseSqlServer(connectionString)
-          .LogTo(message => Debug.WriteLine(message))
       );
 
       builder.Services.AddLogging();

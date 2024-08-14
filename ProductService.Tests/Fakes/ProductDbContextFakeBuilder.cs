@@ -5,13 +5,14 @@ using ProductService.Tests.Fakes;
 
 public class ProductDbContextFakeBuilder
 {
-	public ProductDbContextFake _db;
+	public ProductDbContext _db;
 
 	public ProductDbContextFakeBuilder WithProducts()
 	{
+		var categoryId = _db.ProductCategories.First().Id;
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "Red Cup",
 			Description = "Fairly big cup",
 			Price = 20,
@@ -19,7 +20,7 @@ public class ProductDbContextFakeBuilder
 		});
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "White Cup",
 			Description = "Fairly big cup",
 			Price = 15,
@@ -27,7 +28,7 @@ public class ProductDbContextFakeBuilder
 		});
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "Green Cup",
 			Description = "Fairly big cup",
 			Price = 30,
@@ -35,7 +36,7 @@ public class ProductDbContextFakeBuilder
 		});
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "Blue Cup",
 			Description = "Fairly big cup",
 			Price = 25,
@@ -44,7 +45,7 @@ public class ProductDbContextFakeBuilder
 
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "Yellow Cup",
 			Description = "Fairly big cup",
 			Price = 23,
@@ -52,7 +53,7 @@ public class ProductDbContextFakeBuilder
 		});
 		_db.Products.Add(new Product
 		{
-			CategoryId = 1,
+			CategoryId = categoryId,
 			Name = "T-shirt",
 			Description = "One size fits all",
 			Price = 1500,
@@ -64,6 +65,7 @@ public class ProductDbContextFakeBuilder
 
 	public ProductDbContextFakeBuilder WithCategories()
 	{
+	  System.Diagnostics.Debug.WriteLine("adding categories dude");
 		var parent = new ProductCategory
 		{
 			CategoryName = "Sample category"
@@ -77,30 +79,39 @@ public class ProductDbContextFakeBuilder
 			// Id = 3,
 			CategoryName = "Category to delete"
 		});
-		_db.ProductCategories.Add(new ProductCategory
+
+	_db.ProductCategories.Add(new ProductCategory
 		{
 			// Id = 4,
 			CategoryName = "Child Category",
 			ParentCategory = parent
-		});
-		return this;
+	});
+	_db.SaveChanges();
+
+	return this;
 	}
 
-	public ProductDbContextFake Build()
+	public ProductDbContext Build()
 	{
 		_db.SaveChanges();
 		return _db;
 	}
-	public ProductDbContext BuildFromEmptyWithData(string connectionString)
+	//public ProductDbContext BuildFromEmptyWithData(string connectionString)
+	//{
+	//	var options = new DbContextOptionsBuilder<ProductDbContext>()
+	//		.UseSqlServer(connectionString).Options;
+	//	_db = new(options);
+	//	_db.Database.EnsureCreated();
+	//	WithCategories();
+	//	_db.SaveChanges();
+	//	WithProducts();
+	//	return Build();
+	//}
+	public void FillWithTestData(ProductDbContext db)
 	{
-		var options = new DbContextOptionsBuilder<ProductDbContext>()
-			.UseSqlServer(connectionString).Options;
-		_db = new(options);
-		_db.Database.EnsureCreated();
+		_db = db;
 		WithCategories();
-		_db.SaveChanges();
 		WithProducts();
-		return Build();
 	}
 
 }

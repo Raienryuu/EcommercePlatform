@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "ProductService.Tests": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "hotReloadEnabled": false,
+      "nativeDebugging": false,
+      "sqlDebugging": false
+    }
+  }
+}

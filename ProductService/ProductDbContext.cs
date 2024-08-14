@@ -5,7 +5,7 @@ namespace ProductService;
 
 public class ProductDbContext : DbContext
 {
-	public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options) { }
+	public ProductDbContext(DbContextOptions options) : base(options) { }
 	public DbSet<Product> Products { get; set; }
 	public DbSet<ProductCategory> ProductCategories { get; set; }
 	public DbSet<OrderReserved> OrdersReserved { get; set; }

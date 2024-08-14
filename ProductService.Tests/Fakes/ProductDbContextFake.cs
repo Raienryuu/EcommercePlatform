@@ -3,12 +3,11 @@ using ProductService.Models;
 
 namespace ProductService.Tests.Fakes;
 
-public class ProductDbContextFake(DbContextOptions<ProductDbContext> options) : ProductDbContext(options)
+public class ProductDbContextFake(DbContextOptions options) : ProductDbContext(options)
 {
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
     base.OnConfiguring(optionsBuilder);
-    optionsBuilder.EnableSensitiveDataLogging(true);
   }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
