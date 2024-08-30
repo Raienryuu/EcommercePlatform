@@ -41,10 +41,8 @@ jobs:
         working-directory: UserClient.Tests
       - name: Install angular cli
         run: npm install -g @angular/cli
-      - name: Show current location (debug)
-        run: pwd
-      - name: Print content of directory (debug)
-        run: ls -l
+      - name: Print content of UserClient directory (debug)
+        run: ls -l UserClient
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
