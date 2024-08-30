@@ -39,6 +39,9 @@ jobs:
       working-directory: UserClient.Tests
     - run: npm run build --if-present
       working-directory: UserClient.Tests
+    - name: Show current location (debug)
+      run: pwd
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
