@@ -12,8 +12,6 @@ jobs:
   runlocalclient:
     timeout-minutes: 1
     runs-on: ubuntu-latest
-    steps:
-      
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
