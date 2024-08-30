@@ -41,7 +41,8 @@ jobs:
       working-directory: UserClient.Tests
     - name: Show current location (debug)
       run: pwd
-
+    - name: Print content of directory (debug)
+      run: ls -l
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
