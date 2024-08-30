@@ -6,6 +6,15 @@ name: .NET
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - ProductService
+      - ProductService.Tests
+      - IdentityService
+      - IdentityService.Tests
+      - CartService
+      - CartService.Tests
+      - OrderService
+      - OrderService.Tests
   pull_request:
     branches: [ "main" ]
 

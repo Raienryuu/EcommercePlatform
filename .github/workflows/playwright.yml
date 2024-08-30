@@ -2,6 +2,9 @@ name: Playwright Tests
 on:
   push:
     branches: [ main, master ]
+    paths:
+      - UserClient/**
+      - UserClient.Tests/**
   pull_request:
     branches: [ main, master ]
 jobs:
