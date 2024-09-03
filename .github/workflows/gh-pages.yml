@@ -39,7 +39,7 @@ jobs:
         working-directory: UserClient.Tests
       - run: npm install -g @angular/cli
         working-directory: UserClient.Tests
-      - run: npm run build --if-present
+      - run: ng build --outputh-path dist/user-client
         working-directory: UserClient.Tests
       - name: Print content of UserClient directory (debug)
         run: ls -l UserClient
