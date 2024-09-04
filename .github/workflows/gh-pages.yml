@@ -33,18 +33,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
-      - name: Move to client tests directory
-        run: cd UserClient
       - run: npm ci
         working-directory: UserClient
       - run: npm install -g @angular/cli
         working-directory: UserClient
-      - run: ng build --output-path dist/user-client
+      - run: ng build --output-path dist/user-client --base-href '/ECommercePlatform/'
         working-directory: UserClient
-      - name: Print content of UserClient directory (debug)
-        run: ls -l UserClient
-      - name: Print content of root directory (debug)
-        run: ls -l
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
