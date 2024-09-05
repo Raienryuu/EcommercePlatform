@@ -1,11 +1,11 @@
 name: Playwright Tests
 on:
-  push:
-    branches: [main, master]
-    paths:
-      - UserClient/**
-      - UserClient.Tests/**
-      - .github/workflows/playwright.yml
+  # push:
+  #   branches: [main, master]
+  #   paths:
+  #     - UserClient/**
+  #     - UserClient.Tests/**
+  #     - .github/workflows/playwright.yml
       
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

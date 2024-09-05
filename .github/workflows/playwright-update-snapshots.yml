@@ -17,7 +17,7 @@ jobs:
         run: npx playwright install --with-deps
         working-directory: UserClient.Tests
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --update-snapshots
         working-directory: UserClient.Tests
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: always()
