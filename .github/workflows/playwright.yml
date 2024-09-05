@@ -28,8 +28,15 @@ jobs:
         run: npx playwright test
         working-directory: UserClient.Tests
       - uses: actions/upload-artifact@v4
-        if: always()
+        # if: always()
+        if: failure()
         with:
           name: playwright-report
           path: UserClient.Tests/playwright-report/
           retention-days: 30
+      # - name: Stage test results
+      #   run: git add UserClient.Tests/
+      # - uses: stefanzweifel/git-auto-commit-action@v5
+      #   with: 
+      #     commit_message: "Test results updated"
+      
