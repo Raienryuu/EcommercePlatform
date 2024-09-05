@@ -33,9 +33,3 @@ jobs:
           name: playwright-report
           path: UserClient.Tests/playwright-report/
           retention-days: 30
-
-      - uses: stefanzweifel/git-auto-commit-action@v5
-        if: always()
-        with: 
-          commit_message: "Visual regresssion tests results updated"
-      
