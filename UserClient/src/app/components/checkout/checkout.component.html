@@ -1,33 +1,31 @@
 <body>
   <span class="list">
     <div id="products">
-      <span>
-        <div class="header">Products</div>
-        <div class="content">
-          <div class="product" *ngFor="let product of products">
-            <img
-              alt="productImg"
-              height="120"
-              width="170"
-              ngSrc="assets/garnek"
-              priority="true"
-              style="float: left"
-            />
-            <span class="product-property name">
-              {{ product.name }}
-            </span>
-            <span class="product-property name">
-              {{ currencySymbol }}{{ product.price }}
-            </span>
-            <span class="product-property name">
-              {{ product.quantity }}
-            </span>
-            <span class="product-property name">
-              {{ currencySymbol }}{{ product.price * product.quantity }}
-            </span>
-          </div>
+      <div class="header">Products</div>
+      <div class="content">
+        <div class="product" *ngFor="let product of products">
+          <img
+            alt="productImg"
+            height="120"
+            width="170"
+            ngSrc="assets/garnek"
+            priority="true"
+            style="float: left"
+          />
+          <span class="product-property name">
+            {{ product.name }}
+          </span>
+          <span class="product-property name">
+            {{ currencySymbol }}{{ product.price }}
+          </span>
+          <span class="product-property name">
+            {{ product.quantity }}
+          </span>
+          <span class="product-property name">
+            {{ currencySymbol }}{{ product.price * product.quantity }}
+          </span>
         </div>
-      </span>
+      </div>
     </div>
     <div id="addresses">
       <div class="header">
@@ -111,15 +109,15 @@
             <span> {{ currencySymbol }}10 </span>
           </div>
           <div class="delivery-method">
-            <mat-radio-button value="3" >
+            <mat-radio-button value="3">
               <span class="locker-selection">
                 <img src="../../../assets/logo_DHL.jpg" width="84" />
                 DHL Parcel Box
               </span>
-              </mat-radio-button>
-                <span (click)="openDialog()" style="text-decoration: underline">
-                  Select locker
-                </span>
+            </mat-radio-button>
+            <span (click)="openDialog()" style="text-decoration: underline">
+              Select locker
+            </span>
             <span> {{ currencySymbol }}0 </span>
           </div>
           <span class="delivery-type-description">Pay on delivery</span>
