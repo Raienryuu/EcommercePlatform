@@ -6,53 +6,53 @@ using OrderService.MessageQueue.Sagas.SagaStates;
 namespace OrderService.MessageQueue.Sagas;
 public class NewOrderSaga : MassTransitStateMachine<OrderState>
 {
-  public NewOrderSaga()
-  {
-	InstanceState(x => x.CurrentState, Pending, Confirmed, ReadyToShip);
-
-	Event(() => OrderSubmitted, x =>
+	public NewOrderSaga()
 	{
-	  x.CorrelateById(context => context.Message.OrderId);
-	  x.InsertOnInitial = true;
-	  x.SetSagaFactory(context => new OrderState
-	  {
-		CorrelationId = context.Message.OrderId,
-	  });
-	});
+		InstanceState(x => x.CurrentState, Pending, Confirmed, ReadyToShip);
 
-	Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
+		Event(() => OrderSubmitted, x =>
+		{
+			x.CorrelateById(context => context.Message.OrderId);
+			x.InsertOnInitial = true;
+			x.SetSagaFactory(context => new OrderState
+			{
+				CorrelationId = context.Message.OrderId,
+			});
+		});
 
-	Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
+		Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
 
-	Initially(
-	 When(OrderSubmitted)
-	 .Then(x =>
-	 x.Saga.Products = x.Message.Products)
-	 .Publish(context => new ReserveOrderProductsCommand
-	 {
-	   OrderId = context.Saga.CorrelationId,
-	   Products = context.Saga.Products
-	 })
-	.TransitionTo(Pending));
+		Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
 
-	During(Pending,
-	When(OrderReserved)
-	.TransitionTo(Confirmed));
+		Initially(
+		 When(OrderSubmitted)
+		 .Then(x =>
+		 x.Saga.Products = x.Message.Products)
+		 .Publish(context => new ReserveOrderProductsCommand
+		 {
+			 OrderId = context.Saga.CorrelationId,
+			 Products = context.Saga.Products
+		 })
+		.TransitionTo(Pending));
 
-	During(Pending,
-	When(OrderProductsNotAvailable)
-	.Activity(x => x.OfType<OrderProductsNotAvaiableActivity>())
-	.TransitionTo(Cancelled));
-  }
+		During(Pending,
+		When(OrderReserved)
+		.TransitionTo(Confirmed));
 
-  public Event<IOrderSubmitted> OrderSubmitted { get; set; }
-  public Event<IOrderReserved> OrderReserved { get; set; }
-  public Event<IOrderProductsNotAvaiable> OrderProductsNotAvailable { get; set; }
+		During(Pending,
+		When(OrderProductsNotAvailable)
+		.Activity(x => x.OfType<OrderProductsNotAvaiableActivity>())
+		.TransitionTo(Cancelled));
+	}
 
-  public State Pending { get; set; }
-  public State Confirmed { get; set; }
-  public State ReadyToShip { get; set; }
-  public State Shipped { get; set; }
-  public State Cancelled { get; set; }
+	public Event<IOrderSubmitted> OrderSubmitted { get; set; }
+	public Event<IOrderReserved> OrderReserved { get; set; }
+	public Event<IOrderProductsNotAvaiable> OrderProductsNotAvailable { get; set; }
+
+	public State Pending { get; set; }
+	public State Confirmed { get; set; }
+	public State ReadyToShip { get; set; }
+	public State Shipped { get; set; }
+	public State Cancelled { get; set; }
 
 }

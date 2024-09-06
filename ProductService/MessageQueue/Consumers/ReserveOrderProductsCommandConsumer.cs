@@ -10,11 +10,13 @@ namespace ProductService.MessageQueue.Consumers
   {
 	private readonly ProductDbContext _db;
 	private readonly ILogger _log;
+
 	public ReserveOrderProductsCommandConsumer(ProductDbContext db, ILogger<ReserveOrderProductsCommandConsumer> log)
 	{
 	  _db = db;
 	  _log = log;
 	}
+
 	public async Task Consume(ConsumeContext<ReserveOrderProductsCommand> context)
 	{
 	  _log.LogInformation("Reserving products for order:{orderId}", context.Message.OrderId);
@@ -48,7 +50,7 @@ namespace ProductService.MessageQueue.Consumers
 	  await context.Publish<IOrderReserved>(new
 	  {
 		context.Message.OrderId,
-	  });
+	  }, context => context.CorrelationId = context.Message.OrderId);
 
 	  return;
 	}
@@ -59,7 +61,7 @@ namespace ProductService.MessageQueue.Consumers
 	  await c.Publish<IOrderProductsNotAvaiable>(new
 	  {
 		c.Message.OrderId,
-	  });
+	  }, context => context.CorrelationId = context.Message.OrderId);
 	}
   }
 }
