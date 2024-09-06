@@ -7,14 +7,15 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - ProductService
-      - ProductService.Tests
-      - IdentityService
-      - IdentityService.Tests
-      - CartService
-      - CartService.Tests
-      - OrderService
-      - OrderService.Tests
+      - ProductService/**
+      - ProductService.Tests/**
+      - IdentityService/**
+      - IdentityService.Tests/**
+      - CartService/**
+      - CartService.Tests/**
+      - OrderService/**
+      - OrderService.Tests/**
+  workflow_dispatch:
   pull_request:
     branches: [ "main" ]
 
