@@ -6,12 +6,12 @@ using System.Diagnostics;
 
 namespace ProductService.MessageQueue.Consumers
 {
-  public class ReserveOrderProductsCommandConsumer : IConsumer<ReserveOrderProductsCommand>
+  public class ReserveOrderProductsConsumer : IConsumer<ReserveOrderProductsCommand>
   {
 	private readonly ProductDbContext _db;
 	private readonly ILogger _log;
 
-	public ReserveOrderProductsCommandConsumer(ProductDbContext db, ILogger<ReserveOrderProductsCommandConsumer> log)
+	public ReserveOrderProductsConsumer(ProductDbContext db, ILogger<ReserveOrderProductsConsumer> log)
 	{
 	  _db = db;
 	  _log = log;

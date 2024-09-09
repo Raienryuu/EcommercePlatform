@@ -65,7 +65,6 @@ public class ProductDbContextFakeBuilder
 
 	public ProductDbContextFakeBuilder WithCategories()
 	{
-	  System.Diagnostics.Debug.WriteLine("adding categories dude");
 		var parent = new ProductCategory
 		{
 			CategoryName = "Sample category"

@@ -23,7 +23,7 @@ public static class MessageQueueUtils
 		//var assembly = Assembly.GetEntryAssembly(); find consumers and others from Reflection
 
 
-		o.AddConsumer<ReserveOrderProductsCommandConsumer>();
+		o.AddConsumer<ReserveOrderProductsConsumer>();
 
 		o.UsingRabbitMq((context, cfg) =>
 		{
