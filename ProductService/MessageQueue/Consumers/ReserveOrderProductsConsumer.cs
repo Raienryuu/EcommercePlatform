@@ -19,6 +19,15 @@ namespace ProductService.MessageQueue.Consumers
 
 	public async Task Consume(ConsumeContext<ReserveOrderProductsCommand> context)
 	{
+	  var potentialReservation = await _db.OrdersReserved.FindAsync(context.Message.OrderId);
+
+	  var isInDb = potentialReservation is not null;
+	  if (isInDb)
+	  {
+		_log.LogWarning("Trying to reserve order {OrderId} that already has been reserved", context.Message.OrderId);
+		return;
+	  }
+
 	  _log.LogInformation("Reserving products for order:{orderId}", context.Message.OrderId);
 
 	  var products = context.Message.Products.ToList();
@@ -30,21 +39,26 @@ namespace ProductService.MessageQueue.Consumers
 	  storageProducts.ForEach(x => x.Quantity -= products.First(p => p.ProductId == x.Id).Quantity);
 	  if (storageProducts.Any(x => x.Quantity < 0)) { await PublishProductsNotAvaiable(context); return; }
 
-	  _db.OrdersReserved.Add(new OrderReserved
+	  potentialReservation = new OrderReserved
 	  {
 		OrderId = context.Message.OrderId,
 		IsReserved = true,
 		ReserveTimestamp = DateTime.UtcNow
-	  });
+	  };
+
+	  if (isInDb)
+		_db.OrdersReserved.Update(potentialReservation);
+	  else
+		await _db.OrdersReserved.AddAsync(potentialReservation);
 
 	  try
 	  {
 		await _db.SaveChangesAsync();
 		_log.LogInformation("Products for order: {orderId} has been reserved succesfully.", context.Message.OrderId);
 	  }
-	  catch (Exception ex)
+	  catch (DbUpdateException)
 	  {
-		throw new Exception("Unable to write changes to storage.", ex);
+		throw;
 	  }
 
 	  await context.Publish<IOrderReserved>(new
