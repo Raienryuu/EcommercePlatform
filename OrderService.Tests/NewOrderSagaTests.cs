@@ -115,7 +115,7 @@ public class NewOrderSagaTests
 		var pendingSaga = await sagasHarness.Exists(orderId, (x => x.Pending));
 
 
-		await harness.Bus.Publish<IOrderProductsNotAvaiable>(new
+		await harness.Bus.Publish<IOrderProductsNotAvailable>(new
 		{
 			OrderId = orderId
 		});

@@ -4,7 +4,7 @@ using OrderService.MessageQueue.Sagas.SagaStates;
 
 namespace OrderService.MessageQueue.Sagas.Activities
 {
-  public class OrderProductsNotAvaiableActivity(OrderDbContext db) : IStateMachineActivity<OrderState, IOrderProductsNotAvaiable>
+  public class OrderProductsNotAvaiableActivity(OrderDbContext db) : IStateMachineActivity<OrderState, IOrderProductsNotAvailable>
   {
 	private readonly OrderDbContext _db = db;
 
@@ -13,23 +13,23 @@ namespace OrderService.MessageQueue.Sagas.Activities
 	  visitor.Visit(this);
 	}
 
-	public async Task Execute(BehaviorContext<OrderState, IOrderProductsNotAvaiable> context, IBehavior<OrderState, IOrderProductsNotAvaiable> next)
+	public async Task Execute(BehaviorContext<OrderState, IOrderProductsNotAvailable> context, IBehavior<OrderState, IOrderProductsNotAvailable> next)
 	{
 	  SetOrderAsCancelled(context);
 	  await next.Execute(context).ConfigureAwait(false);
 	}
 
-	public Task Faulted<TException>(BehaviorExceptionContext<OrderState, IOrderProductsNotAvaiable, TException> context, IBehavior<OrderState, IOrderProductsNotAvaiable> next) where TException : Exception
+	public Task Faulted<TException>(BehaviorExceptionContext<OrderState, IOrderProductsNotAvailable, TException> context, IBehavior<OrderState, IOrderProductsNotAvailable> next) where TException : Exception
 	{
 	  return next.Faulted(context);
 	}
 
 	public void Probe(ProbeContext context)
 	{
-	  context.CreateMessageScope(nameof(IOrderProductsNotAvaiable));
+	  context.CreateMessageScope(nameof(IOrderProductsNotAvailable));
 	}
 
-	private async void SetOrderAsCancelled(BehaviorContext<OrderState, IOrderProductsNotAvaiable> context)
+	private async void SetOrderAsCancelled(BehaviorContext<OrderState, IOrderProductsNotAvailable> context)
 	{
 	  var order = await _db.Orders.FindAsync([context.Message.OrderId], cancellationToken: CancellationToken.None);
 	  try

@@ -47,7 +47,7 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 
 	public Event<IOrderSubmitted> OrderSubmitted { get; set; }
 	public Event<IOrderReserved> OrderReserved { get; set; }
-	public Event<IOrderProductsNotAvaiable> OrderProductsNotAvailable { get; set; }
+	public Event<IOrderProductsNotAvailable> OrderProductsNotAvailable { get; set; }
 
 	public State Pending { get; set; }
 	public State Confirmed { get; set; }

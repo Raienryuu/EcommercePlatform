@@ -54,7 +54,7 @@ public class ReserveProductOrderTests(DatabaseFixture db)
     var publishedResponse = harness.Published
       .Select(x => x.Context.CorrelationId == orderId).ToList().Last();
     Assert.True(orderCommandConsumed);
-    Assert.IsAssignableFrom<IOrderProductsNotAvaiable>(publishedResponse
+    Assert.IsAssignableFrom<IOrderProductsNotAvailable>(publishedResponse
       .MessageObject);
   }
 

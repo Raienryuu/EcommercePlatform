@@ -1,5 +1,5 @@
 namespace MessageQueue.Contracts;
-public interface IOrderProductsNotAvaiable
+public interface IOrderProductsNotAvailable
 {
   Guid OrderId { get; }
 }

@@ -58,7 +58,7 @@ namespace ProductService.MessageQueue.Consumers
 	private async Task PublishProductsNotAvaiable(ConsumeContext<ReserveOrderProductsCommand> c)
 	{
 	  _log.LogInformation("Unable to reserve products for order: {orderId}", c.Message.OrderId);
-	  await c.Publish<IOrderProductsNotAvaiable>(new
+	  await c.Publish<IOrderProductsNotAvailable>(new
 	  {
 		c.Message.OrderId,
 	  }, context => context.CorrelationId = context.Message.OrderId);
