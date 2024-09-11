@@ -13,7 +13,7 @@
   <mat-sidenav-container class="catalog-main">
     <mat-sidenav class="side-drawer" mode="side" opened>
       <mat-list class="categories">
-        <a class="categories-return" href="" mat-list-item>
+        <a aria-label="go to broader category" class="categories-return" href="" mat-list-item>
           <div class="categories-back">
             <mat-icon class="categories-back-icon" inline="true"
               >arrow_upward</mat-icon
@@ -116,7 +116,7 @@
             <div class="product-name">{{ product.name }}</div>
             <div class="horizontal-flex" style="width: 100%">
               <div class="product-price">{{ product.price }} $</div>
-              <button class="product-btn" mat-flat-button>
+              <button aria-label="add to cart" class="product-btn" mat-flat-button>
                 <mat-icon class="product-btn-icon">add_shopping_cart</mat-icon>
               </button>
             </div>
@@ -132,6 +132,7 @@
             appearance="outline"
           >
             <mat-select
+              aria-label="items per page"
               [value]="pageSize"
               disableOptionCentering="false"
               hideSingleSelectionIndicator
