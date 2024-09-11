@@ -22,17 +22,18 @@
         {{ product.name }}
       </span>
       <span class="product-property quantity-wrapper">
-        <button mat-icon-button (click)="AddQuantity(product, -1)" (change)="ValidateQuantity(product)">
+        <button aria-label="decrease quantity" mat-icon-button (click)="AddQuantity(product, -1)" (change)="ValidateQuantity(product)">
           <mat-icon> chevron_left </mat-icon>
         </button>
         <mat-form-field
+          
           style="width: 60px"
           appearance="outline"
           floatLabel="always"
         >
-          <input type="number" matInput [(ngModel)]="product.quantity" />
+          <input aria-label="quantity of product" type="number" matInput [(ngModel)]="product.quantity" />
         </mat-form-field>
-        <button mat-icon-button (click)="AddQuantity(product, 1)">
+        <button aria-label="increase quantity" mat-icon-button (click)="AddQuantity(product, 1)">
           <mat-icon>chevron_right</mat-icon>
         </button>
       </span>
