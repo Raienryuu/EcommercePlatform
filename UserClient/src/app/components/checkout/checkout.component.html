@@ -41,7 +41,7 @@
           [ngClass]="{ selected: i === activeSelection }"
         >
           <mat-card-content>
-            <button mat-icon-button class="edit">
+            <button aria-label="edit address" mat-icon-button class="edit" name="edit">
               <mat-icon [ngClass]="{ selected: i === activeSelection }">
                 edit
               </mat-icon>
@@ -75,7 +75,7 @@
         </mat-card>
         <mat-card>
           <mat-card-content class="center">
-            <button mat-icon-button>
+            <button aria-label="add new address" mat-icon-button>
               <mat-icon class="add" fontIcon="add" />
             </button>
           </mat-card-content>
@@ -111,7 +111,11 @@
           <div class="delivery-method">
             <mat-radio-button value="3">
               <span class="locker-selection">
-                <img src="../../../assets/logo_DHL.jpg" width="84" />
+                <img
+                  src="../../../assets/logo_DHL.jpg"
+                  width="84"
+                  alt="dhl_logo"
+                />
                 DHL Parcel Box
               </span>
             </mat-radio-button>
