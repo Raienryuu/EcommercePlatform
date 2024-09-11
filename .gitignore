@@ -366,3 +366,4 @@ FodyWeavers.xsd
 .idea/
 
 
+UserClient.Tests/tests/accessibility_local.spec.ts
