@@ -14,10 +14,10 @@ jobs:
         run: npm ci
         working-directory: UserClient.Tests
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps tests/visual-regression.spec.ts
+        run: npx playwright install --with-deps 
         working-directory: UserClient.Tests
       - name: Run Playwright tests
-        run: npx playwright test --update-snapshots 
+        run: npx playwright test --update-snapshots tests/visual-regression.spec.ts
         working-directory: UserClient.Tests
       - uses: stefanzweifel/git-auto-commit-action@v5
         if: always()
