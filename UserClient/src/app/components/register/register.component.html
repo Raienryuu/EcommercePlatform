@@ -2,7 +2,13 @@
   <form class="registerForm" [formGroup]="registerForm">
     <mat-form-field class="inputs">
       <mat-label>Login</mat-label>
-      <input matInput type="text" formControlName="login" id="login" />
+      <input
+        autocomplete="username"
+        matInput
+        type="text"
+        formControlName="login"
+        id="login"
+      />
       <mat-error> Login is too short</mat-error>
     </mat-form-field>
 
@@ -15,6 +21,7 @@
     <mat-form-field class="inputs">
       <mat-label>Password</mat-label>
       <input
+        autocomplete="new-password"
         matInput
         type="password"
         formControlName="password"
@@ -41,6 +48,7 @@
     <mat-form-field class="inputs">
       <mat-label>Confirm password</mat-label>
       <input
+        autocomplete="new-password"
         matInput
         type="password"
         formControlName="password2"
@@ -77,13 +85,17 @@
     </mat-form-field>
 
     <mat-form-field class="inputs">
-      <input
-        matInput
-        type="tel"
-        id="phoneNumber"
-        formControlName="phoneNumber"
-        class="intl-tel-input"
-      />
+      <div>
+        <input
+          aria-label="provide phone number"
+          matInput
+          type="tel"
+          id="phoneNumber"
+          formControlName="phoneNumber"
+          class="intl-tel-input"
+        />
+
+      </div>
       <mat-error *ngIf="registerForm.get('phoneNumber')?.hasError('required')">
         Phone number is empty</mat-error
       >

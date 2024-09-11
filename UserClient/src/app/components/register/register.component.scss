@@ -42,7 +42,7 @@ div.registerPanel {
 }
 
 ::ng-deep ul {
-  transform: translateY(-100%);
+  // transform: translateY(-100%);
   top: 0;
   left: 0;
   border-radius: 4px;
@@ -55,4 +55,8 @@ div.registerPanel {
 
 button {
   width: min(300px, 70svw);
+}
+
+::ng-deep .iti__flag-container {
+  margin:  10px;
 }
