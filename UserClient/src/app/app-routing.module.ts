@@ -7,7 +7,7 @@ import { CartComponent } from './components/cart/cart.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'checkout' },
+  { path: '', pathMatch: 'full', redirectTo: 'register' },
   { path: 'products/:categoryId', component: CatalogComponent },
   { path: 'products', component: CatalogComponent },
   { path: 'login', component: LoginComponent },

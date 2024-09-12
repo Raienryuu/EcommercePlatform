@@ -1,7 +1,7 @@
 div.registerPanel {
   margin: auto;
   width: clamp(400px, 80vw, 1000px);
-  font-size: clamp(0.8em, 0.7svw, 1.4rem)!important;
+  font-size: clamp(0.8em, 0.7svw, 1.4rem) !important;
 }
 
 .registerForm {
@@ -22,6 +22,7 @@ div.registerPanel {
 .inputs {
   width: 100%;
   font-size: inherit;
+  overflow: visible;
 }
 
 .mat-select {
@@ -37,17 +38,6 @@ div.registerPanel {
   font-size: inherit;
 }
 
-:host ::ng-deep .mdc-text-field {
-  overflow: visible !important;
-}
-
-::ng-deep ul {
-  // transform: translateY(-100%);
-  top: 0;
-  left: 0;
-  border-radius: 4px;
-}
-
 .wide-grid {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -57,6 +47,7 @@ button {
   width: min(300px, 70svw);
 }
 
-::ng-deep .iti__flag-container {
-  margin:  10px;
+::ng-deep .mat-mdc-menu-panel {
+  overflow-x: clip !important;
+  overflow-y: scroll !important;
 }

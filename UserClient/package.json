@@ -23,6 +23,7 @@
     "@angular/router": "^18.0.0",
     "@stripe/stripe-js": "^3.4.1",
     "intl-tel-input": "^18.2.1",
+    "ngx-mat-intl-tel-input": "^5.0.0",
     "ngx-stripe": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

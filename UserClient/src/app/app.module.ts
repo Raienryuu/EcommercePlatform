@@ -33,9 +33,10 @@ import { CountrySelectComponent } from './country-select/country-select.componen
 import { PhoneSelectComponent } from './phone-select/phone-select.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { MatCardModule } from '@angular/material/card';
-import { MatRadioModule } from '@angular/material/radio'
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog'
+import { MatRadioModule } from '@angular/material/radio';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { NgxMatIntlTelInputComponent } from 'ngx-mat-intl-tel-input';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
@@ -76,6 +77,7 @@ import { MatDialogModule } from '@angular/material/dialog'
     MatRadioModule,
     MatCheckboxModule,
     MatDialogModule,
+    NgxMatIntlTelInputComponent,
   ],
   providers: [provideHttpClient()],
 })

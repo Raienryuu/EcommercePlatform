@@ -85,17 +85,28 @@
     </mat-form-field>
 
     <mat-form-field class="inputs">
-      <div>
-        <input
-          aria-label="provide phone number"
-          matInput
-          type="tel"
-          id="phoneNumber"
-          formControlName="phoneNumber"
-          class="intl-tel-input"
-        />
-
-      </div>
+      <!-- <input
+        aria-label="provide phone number"
+        matNativeControl
+        type="tel"
+        id="phoneNumber"
+        formControlName="phoneNumber"
+        class="intl-tel-input"
+      /> -->
+      <mat-label>Phone number</mat-label>
+      <ngx-mat-intl-tel-input
+        [preferredCountries]="[]"
+        matInput
+        name="phoneNumber"
+        id="phoneNumber"
+        describedBy="phoneInput"
+        formControlName="phoneNumber"
+        [enablePlaceholder]="true"
+        [enableSearch]="true"
+        (countryChanged)="UpdatePhonePrefix($event)"
+        [inputPlaceholder]="phonePlaceholder"
+        
+      />
       <mat-error *ngIf="registerForm.get('phoneNumber')?.hasError('required')">
         Phone number is empty</mat-error
       >

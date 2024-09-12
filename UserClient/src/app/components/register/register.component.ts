@@ -9,8 +9,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import * as intlTelInput from 'intl-tel-input';
+import intlTelInput from 'intl-tel-input';
 import { ToNewUser, registerForm } from './RegisterTemplateData';
+import { Country } from 'ngx-mat-intl-tel-input/lib/model/country.model';
 
 @Component({
   selector: 'app-register',
@@ -23,7 +24,8 @@ export class RegisterComponent {
   registerForm: FormGroup;
   passwordMatcher1: PasswordsErrorStateMatcher;
   passwordMatcher2: PasswordsErrorStateMatcher;
-  phonePrefixElement: intlTelInput.Plugin | null;
+  phonePlaceholder: string | undefined;
+
   countriesNoPhonesSorted = CountriesNoPhonesSorted;
 
   constructor(private userService: UserService) {
@@ -41,11 +43,11 @@ export class RegisterComponent {
       Country: '',
     };
     this.confirmPassword = '';
+    this.phonePlaceholder = '';
 
     this.registerForm = registerForm;
     this.passwordMatcher1 = new PasswordsErrorStateMatcher();
     this.passwordMatcher2 = new PasswordsErrorStateMatcher();
-    this.phonePrefixElement = null;
   }
 
   Register(): void {
@@ -57,25 +59,14 @@ export class RegisterComponent {
         .subscribe((result: any) => console.log(result));
     }
   }
-  ngAfterViewInit(): void {
-    const input = document.querySelector('#phoneNumber');
-    if (input) {
-      this.phonePrefixElement = window.intlTelInput(input, {
-        separateDialCode: false,
-        preferredCountries: [],
-        initialCountry: 'auto',
-      });
 
-      input.addEventListener('countrychange', () => {
-        this.UpdatePhonePrefix(this.phonePrefixElement);
-      });
-    }
-  }
-
-  UpdatePhonePrefix($event: any): void {
+  UpdatePhonePrefix($event: Country): void {
     this.registerForm
       .get('phonePrefix')
-      ?.setValue(this.phonePrefixElement?.getSelectedCountryData()?.dialCode);
+      ?.setValue($event.dialCode);
+    
+    this.phonePlaceholder = $event.placeHolder?.slice($event.dialCode.length + 1);
+
     this.registerForm.get('phoneNumber')?.updateValueAndValidity();
   }
 }

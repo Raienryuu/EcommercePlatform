@@ -6,5 +6,5 @@ import { Component } from '@angular/core';
   styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent {
-  Name: string = "UserPalaceHolder";
+  Name: string = "UsernamePlaceHolder";
 }
