@@ -1,7 +1,29 @@
 {
 	"Routes": [
 		{
-			"DownstreamPathTemplate": "/api/v1/user/{everything}",
+			"DownstreamPathTemplate": "/api/v1/user/login", // identityService login
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5156
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/user/login"
+		},
+		{
+			"DownstreamPathTemplate": "/api/v1/user/register", // identityService register
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "localhost",
+					"Port": 5156
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/user/register"
+		},
+		{
+			"DownstreamPathTemplate": "/api/v1/user/{everything}", // identityService catchAll
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{

@@ -42,6 +42,7 @@ namespace IdentityService.Controller
 	[Route("register")]
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[AllowAnonymous]
 	public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
 	{
 	  PasswordHasher<IdentityUser> passwordHasher = new();
@@ -89,6 +90,7 @@ namespace IdentityService.Controller
 	[Route("login")]
 	[ProducesResponseType(StatusCodes.Status202Accepted)]
 	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[AllowAnonymous]
 	public async Task<ActionResult> Login(
 	  [FromBody] UserCredentials credentials)
 	{
@@ -138,16 +140,14 @@ namespace IdentityService.Controller
 
 	[HttpGet]
 	[Route("test")]
-	public IActionResult AuthUser()
+	[Authorize]
+	public IActionResult AuthUser([FromHeader(Name = "UserId")] Guid userId)
 	{
-	  HttpContext.Request.Headers.TryGetValue("UserId", out var userId);
-	  Debug.WriteLine($"This method started: {userId}");
 
-	  var response = "null";
-	  if (userId.Count > 0)
-		response = "userId";
+	  Console.WriteLine($"This method started: {userId}");
 
-	  return Ok(userId[0]);
+
+	  return Ok(userId);
 	}
   }
 }
