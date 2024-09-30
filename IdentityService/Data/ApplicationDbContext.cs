@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IdentityService.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
     {
         
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
@@ -13,5 +13,5 @@ namespace IdentityService.Data
         {
         }
         public DbSet<UserAddress> Addresses { get; set; }
-    }
+  }
 }

@@ -20,15 +20,15 @@ namespace IdentityService.Controller
   public class UserController : ControllerBase
   {
 	private readonly ApplicationDbContext _db;
-	private readonly UserManager<IdentityUser> _userManager;
-	private readonly SignInManager<IdentityUser> _signinManager;
-	private readonly RoleManager<IdentityRole> _roleManager;
+	private readonly UserManager<IdentityUser<Guid>> _userManager;
+	private readonly SignInManager<IdentityUser<Guid>> _signinManager;
+	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 	private readonly IConfiguration _configuration;
 
 	public UserController(ApplicationDbContext db,
-		UserManager<IdentityUser> userManager,
-		SignInManager<IdentityUser> signInManager,
-		RoleManager<IdentityRole> roleManager,
+		UserManager<IdentityUser<Guid>> userManager,
+		SignInManager<IdentityUser<Guid>> signInManager,
+		RoleManager<IdentityRole<Guid>> roleManager,
 		IConfiguration configuration)
 	{
 	  _db = db;
@@ -45,7 +45,7 @@ namespace IdentityService.Controller
 	[AllowAnonymous]
 	public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
 	{
-	  PasswordHasher<IdentityUser> passwordHasher = new();
+	  PasswordHasher<IdentityUser<Guid>> passwordHasher = new();
 	  Debug.WriteLine(registrationData.Name);
 	  bool isValid = new NewUserValidator().Validate(registrationData);
 
@@ -54,7 +54,7 @@ namespace IdentityService.Controller
 		return BadRequest("Invalid user data");
 	  }
 
-	  IdentityUser newUser = new()
+	  IdentityUser<Guid> newUser = new()
 	  {
 		UserName = registrationData.UserName,
 		Email = registrationData.Email,
@@ -100,6 +100,7 @@ namespace IdentityService.Controller
 	  }
 
 	  var user = await _userManager.FindByNameAsync(credentials.Login);
+
 	  if (user is null)
 	  {
 		return BadRequest("{\"message\":\"Not able to get matching values from database.\"}");
@@ -118,7 +119,7 @@ namespace IdentityService.Controller
 
 	  var claims = new[]
 	  {
-		new Claim(ClaimTypes.Name, user.Id),
+		new Claim(ClaimTypes.Name, user.Id.ToString()),
 		new Claim(ClaimTypes.Email, user.Email),
 		new Claim(ClaimTypes.Role, string.Join(',',
 		  await _userManager.GetRolesAsync(user))),

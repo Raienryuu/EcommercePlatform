@@ -1,4 +1,5 @@
 ﻿using IdentityService.Data;
+using IdentityService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -26,15 +27,13 @@ public class Startup
 		options.UseSqlServer(connectionString)
 		);
 
-	if (Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development ||
-	Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Production)
-	{
-	  services.AddIdentity<IdentityUser, IdentityRole>(options =>
-		  options.SignIn.RequireConfirmedAccount = false)
-		  .AddEntityFrameworkStores<ApplicationDbContext>();
-	}
+
+	services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+		options.SignIn.RequireConfirmedAccount = false)
+		.AddEntityFrameworkStores<ApplicationDbContext>();
 	services.AddLogging(options =>
 		options.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning));
+	services.AddScoped<IAddressesService, AddressesService>();
 
 	if (Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development)
 	{
@@ -42,8 +41,8 @@ public class Startup
 	  services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 	  {
 		builder.WithOrigins("http://localhost:4200")
-					  .AllowCredentials()
-					  .AllowAnyHeader();
+			.AllowCredentials()
+			.AllowAnyHeader();
 	  }));
 	}
 

@@ -35,9 +35,9 @@ namespace IdentityService.Tests
           .EnableSensitiveDataLogging()
           .Options);
 
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
-          options.SignIn.RequireConfirmedAccount = false)
-          .AddEntityFrameworkStores<ApplicationDbContextFake>();
+        //services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+        //  options.SignIn.RequireConfirmedAccount = false)
+        //  .AddEntityFrameworkStores<ApplicationDbContextFake>();
 
         var context = services.BuildServiceProvider().GetService<ApplicationDbContext>();
         context.Database.EnsureCreated();
