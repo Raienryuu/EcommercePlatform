@@ -1,0 +1,126 @@
+{
+	"Routes": [
+		{
+			"DownstreamPathTemplate": "/api/v1/user/login", // identityService login
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "identityservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/user/login"
+		},
+		{
+			"DownstreamPathTemplate": "/api/v1/user/register", // identityService register
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "identityservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/user/register"
+		},
+		{
+			"DownstreamPathTemplate": "/api/v1/user/{everything}", // identityService catchAll
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "identityservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/user/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+			}
+		},
+		{
+			"DownstreamPathTemplate": "/api/orders/{everything}", // orderService
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "orderservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/orders/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+			}
+		},
+		{
+			"DownstreamPathTemplate": "/api/products/{everything}", // productService
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "productservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/products/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+			}
+		},
+		{
+			"DownstreamPathTemplate": "/api/productscategories/{everything}", // productService
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "productservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/productscategories/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+			}
+		},
+		{
+			"DownstreamPathTemplate": "/api/cart/{everything}", // cartService
+			"DownstreamScheme": "https",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "cartservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/cart/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+			}
+		}
+	]
+}

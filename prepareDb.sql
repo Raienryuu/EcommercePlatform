@@ -1,9 +1,10 @@
 DROP DATABASE ProductService;
 DROP DATABASE OrderService;
+DROP DATABASE [aspnet-IdentityService];
 
 CREATE DATABASE ProductService;
 CREATE DATABASE OrderService;
-
+CREATE DATABASE [aspnet-IdentityService];
 GO
 
 USE ProductService;
@@ -27,6 +28,17 @@ CREATE LOGIN orderManager
 CREATE USER orderManager FOR LOGIN orderManager;
 
 EXEC sp_addrolemember db_owner, orderManager;
+
+USE [aspnet-IdentityService];
+
+DROP USER  IF EXISTS  identityManager;  
+DROP LOGIN identityManager;
+
+CREATE LOGIN identityManager 
+    WITH PASSWORD = 'totallynotamangerpassword!@#$5';
+CREATE USER identityManager FOR LOGIN identityManager;
+
+EXEC sp_addrolemember db_owner, identityManager;
 
 
 GO

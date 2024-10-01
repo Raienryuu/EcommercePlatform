@@ -29,6 +29,32 @@ services:
       - sqlserver
       - mongodb
 
+  identityservice:
+    build:
+      dockerfile: IdentityService/Dockerfile
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Host=Server=sqlserver;
+      - ConnectionStrings__User=user=identityManager;
+      - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
+      - ASPNETCORE_URLS=https://+:8080;
+    ports:
+      - 5156:8080
+    depends_on:
+      - sqlserver
+
+  ocelotservice:
+    build:
+      dockerfile: OcelotGateway/Dockerfile
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_URLS=https://+:8080;
+    ports:
+      - 5044:8080
+
+
   productservice:
     build:
       dockerfile: ProductService/Dockerfile

@@ -1,27 +1,5 @@
 {
 	"Routes": [
-		{
-			"DownstreamPathTemplate": "/api/v1/user/login",
-			"DownstreamScheme": "http",
-			"DownstreamHostAndPorts": [
-				{
-					"Host": "localhost",
-					"Port": 5156
-				}
-			],
-			"UpstreamPathTemplate": "/api/v1/user/login"
-		},
-		{
-			"DownstreamPathTemplate": "/api/v1/user/register",
-			"DownstreamScheme": "http",
-			"DownstreamHostAndPorts": [
-				{
-					"Host": "localhost",
-					"Port": 5156
-				}
-			],
-			"UpstreamPathTemplate": "/api/v1/user/register"
-		}
 	],
 	"GlobalConfiguration": {
 		"BaseUrl": "http://localhost:5044"

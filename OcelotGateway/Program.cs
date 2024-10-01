@@ -3,6 +3,7 @@ using Ocelot.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Diagnostics;
 namespace OcelotBasic
 {
   public class Program
@@ -14,13 +15,14 @@ namespace OcelotBasic
 	  .UseContentRoot(Directory.GetCurrentDirectory())
 	  .ConfigureAppConfiguration((hostingContext, config) =>
 	  {
+		IWebHostEnvironment env = hostingContext.HostingEnvironment;
 		config
+				  .AddEnvironmentVariables()
 				  .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
 				  .AddJsonFile("appsettings.json", true, true)
-				  .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
+				  .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true, false)
 				  .AddJsonFile("ocelot.json")
-				  .AddJsonFile("ocelot.generic.json")
-				  .AddEnvironmentVariables();
+				  .AddJsonFile($"ocelot.{env.EnvironmentName}.json", false, true);
 	  })
 	  .ConfigureServices((context, s) =>
 	  {
@@ -29,6 +31,8 @@ namespace OcelotBasic
 	  })
 	  .ConfigureLogging((hostingContext, logging) =>
 	  {
+		logging.SetMinimumLevel(LogLevel.Trace);
+		logging.AddConsole();
 	  })
 	  .Configure(app =>
 	  {
