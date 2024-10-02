@@ -2,7 +2,7 @@
 	"Routes": [
 		{
 			"DownstreamPathTemplate": "/api/v1/user/login", // identityService login
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "identityservice",
@@ -13,7 +13,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/v1/user/register", // identityService register
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "identityservice",
@@ -24,7 +24,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/v1/user/{everything}", // identityService catchAll
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "identityservice",
@@ -44,7 +44,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/orders/{everything}", // orderService
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "orderservice",
@@ -64,7 +64,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/products/{everything}", // productService
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
@@ -84,7 +84,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/productscategories/{everything}", // productService
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
@@ -104,7 +104,7 @@
 		},
 		{
 			"DownstreamPathTemplate": "/api/cart/{everything}", // cartService
-			"DownstreamScheme": "https",
+			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "cartservice",

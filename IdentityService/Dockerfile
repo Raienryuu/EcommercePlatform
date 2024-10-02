@@ -8,8 +8,10 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["IdentityService/IdentityService.csproj", "."]
+
 RUN dotnet restore "IdentityService.csproj"
 COPY ["IdentityService", "IdentityService"]
+
 WORKDIR "/src/."
 RUN dotnet build "IdentityService/IdentityService.csproj" -c Release -o /app/build
 

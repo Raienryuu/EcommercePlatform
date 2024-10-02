@@ -19,13 +19,12 @@ RUN dotnet build "OcelotGateway/OcelotGateway.csproj" -c $BUILD_CONFIGURATION -o
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "OcelotGateway/OcelotGateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-RUN dotnet dev-certs https
+RUN #dotnet dev-certs https
 
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/ /root/.dotnet/corefx/cryptography/x509stores/my/
+#COPY --from=publish /root/.dotnet/corefx/cryptography/x509stores/my/ /root/.dotnet/corefx/cryptography/x509stores/my/
 ENTRYPOINT ["dotnet", "OcelotGateway.dll"]
-#ENTRYPOINT ["tail"]
-#CMD ["-f","/dev/null"]
+
