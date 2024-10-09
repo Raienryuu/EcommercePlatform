@@ -1,0 +1,48 @@
+@import "src/color-palette.scss";
+
+.header {
+  margin-top: 5svh;
+  background-color: $primary-200;
+  // padding: 1svw;
+  padding: calc(1vh + 1vw);
+  max-width: min(700px, 70vw);
+  min-height: 48px;
+  height: 8vh;
+  border-radius: 10px 10px 0 0;
+  font-weight: 700;
+  font-size: 1.5em;
+  color: $gray-600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  max-width: min(700px, 70vw);
+  background-color: $primary-100;
+  padding: calc(1vh + 1vw);
+  border-radius: 0 0 10px 10px;
+}
+
+form.layout {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2svh 2svw;
+  padding: 3svw 3svw 6rem;
+}
+
+mat-form-field.full-width {
+  width: 100%;
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+
+
+.cta-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.cta-buttons button {
+  margin: 1vmin;
+}

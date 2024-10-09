@@ -1,17 +1,23 @@
-<mat-form-field class="inputs">
+<mat-form-field>
   <mat-label>Country</mat-label>
-  <mat-select id="country">
-    <mat-option
-      *ngFor="let country of countriesNoPhonesSorted"
-      value="{{ country }}"
-      >{{ country }}</mat-option
-    >
+  <mat-select
+    id="country"
+    (selectionChange)="selectionChanged($event)"
+    [required]="required"
+    [formControl]="countryControl"
+    [errorStateMatcher]="matcher"
+  >
+    @for (countryItem of countriesNoPhonesSorted; track countryItem){
+    <mat-option value="{{ countryItem }}">{{ countryItem }}</mat-option>
+    }
   </mat-select>
-  <mat-error> Please choose country</mat-error>
+  @if (validate){
+  <mat-error>{{ errorMessage }}</mat-error>
+  }
 </mat-form-field>
 
 <style>
   mat-form-field {
-    margin: 5px 20px;
+    width: 100%;
   }
 </style>

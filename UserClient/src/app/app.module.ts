@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { forwardRef, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './core/app.component';
@@ -7,7 +7,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { CatalogComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,16 +27,14 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { CartComponent } from './components/cart/cart.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { CheckoutComponent } from './components/checkout/checkout.component';
-import { CheckoutComponent1 } from './components/checkout/checkout.component';
-import { CheckoutComponent2 } from './components/checkout/checkout.component';
 import { CountrySelectComponent } from './country-select/country-select.component';
-import { PhoneSelectComponent } from './phone-select/phone-select.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxMatIntlTelInputComponent } from 'ngx-mat-intl-tel-input';
 import { MatDialogModule } from '@angular/material/dialog';
+import { AddressEditorComponent } from './components/address-editor/address-editor.component';
 
 @NgModule({
   declarations: [
@@ -48,10 +46,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     FooterComponent,
     CartComponent,
     CheckoutComponent,
-    CheckoutComponent1,
-    CheckoutComponent2,
-    CountrySelectComponent,
-    PhoneSelectComponent,
+    AddressEditorComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -78,6 +73,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatCheckboxModule,
     MatDialogModule,
     NgxMatIntlTelInputComponent,
+    CountrySelectComponent,
   ],
   providers: [provideHttpClient()],
 })

@@ -47,7 +47,3 @@ button {
   width: min(300px, 70svw);
 }
 
-::ng-deep .mat-mdc-menu-panel {
-  overflow-x: clip !important;
-  overflow-y: scroll !important;
-}

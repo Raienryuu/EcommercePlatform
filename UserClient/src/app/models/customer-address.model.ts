@@ -9,3 +9,13 @@ export interface CustomerAddress {
   ZIPCode: string;
   Country: string;
 }
+
+export interface CustomerAddressV2 {
+  FullName: string;
+  Email: string;
+  PhoneNumber: string;
+  Address: string;
+  City: string;
+  ZIPCode: string;
+  Country: string;
+}

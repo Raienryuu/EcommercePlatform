@@ -37,113 +37,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 @Component({
-  selector: 'app-checkout1',
-  templateUrl: './part1.html',
-  styleUrls: ['./checkout.component.scss'],
-})
-export class CheckoutComponent1 {
-  phonePrefixElement: intlTelInput.Plugin | null = null;
-  phone: string = null!;
-
-  @Input()
-  product: Product = null!;
-  readyToPopulate: boolean = false;
-
-  countriesNoPhonesSorted: string[] = CountriesNoPhonesSorted;
-
-  selectedCountry: string = null!;
-  phoneNumber: string = null!;
-
-  UpdateCountry(country: string) {
-    console.info('Got new country value: ' + country);
-  }
-}
-
-@Component({
-  selector: 'app-checkout2',
-  templateUrl: './part2.html',
-  styleUrls: ['./checkout.component.scss'],
-})
-export class CheckoutComponent2 {
-  stripe = this.factoryService.create(environment.stripeApiKey);
-  YOUR_CLIENT_SECRET: string | null =
-    'pi_3POFD5C7yfdpfbDs1K4y1MF5_secret_mbpshCsI0kRJtroB8J1zNQXNm';
-  paymentIntent: any;
-
-  constructor(private factoryService: StripeFactoryService) {}
-  elementsOptions: StripeElementsOptions = {
-    locale: 'en',
-    clientSecret: this.YOUR_CLIENT_SECRET!,
-    appearance: {
-      theme: 'stripe',
-      variables: {
-        colorBackground: '#F0F2FF',
-        colorText: '#000000de',
-        fontLineHeight: '50px',
-
-        // fontSizeBase: '20px'
-      },
-      labels: 'floating',
-      rules: {
-        '.Input': {
-          lineHeight: '1.5rem',
-        },
-      },
-    },
-  };
-  paymentElementOptions: StripePaymentElementOptions = {
-    layout: {
-      type: 'tabs',
-      defaultCollapsed: false,
-    },
-  };
-
-  @ViewChild(StripePaymentElementComponent)
-  paymentElement!: StripePaymentElementComponent;
-
-  private readonly fb = inject(UntypedFormBuilder);
-
-  paymentElementForm = this.fb.group({
-    email: ['support@ngx-stripe.dev', [Validators.required, Validators.email]],
-  });
-
-  paying = signal(false);
-  pay() {
-    if (this.paying() || this.paymentElementForm.invalid) return;
-    this.paying.set(true);
-
-    const { email } = this.paymentElementForm.getRawValue();
-
-    this.stripe
-      .confirmPayment({
-        elements: this.paymentElement.elements,
-        confirmParams: {
-          payment_method_data: {
-            billing_details: {
-              email: email as string,
-            },
-          },
-        },
-        redirect: 'if_required',
-      })
-      .subscribe((result) => {
-        this.paying.set(false);
-        console.log('Result', result);
-        if (result.error) {
-          // Show error to your customer (e.g., insufficient funds)
-          alert({ success: false, error: result.error.message });
-        } else {
-          // The payment has been processed!
-          if (result.paymentIntent.status === 'succeeded') {
-            // Show a success message to your customer
-            alert({ success: true });
-          }
-        }
-      });
-  }
-}
-
-@Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
@@ -179,12 +72,6 @@ export class CheckoutComponent {
     },
   ];
   activeSelection: Number = this.customerAddresses.length - 1;
-
-  @ViewChild(CheckoutComponent1)
-  deliveryForm!: CheckoutComponent1;
-
-  @ViewChild(CheckoutComponent2)
-  paymentSelection!: CheckoutComponent2;
 
   constructor(
     private factoryService: StripeFactoryService,
@@ -289,6 +176,8 @@ export class LockerSelectorDialog {
     return null!;
   }
 }
+
+
 interface DhlAddress {
   sap: Number;
   name: String;

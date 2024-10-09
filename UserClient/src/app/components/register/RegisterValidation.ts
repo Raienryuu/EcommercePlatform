@@ -33,7 +33,7 @@ export const phonePrefixValidator: ValidatorFn = (
   return prefix && prefix.valid ? null : { phonePrefix: true };
 };
 
-export const registerForm = new FormGroup(
+export const RegisterFormWithValidators = new FormGroup(
   {
     login: new FormControl('', [Validators.required, Validators.minLength(3)]),
     email: new FormControl('', [Validators.required, Validators.email]),
@@ -56,7 +56,10 @@ export const registerForm = new FormGroup(
     address: new FormControl('', Validators.required),
     city: new FormControl('', Validators.required),
     zipCode: new FormControl('', Validators.required),
-    country: new FormControl('', Validators.required),
+    country: new FormControl(
+      { value: '', disabled: false },
+      Validators.required
+    ),
   },
   { validators: confirmPasswordValidator }
 );
