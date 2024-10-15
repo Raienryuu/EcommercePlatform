@@ -48,11 +48,12 @@ export const RegisterFormWithValidators = new FormGroup(
     name: new FormControl('', Validators.required),
     lastname: new FormControl('', Validators.required),
     phonePrefix: new FormControl('', Validators.required),
-    phoneNumber: new FormControl('', [
-      phonePrefixValidator,
+    phoneNumber: new FormControl('', Validators.compose([
+      Validators.minLength(1),
       Validators.required,
       Validators.pattern('^[0-9 ()+-]*$'),
-    ]),
+      phonePrefixValidator,
+    ])),
     address: new FormControl('', Validators.required),
     city: new FormControl('', Validators.required),
     zipCode: new FormControl('', Validators.required),
@@ -65,7 +66,7 @@ export const RegisterFormWithValidators = new FormGroup(
 );
 
 export function ToNewUser(form: FormGroup): NewUser {
-  let user: NewUser = {
+  const user: NewUser = {
     UserName: form.value.login,
     Password: form.value.password,
     Name: form.value.name,

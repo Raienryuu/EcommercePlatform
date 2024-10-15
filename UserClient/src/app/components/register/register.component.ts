@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { NewUser } from 'src/app/models/user-registration-form';
-import { CountriesNoPhonesSorted } from './RegisterRawData';
 import { UserService } from 'src/app/services/userService/user.service';
 import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -20,6 +19,7 @@ export class RegisterComponent {
   passwordMatcher2: PasswordsErrorStateMatcher;
   phonePlaceholder: string | undefined;
   countryControlReference: FormControl;
+  phoneControlReference: FormControl;
 
   constructor(private userService: UserService) {
     this.user = {
@@ -36,13 +36,18 @@ export class RegisterComponent {
       Country: '',
     };
     this.confirmPassword = '';
-    
-    // afghanistan is being selected as default, 
-    this.phonePlaceholder = '701234567'; 
+
+    // afghanistan is being selected as default,
     // with this value provided it mitigates value changed after check error
-    
+    this.phonePlaceholder = '701234567';
+
     this.registerForm = RegisterFormWithValidators;
-    this.countryControlReference = this.registerForm.controls['country'] as FormControl;
+    this.countryControlReference = this.registerForm.controls[
+      'country'
+    ] as FormControl;
+    this.phoneControlReference = this.registerForm.controls[
+      'phoneNumber'
+    ] as FormControl;
     this.passwordMatcher1 = new PasswordsErrorStateMatcher();
     this.passwordMatcher2 = new PasswordsErrorStateMatcher();
   }
@@ -50,24 +55,29 @@ export class RegisterComponent {
   Register(): void {
     this.user = ToNewUser(this.registerForm);
     console.log(this.user);
-    console.warn(this.registerForm.get('country'));
+    console.log(this.registerForm.controls['phoneNumber']);
+    this.registerForm.controls['country'].markAsDirty();
+    this.registerForm.controls['phoneNumber'].markAsTouched();
+    this.registerForm.controls['phoneNumber'].markAsDirty();
+
     if (this.registerForm.valid) {
       this.user = ToNewUser(this.registerForm);
 
       this.userService
         .Register(this.user)
-        .subscribe((result: any) => console.log(result));
+        .subscribe((result: unknown) => console.log(result));
     }
   }
 
   UpdatePhonePrefix($event: Country): void {
     this.phonePlaceholder = $event.placeHolder?.slice(
-      $event.dialCode.length + 1
+      $event.dialCode.length + 1,
     );
     this.registerForm.get('phonePrefix')?.setValue($event.dialCode);
-    this.registerForm.get('phoneNumber')?.updateValueAndValidity();
+    this.registerForm
+      .get('phonePrefix')
+      ?.updateValueAndValidity({ emitEvent: false });
   }
-
 }
 
 class PasswordsErrorStateMatcher implements ErrorStateMatcher {

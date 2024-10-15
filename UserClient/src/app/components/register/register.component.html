@@ -85,32 +85,24 @@
     </mat-form-field>
 
     <mat-form-field class="inputs">
-      <mat-label>Phone number*</mat-label>
+      <mat-label>Phone number</mat-label>
       <ngx-mat-intl-tel-input
         aria-label="provide phone number"
         matInput
         name="phoneNumber"
         id="phoneNumber"
         describedBy="phoneInput"
-        formControlName="phoneNumber"
+        [required]="true"
+        [formControlName]="'phoneNumber'"
         [enablePlaceholder]="true"
         [enableSearch]="true"
         (countryChanged)="UpdatePhonePrefix($event)"
-        inputPlaceholder="{{phonePlaceholder}}"
-        [cssClass]="'phonePicker'"
-        #phone
+        inputPlaceholder="{{ phonePlaceholder }}"
+        [minlength]="1"
       />
-      <mat-error *ngIf="registerForm.get('phoneNumber')?.hasError('required')">
-        Phone number is empty</mat-error
-      >
-      <mat-error
-        *ngIf="registerForm.get('phoneNumber')?.hasError('phonePrefix')"
-      >
-        Please choose prefix</mat-error
-      >
       <mat-error
         *ngIf="
-          !registerForm.get('phoneNumber')?.hasError('required') &&
+          registerForm.get('phoneNumber')?.hasError('required') ||
           !registerForm.get('phoneNumber')?.hasError('phonePrefix')
         "
       >
