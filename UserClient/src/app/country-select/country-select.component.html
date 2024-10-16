@@ -7,12 +7,12 @@
     [formControl]="countryControl"
     [errorStateMatcher]="matcher"
   >
-    @for (countryItem of countriesNoPhonesSorted; track countryItem){
-    <mat-option value="{{ countryItem }}">{{ countryItem }}</mat-option>
+    @for (countryItem of countriesNoPhonesSorted; track countryItem) {
+      <mat-option value="{{ countryItem }}">{{ countryItem }}</mat-option>
     }
   </mat-select>
-  @if (validate){
-  <mat-error>{{ errorMessage }}</mat-error>
+  @if (validate) {
+    <mat-error>{{ errorMessage }}</mat-error>
   }
 </mat-form-field>
 

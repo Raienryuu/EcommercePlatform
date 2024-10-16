@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  forwardRef,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CountriesNoPhonesSorted } from '../components/register/RegisterRawData';
 import {
   MatError,
@@ -14,16 +8,7 @@ import {
   MatSelect,
   MatSelectChange,
 } from '@angular/material/select';
-import {
-  ControlValueAccessor,
-  FormControl,
-  FormGroup,
-  FormGroupDirective,
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  NgForm,
-  Validators,
-} from '@angular/forms';
+import { ControlValueAccessor, FormControl, FormsModule } from '@angular/forms';
 import { SuffixTransform } from '../pipes/phone-suffix-transform.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -45,12 +30,11 @@ import { ErrorStateMatcher } from '@angular/material/core';
   ],
 })
 export class CountrySelectComponent implements ControlValueAccessor {
-
   /**
    *
    */
   constructor() {
-    if (this.validate === false){
+    if (this.validate === false) {
       this.countryControl = new FormControl();
     }
   }
@@ -60,37 +44,35 @@ export class CountrySelectComponent implements ControlValueAccessor {
   matcher = new CountryMatcher();
 
   @Input() country: string = null!;
-  @Input() errorMessage: string = 'Please choose country';
-  @Input() isDisabled: boolean = false;
-  @Input() required: boolean = false;
-  @Input() validate: boolean = false;
+  @Input() errorMessage = 'Please choose country';
+  @Input() isDisabled = false;
+  @Input() required = false;
+  @Input() validate = false;
 
   @Output()
   countryChange = new EventEmitter<string>();
-  @Output()
-  formGroupChange = new EventEmitter<string>();
+
 
   @Input()
-  countryControl : FormControl<any> = null!;
+  countryControl: FormControl<unknown> = null!;
 
   selectionChanged(event: MatSelectChange) {
     this._onChange(event.value);
     this.countryChange.emit(event.value);
-    
   }
 
-  _onChange: (_: any) => void = (_) => true;
-  _onTouched: any;
+  _onChange: (_: unknown) => void = () => true;
+  _onTouched: unknown;
 
-  writeValue(obj: any): void {
+  writeValue(obj: unknown): void {
     this.country = obj as string;
   }
 
-  registerOnChange(fn: (_: any) => void): void {
+  registerOnChange(fn: (_: unknown) => void): void {
     this._onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: unknown): void {
     this._onTouched = fn;
   }
 
@@ -100,10 +82,7 @@ export class CountrySelectComponent implements ControlValueAccessor {
 }
 
 export class CountryMatcher implements ErrorStateMatcher {
-  isErrorState(
-    control: FormControl | null
-  ): boolean {
-    console.info(control?.value);
+  isErrorState(control: FormControl | null): boolean {
     return !!(
       (control?.value === undefined || control?.value === '') &&
       (control?.touched || control?.dirty)
