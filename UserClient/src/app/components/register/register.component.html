@@ -91,23 +91,16 @@
         matInput
         name="phoneNumber"
         id="phoneNumber"
-        describedBy="phoneInput"
+        describedBy="phoneNumber"
         [required]="true"
         [formControlName]="'phoneNumber'"
         [enablePlaceholder]="true"
         [enableSearch]="true"
         (countryChanged)="UpdatePhonePrefix($event)"
         inputPlaceholder="{{ phonePlaceholder }}"
-        [minlength]="1"
+        #phone
       />
-      <mat-error
-        *ngIf="
-          registerForm.get('phoneNumber')?.hasError('required') ||
-          !registerForm.get('phoneNumber')?.hasError('phonePrefix')
-        "
-      >
-        Phone number is invalid</mat-error
-      >
+      <mat-error> Phone number is invalid </mat-error>
     </mat-form-field>
 
     <mat-form-field class="inputs">

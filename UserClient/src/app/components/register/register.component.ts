@@ -1,10 +1,15 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  NgZone,
+  viewChild,
+} from '@angular/core';
 import { NewUser } from 'src/app/models/user-registration-form';
 import { UserService } from 'src/app/services/userService/user.service';
 import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { RegisterFormWithValidators, ToNewUser } from './RegisterValidation';
 import { Country } from 'ngx-mat-intl-tel-input/lib/model/country.model';
+import { NgxMatIntlTelInputComponent } from 'ngx-mat-intl-tel-input';
 
 @Component({
   selector: 'app-register',
@@ -21,7 +26,12 @@ export class RegisterComponent {
   countryControlReference: FormControl;
   phoneControlReference: FormControl;
 
-  constructor(private userService: UserService) {
+  phoneInput = viewChild<NgxMatIntlTelInputComponent>('phone');
+
+  constructor(
+    private userService: UserService,
+    private ngZone: NgZone,
+  ) {
     this.user = {
       UserName: '',
       Password: '',
@@ -48,17 +58,27 @@ export class RegisterComponent {
     this.phoneControlReference = this.registerForm.controls[
       'phoneNumber'
     ] as FormControl;
+    this.phoneControlReference.markAsDirty({
+      emitEvent: true,
+      onlySelf: false,
+    });
+
     this.passwordMatcher1 = new PasswordsErrorStateMatcher();
     this.passwordMatcher2 = new PasswordsErrorStateMatcher();
   }
 
   Register(): void {
+    if (this.registerForm.controls['phoneNumber'].invalid) { // forcing ngx-mat-intl to update view
+      this.phoneInput()?.setDisabledState(false);
+    }
+    this.registerForm.markAllAsTouched();
+    
     this.user = ToNewUser(this.registerForm);
+
     console.log(this.user);
-    console.log(this.registerForm.controls['phoneNumber']);
-    this.registerForm.controls['country'].markAsDirty();
-    this.registerForm.controls['phoneNumber'].markAsTouched();
-    this.registerForm.controls['phoneNumber'].markAsDirty();
+    this.registerForm.controls['phoneNumber'].setErrors({
+      RequiredValidator: true,
+    });
 
     if (this.registerForm.valid) {
       this.user = ToNewUser(this.registerForm);
