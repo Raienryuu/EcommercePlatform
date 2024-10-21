@@ -1,4 +1,4 @@
-import { forwardRef, NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './core/app.component';
@@ -7,7 +7,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { CatalogComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
-import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { NgxMatIntlTelInputComponent } from 'ngx-mat-intl-tel-input';
+import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
 
@@ -72,7 +72,7 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
     MatRadioModule,
     MatCheckboxModule,
     MatDialogModule,
-    NgxMatIntlTelInputComponent,
+    NgxMatInputTelComponent,
     CountrySelectComponent,
   ],
   providers: [provideHttpClient()],

@@ -8,7 +8,7 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'register' },
+  { path: '', pathMatch: 'full', redirectTo: 'address' },
   { path: 'products/:categoryId', component: CatalogComponent },
   { path: 'products', component: CatalogComponent },
   { path: 'login', component: LoginComponent },

@@ -1,15 +1,11 @@
-import {
-  Component,
-  NgZone,
-  viewChild,
-} from '@angular/core';
+import { Component, NgZone, viewChild } from '@angular/core';
 import { NewUser } from 'src/app/models/user-registration-form';
 import { UserService } from 'src/app/services/userService/user.service';
 import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { RegisterFormWithValidators, ToNewUser } from './RegisterValidation';
-import { Country } from 'ngx-mat-intl-tel-input/lib/model/country.model';
-import { NgxMatIntlTelInputComponent } from 'ngx-mat-intl-tel-input';
+import { Country } from 'ngx-mat-input-tel/lib/model/country.model';
+import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 
 @Component({
   selector: 'app-register',
@@ -22,11 +18,11 @@ export class RegisterComponent {
   registerForm: FormGroup;
   passwordMatcher1: PasswordsErrorStateMatcher;
   passwordMatcher2: PasswordsErrorStateMatcher;
-  phonePlaceholder: string | undefined;
+  phonePlaceholder: string;
   countryControlReference: FormControl;
   phoneControlReference: FormControl;
 
-  phoneInput = viewChild<NgxMatIntlTelInputComponent>('phone');
+  phoneInput = viewChild<NgxMatInputTelComponent>('phone');
 
   constructor(
     private userService: UserService,
@@ -68,11 +64,12 @@ export class RegisterComponent {
   }
 
   Register(): void {
-    if (this.registerForm.controls['phoneNumber'].invalid) { // forcing ngx-mat-intl to update view
+    if (this.registerForm.controls['phoneNumber'].invalid) {
+      // forcing ngx-mat-intl to update view
       this.phoneInput()?.setDisabledState(false);
     }
     this.registerForm.markAllAsTouched();
-    
+
     this.user = ToNewUser(this.registerForm);
 
     console.log(this.user);
@@ -92,7 +89,7 @@ export class RegisterComponent {
   UpdatePhonePrefix($event: Country): void {
     this.phonePlaceholder = $event.placeHolder?.slice(
       $event.dialCode.length + 1,
-    );
+    ) as string;
     this.registerForm.get('phonePrefix')?.setValue($event.dialCode);
     this.registerForm
       .get('phonePrefix')

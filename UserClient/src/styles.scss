@@ -170,20 +170,20 @@ mat-checkbox {
   --mat-radio-checked-ripple-color: #{$primary-500};
 }
 
-.ngx-mat-tel-input-mat-menu-panel > div {
-  button.country-list-button {
-    padding: 0 14px !important;
-  }
-}
+// .ngx-mat-tel-input-mat-menu-panel > div {
+//   button.country-list-button {
+//     padding: 0 14px !important;
+//   }
+// }
 
-button.country-selector {
-  top: 15px !important;
-}
-.cdk-overlay-pane:has(> .ngx-mat-tel-input-mat-menu-panel) {
-  top: 10% !important;
-  max-height: 80% !important;
-}
+// button.country-selector {
+//   top: 15px !important;
+// }
+// .cdk-overlay-pane:has(> .ngx-mat-tel-input-mat-menu-panel) {
+//   top: 10% !important;
+//   max-height: 80% !important;
+// }
 
-input.country-search {
-  width: calc(100% - 40px) !important;
-}
+// input.country-search {
+//   width: calc(100% - 40px) !important;
+// }
