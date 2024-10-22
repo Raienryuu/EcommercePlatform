@@ -13,7 +13,6 @@ import {
   FormControl,
   FormsModule,
 } from '@angular/forms';
-import { SuffixTransform } from '../pipes/phone-suffix-transform.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 
@@ -28,7 +27,6 @@ import { ErrorStateMatcher } from '@angular/material/core';
     MatOption,
     MatSelect,
     FormsModule,
-    SuffixTransform,
     FormsModule,
     ReactiveFormsModule,
   ],
