@@ -1,6 +1,6 @@
-import { Component, forwardRef } from '@angular/core';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
-import { CustomerAddressV2 } from 'src/app/models/customer-address.model';
+import { Component } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { CustomerAddress } from 'src/app/models/customer-address.model';
 
 @Component({
   selector: 'app-address-editor',
@@ -10,17 +10,32 @@ import { CustomerAddressV2 } from 'src/app/models/customer-address.model';
 
 })
 export class AddressEditorComponent {
-  address: CustomerAddressV2 = {
+  address: CustomerAddress = {
+    FullName: '',
+    Email: '',
+    PhoneNumber: '',
     Address: '',
     City: '',
     Country: '',
-    Email: '',
-    FullName: '',
-    PhoneNumber: '',
     ZIPCode: '',
   };
 
+  addressForm = new FormGroup({
+    name: new FormControl('', Validators.required),
+    email: new FormControl('', [Validators.required, Validators.email]),
+    phoneNumber: new FormControl('', Validators.compose([
+      Validators.required,
+      Validators.pattern('^[0-9 ()+-]*$'),
+    ])),
+    address: new FormControl('', Validators.required),
+    city: new FormControl('', Validators.required),
+    country: new FormControl('', Validators.required),
+    zipcode: new FormControl('', Validators.required),
+  })
+
   printAddress() {
     console.log(this.address);
+    console.log(this.addressForm.controls['country']);
+    
   }
 }

@@ -1,4 +1,4 @@
-import { Component, NgZone, viewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { NewUser } from 'src/app/models/user-registration-form';
 import { UserService } from 'src/app/services/userService/user.service';
 import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
@@ -24,22 +24,19 @@ export class RegisterComponent {
 
   phoneInput = viewChild<NgxMatInputTelComponent>('phone');
 
-  constructor(
-    private userService: UserService,
-    private ngZone: NgZone,
-  ) {
+  constructor(private userService: UserService) {
     this.user = {
       UserName: '',
       Password: '',
-      Name: '',
-      Lastname: '',
-      Email: '',
-      PhonePrefix: '',
-      PhoneNumber: '',
-      Address: '',
-      City: '',
-      ZIPCode: '',
-      Country: '',
+      Address: {
+        FullName: '',
+        Email: '',
+        PhoneNumber: '',
+        Address: '',
+        City: '',
+        ZIPCode: '',
+        Country: '',
+      },
     };
     this.confirmPassword = '';
 
@@ -69,13 +66,6 @@ export class RegisterComponent {
       this.phoneInput()?.setDisabledState(false);
     }
     this.registerForm.markAllAsTouched();
-
-    this.user = ToNewUser(this.registerForm);
-
-    console.log(this.user);
-    this.registerForm.controls['phoneNumber'].setErrors({
-      RequiredValidator: true,
-    });
 
     if (this.registerForm.valid) {
       this.user = ToNewUser(this.registerForm);

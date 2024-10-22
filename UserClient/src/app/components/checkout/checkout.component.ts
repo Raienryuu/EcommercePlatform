@@ -1,18 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Inject,
-  Input,
-  Output,
-  ViewChild,
-  inject,
-  signal,
-} from '@angular/core';
+import { Component, HostListener, Inject, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
-import intlTelInput from 'intl-tel-input';
-import { CountriesNoPhonesSorted } from '../register/RegisterRawData';
-import { FormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import {
   StripeFactoryService,
   StripePaymentElementComponent,
@@ -43,39 +31,35 @@ import { MatInputModule } from '@angular/material/input';
 })
 export class CheckoutComponent {
   products: Product[] = null!;
-  promoCodes: String[] = null!;
-  currencySymbol: String = '€';
+  promoCodes: string[] = null!;
+  currencySymbol = '€';
   total = { base: 155.88, tax: 15.88, delivery: 15, total: 170.88 };
 
   customerAddresses: CustomerAddress[] = [
     {
-      Name: 'John',
-      Lastname: 'California',
+      FullName: 'John California',
       Address: '787 Dunbar Road',
       Email: 'johnyboy@mail.com',
-      PhonePrefix: '+1',
-      PhoneNumber: '(213) 555-3890',
+      PhoneNumber: '+1 (213) 555-3890',
       City: 'San Jose, CA',
       ZIPCode: '95127',
       Country: 'USA',
     },
     {
-      Name: 'John Senior',
-      Lastname: 'California',
+      FullName: 'John Senior California',
       Address: '788B Dunbar Road',
       Email: 'oljohny@mail.com',
-      PhonePrefix: '+1',
-      PhoneNumber: '(213) 555-3890',
+      PhoneNumber: '+1 (213) 555-3890',
       City: 'San Jose, CA',
       ZIPCode: '95127',
       Country: 'USA',
     },
   ];
-  activeSelection: Number = this.customerAddresses.length - 1;
+  activeSelection: number = this.customerAddresses.length - 1;
 
   constructor(
     private factoryService: StripeFactoryService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
   ) {
     this.products = [
       {
@@ -92,7 +76,7 @@ export class CheckoutComponent {
   stripe = this.factoryService.create(environment.stripeApiKey);
   YOUR_CLIENT_SECRET: string | null =
     'pi_3POFD5C7yfdpfbDs1K4y1MF5_secret_mbpshCsI0kRJtroB8J1zNQXNm';
-  paymentIntent: any;
+  paymentIntent: unknown;
 
   @ViewChild(StripePaymentElementComponent)
   paymentElement!: StripePaymentElementComponent;
@@ -124,7 +108,7 @@ export class CheckoutComponent {
     },
   };
 
-  SelectAddress(id: Number) {
+  SelectAddress(id: number) {
     this.activeSelection = id;
     console.log(id);
   }
@@ -132,7 +116,7 @@ export class CheckoutComponent {
   dhlAddress!: DhlAddress;
 
   openDialog(): void {
-    const dialogRef = this.dialog.open(LockerSelectorDialog);
+    const dialogRef = this.dialog.open(LockerSelectorDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.dhlAddress = result;
@@ -156,10 +140,10 @@ export class CheckoutComponent {
     MatDialogClose,
   ],
 })
-export class LockerSelectorDialog {
+export class LockerSelectorDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<LockerSelectorDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DhlAddress
+    public dialogRef: MatDialogRef<LockerSelectorDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
   ) {}
 
   onNoClick(): void {}
@@ -177,13 +161,12 @@ export class LockerSelectorDialog {
   }
 }
 
-
 interface DhlAddress {
-  sap: Number;
-  name: String;
-  zip: String;
-  city: String;
-  street: String;
-  streetNo: String;
-  houseNo: String;
+  sap: number;
+  name: string;
+  zip: string;
+  city: string;
+  street: string;
+  streetNo: string;
+  houseNo: string;
 }

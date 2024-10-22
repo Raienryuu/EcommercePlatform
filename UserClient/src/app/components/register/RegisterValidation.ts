@@ -9,7 +9,7 @@ import {
 import { NewUser } from 'src/app/models/user-registration-form';
 
 export const confirmPasswordValidator: ValidatorFn = (
-  control: AbstractControl
+  control: AbstractControl,
 ): ValidationErrors | null => {
   const password = control.root.get('password');
   const password2 = control.root.get('password2');
@@ -27,7 +27,7 @@ export const confirmPasswordValidator: ValidatorFn = (
 };
 
 export const phonePrefixValidator: ValidatorFn = (
-  control: AbstractControl
+  control: AbstractControl,
 ): ValidationErrors | null => {
   const prefix = control.root.get('phonePrefix');
   return prefix && prefix.valid ? null : { phonePrefix: true };
@@ -48,36 +48,39 @@ export const RegisterFormWithValidators = new FormGroup(
     name: new FormControl('', Validators.required),
     lastname: new FormControl('', Validators.required),
     phonePrefix: new FormControl('', Validators.required),
-    phoneNumber: new FormControl('', Validators.compose([
-      Validators.minLength(1),
-      Validators.required,
-      Validators.pattern('^[0-9 ()+-]*$'),
-      phonePrefixValidator,
-    ])),
+    phoneNumber: new FormControl(
+      '',
+      Validators.compose([
+        Validators.minLength(1),
+        Validators.required,
+        Validators.pattern('^[0-9 ()+-]*$'),
+        phonePrefixValidator,
+      ]),
+    ),
     address: new FormControl('', Validators.required),
     city: new FormControl('', Validators.required),
     zipCode: new FormControl('', Validators.required),
     country: new FormControl(
       { value: '', disabled: false },
-      Validators.required
+      Validators.required,
     ),
   },
-  { validators: confirmPasswordValidator }
+  { validators: confirmPasswordValidator },
 );
 
 export function ToNewUser(form: FormGroup): NewUser {
   const user: NewUser = {
     UserName: form.value.login,
     Password: form.value.password,
-    Name: form.value.name,
-    Lastname: form.value.lastname,
-    Email: form.value.email,
-    PhonePrefix: form.value.phonePrefix,
-    PhoneNumber: form.value.phoneNumber,
-    Address: form.value.address,
-    City: form.value.city,
-    ZIPCode: form.value.zipCode,
-    Country: form.value.country,
+    Address: {
+      FullName: form.value.name,
+      Email: form.value.email,
+      PhoneNumber: form.value.phoneNumber,
+      Address: form.value.address,
+      City: form.value.city,
+      ZIPCode: form.value.zipCode,
+      Country: form.value.country,
+    },
   };
 
   return user;
