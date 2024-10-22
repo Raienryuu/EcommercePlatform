@@ -5,7 +5,6 @@
     (selectionChange)="selectionChanged($event)"
     [required]="required"
     [formControl]="countryControl"
-    [errorStateMatcher]="matcher"
   >
     @for (countryItem of countriesNoPhonesSorted; track countryItem) {
       <mat-option value="{{ countryItem }}">{{ countryItem }}</mat-option>

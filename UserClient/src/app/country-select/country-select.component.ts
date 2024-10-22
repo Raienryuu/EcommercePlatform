@@ -8,7 +8,11 @@ import {
   MatSelect,
   MatSelectChange,
 } from '@angular/material/select';
-import { ControlValueAccessor, FormControl, FormsModule } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  FormControl,
+  FormsModule,
+} from '@angular/forms';
 import { SuffixTransform } from '../pipes/phone-suffix-transform.pipe';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -43,8 +47,8 @@ export class CountrySelectComponent implements ControlValueAccessor {
 
   matcher = new CountryMatcher();
 
-  @Input() country: string = null!;
-  @Input() errorMessage = 'Please choose country';
+  @Input() country = '';
+  @Input() errorMessage = 'Country is required';
   @Input() isDisabled = false;
   @Input() required = false;
   @Input() validate = false;
@@ -52,9 +56,8 @@ export class CountrySelectComponent implements ControlValueAccessor {
   @Output()
   countryChange = new EventEmitter<string>();
 
-
   @Input()
-  countryControl: FormControl<unknown> = null!;
+  countryControl: FormControl<string> = null!;
 
   selectionChanged(event: MatSelectChange) {
     this._onChange(event.value);
@@ -84,7 +87,9 @@ export class CountrySelectComponent implements ControlValueAccessor {
 export class CountryMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null): boolean {
     return !!(
-      (control?.value === undefined || control?.value === '') &&
+      (control?.value === null ||
+        control?.value === '' ||
+        control?.value === undefined) &&
       (control?.touched || control?.dirty)
     );
   }
