@@ -41,7 +41,13 @@
           [ngClass]="{ selected: i === activeSelection }"
         >
           <mat-card-content>
-            <button aria-label="edit address" mat-icon-button class="edit" name="edit">
+            <button
+              aria-label="edit address"
+              mat-icon-button
+              class="edit"
+              name="edit"
+              (click)="OpenAddressEditor(false, i)"
+            >
               <mat-icon [ngClass]="{ selected: i === activeSelection }">
                 edit
               </mat-icon>
@@ -71,11 +77,20 @@
                 address.Email
               }}
             </tr>
+            <tr>
+              {{
+                address.Country
+              }}
+            </tr>
           </mat-card-content>
         </mat-card>
         <mat-card>
           <mat-card-content class="center">
-            <button aria-label="add new address" mat-icon-button>
+            <button
+              aria-label="add new address"
+              mat-icon-button
+              (click)="OpenAddressEditor(true, -1)"
+            >
               <mat-icon class="add" fontIcon="add" />
             </button>
           </mat-card-content>
@@ -119,7 +134,7 @@
                 DHL Parcel Box
               </span>
             </mat-radio-button>
-            <span (click)="openDialog()" style="text-decoration: underline">
+            <span (click)="openDhlDialog()" style="text-decoration: underline">
               Select locker
             </span>
             <span> {{ currencySymbol }}0 </span>

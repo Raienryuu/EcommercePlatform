@@ -1,4 +1,10 @@
-import { Component, HostListener, Inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Inject,
+  viewChild,
+  ViewChild,
+} from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { FormsModule } from '@angular/forms';
 import {
@@ -23,6 +29,10 @@ import {
 } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {
+  AddressEditorComponent,
+  AddressEditorResponse,
+} from '../address-editor/address-editor.component';
 
 @Component({
   selector: 'app-checkout',
@@ -37,29 +47,32 @@ export class CheckoutComponent {
 
   customerAddresses: CustomerAddress[] = [
     {
+      Id: 2,
       FullName: 'John California',
       Address: '787 Dunbar Road',
       Email: 'johnyboy@mail.com',
       PhoneNumber: '+1 (213) 555-3890',
       City: 'San Jose, CA',
       ZIPCode: '95127',
-      Country: 'USA',
+      Country: 'United States',
     },
     {
+      Id: 1,
       FullName: 'John Senior California',
       Address: '788B Dunbar Road',
       Email: 'oljohny@mail.com',
       PhoneNumber: '+1 (213) 555-3890',
       City: 'San Jose, CA',
       ZIPCode: '95127',
-      Country: 'USA',
+      Country: 'United States',
     },
   ];
   activeSelection: number = this.customerAddresses.length - 1;
 
   constructor(
     private factoryService: StripeFactoryService,
-    public dialog: MatDialog,
+    public dialogDhl: MatDialog,
+    public dialogAddressEditor: MatDialog,
   ) {
     this.products = [
       {
@@ -110,13 +123,74 @@ export class CheckoutComponent {
 
   SelectAddress(id: number) {
     this.activeSelection = id;
-    console.log(id);
+  }
+
+  OpenAddressEditor(addNewAddress: boolean, addressesIndex: number) {
+    const dialog = this.dialogAddressEditor.open(AddressEditorComponent, {
+      panelClass: 'backdrop',
+    });
+
+    if (addNewAddress) dialog.componentRef!.instance.isNew = addNewAddress;
+    else
+      this.AssignAddressFormValues(
+        dialog,
+        this.customerAddresses[addressesIndex],
+      );
+    dialog.componentRef!.instance.actionResponse.subscribe((event) =>
+      this.HandleAddressEvent(dialog, event),
+    );
+  }
+
+  private HandleAddressEvent(
+    dialog: MatDialogRef<AddressEditorComponent, unknown>,
+    $event: AddressEditorResponse | undefined,
+  ) {
+    // just close dialog case
+    if ($event === undefined) {
+      dialog.close();
+      return;
+    }
+    // delete case
+    if ($event.WasDeleted) {
+      this.customerAddresses = this.customerAddresses.filter(
+        (x) => x.Id !== $event.Address!.Id,
+      );
+      return;
+    }
+    let doesExists = false;
+    // update case
+    this.customerAddresses.forEach((a, index) => {
+      if (a.Id === $event!.Address!.Id) {
+        this.customerAddresses[index] = $event!.Address!;
+        doesExists = true;
+      }
+    });
+    // add case
+    if (!doesExists) this.customerAddresses.push($event!.Address!);
+    dialog.close();
+  }
+
+  private AssignAddressFormValues(
+    dialog: MatDialogRef<AddressEditorComponent, unknown>,
+    newValue: CustomerAddress,
+  ) {
+    const form = dialog.componentInstance.addressForm;
+    form.controls['id'].setValue(newValue.Id);
+    form.controls['address'].setValue(newValue.Address);
+    form.controls['city'].setValue(newValue.City);
+    form.controls['country'].setValue(newValue.Country);
+    form.controls['email'].setValue(newValue.Email);
+    form.controls['phoneNumber'].setValue(newValue.PhoneNumber);
+    form.controls['fullname'].setValue(newValue.FullName);
+    form.controls['zipcode'].setValue(newValue.ZIPCode);
+
+    dialog.componentInstance.countrySelector()?.writeValue(newValue.Country);
   }
 
   dhlAddress!: DhlAddress;
 
-  openDialog(): void {
-    const dialogRef = this.dialog.open(LockerSelectorDialogComponent);
+  openDhlDialog(): void {
+    const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent);
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.dhlAddress = result;
@@ -125,7 +199,7 @@ export class CheckoutComponent {
 }
 
 @Component({
-  selector: 'locker-selctor',
+  selector: 'app-locker-selctor',
   templateUrl: 'map.html',
   styleUrls: ['./checkout.component.scss'],
   standalone: true,
