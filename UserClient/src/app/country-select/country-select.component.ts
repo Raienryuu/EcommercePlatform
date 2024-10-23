@@ -60,24 +60,30 @@ export class CountrySelectComponent implements ControlValueAccessor {
   selectionChanged(event: MatSelectChange) {
     this._onChange(event.value);
     this.countryChange.emit(event.value);
+    
   }
 
   _onChange: (_: unknown) => void = () => true;
-  _onTouched: unknown;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _onTouched(_: unknown){
+    this.countryControl.markAsTouched();
+  }
 
   writeValue(obj: unknown): void {
     this.country = obj as string;
+    this.countryControl.setValue(obj as string);
   }
 
   registerOnChange(fn: (_: unknown) => void): void {
     this._onChange = fn;
   }
 
-  registerOnTouched(fn: unknown): void {
+  registerOnTouched(fn: (_: unknown) => void): void {
     this._onTouched = fn;
   }
 
-  setDisabledState?(isDisabled: boolean): void {
+  setDisabledState(isDisabled: boolean): void {
     this.isDisabled = isDisabled;
   }
 }

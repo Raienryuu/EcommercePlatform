@@ -102,6 +102,7 @@ export class AddressEditorComponent {
 
   IsDataValid(): boolean {
     this.addressForm.markAllAsTouched();
+    this.countrySelector()?.countryControl.markAsTouched();
     if (this.addressForm.invalid) return false;
     this.address = {
       Id: this.addressForm.controls['id'].value!,
