@@ -3,7 +3,7 @@
   <form class="layout" [formGroup]="addressForm">
     <mat-form-field class="full-width">
       <mat-label>Full Name</mat-label>
-      <input matInput formControlName="name" />
+      <input matInput formControlName="fullname" />
       <mat-error> Full name is required</mat-error>
     </mat-form-field>
     <mat-form-field class="inputs">
@@ -48,6 +48,7 @@
       [required]="true"
       [validate]="true"
       [(country)]="addressForm.controls['country'].value!"
+      #country
     ></app-country-select>
 
     <mat-form-field>
@@ -56,10 +57,33 @@
       <mat-error> City is requried</mat-error>
     </mat-form-field>
   </form>
-  <div class="cta-buttons">
-    <button mat-stroked-button class="cancel-order">Back</button>
-    <button mat-flat-button (click)="printAddress()" color="primary">
-      Order
-    </button>
-  </div>
+  <mat-dialog-actions>
+    <div class="cta-container">
+      @if (!isNew) {
+        <div class="cta-buttons">
+          <button
+            mat-flat-button
+            class="delete-button"
+            (click)="DeleteAddress()"
+          >
+            Delete
+          </button>
+        </div>
+      }
+      <div class="cta-buttons" style="align-self: flex-end">
+        <button mat-stroked-button (click)="CloseEditor()" class="cancel-order">
+          Cancel
+        </button>
+        @if (isNew) {
+          <button mat-flat-button (click)="AddAddress()" color="primary">
+            Add
+          </button>
+        } @else {
+          <button mat-flat-button (click)="UpdateAddress()" color="primary">
+            Update
+          </button>
+        }
+      </div>
+    </div>
+  </mat-dialog-actions>
 </div>

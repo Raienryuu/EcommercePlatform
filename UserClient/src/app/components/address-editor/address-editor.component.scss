@@ -1,10 +1,9 @@
 @import "src/color-palette.scss";
 
 .header {
-  margin-top: 5svh;
   background-color: $primary-200;
   // padding: 1svw;
-  padding: calc(1vh + 1vw);
+  padding: calc(0.5vh + 0.5vw);
   max-width: min(700px, 70vw);
   min-height: 48px;
   height: 8vh;
@@ -20,7 +19,7 @@
 .content {
   max-width: min(700px, 70vw);
   background-color: $primary-100;
-  padding: calc(1vh + 1vw);
+  padding: calc(0.5vh + 0.5vw);
   border-radius: 0 0 10px 10px;
 }
 
@@ -28,7 +27,7 @@ form.layout {
   display: grid;
   grid-template-columns: auto auto;
   gap: 2svh 2svw;
-  padding: 3svw 3svw 6rem;
+  padding: 3svw 3svw 1svw 3svw;
 }
 
 mat-form-field.full-width {
@@ -37,7 +36,6 @@ mat-form-field.full-width {
   grid-column-end: 3;
 }
 
-
 .cta-buttons {
   display: flex;
   justify-content: center;
@@ -45,4 +43,24 @@ mat-form-field.full-width {
 
 .cta-buttons button {
   margin: 1vmin;
+}
+
+button.delete-button {
+  background-color: $red-400;
+  color: white;
+}
+
+.cta-container {
+  display: flex;
+  justify-content: space-between;
+  margin-left: auto;
+  margin-right: auto;
+  padding:  1svw 4svw 2svh;
+  width: 100%;
+}
+
+.backdrop {
+  div.mat-mdc-dialog-surface{
+    border-radius: 10px !important;
+  }
 }
