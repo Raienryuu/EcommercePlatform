@@ -134,9 +134,9 @@
                 DHL Parcel Box
               </span>
             </mat-radio-button>
-            <span (click)="openDhlDialog()" style="text-decoration: underline">
+            <button mat-flat-button class="dhl-locker" (click)="openDhlDialog()">
               Select locker
-            </span>
+            </button>
             <span> {{ currencySymbol }}0 </span>
           </div>
           <span class="delivery-type-description">Pay on delivery</span>

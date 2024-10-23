@@ -127,7 +127,7 @@ export class CheckoutComponent {
 
   OpenAddressEditor(addNewAddress: boolean, addressesIndex: number) {
     const dialog = this.dialogAddressEditor.open(AddressEditorComponent, {
-      panelClass: 'backdrop',
+      panelClass: 'dialogPanel',
     });
 
     if (addNewAddress) dialog.componentRef!.instance.isNew = addNewAddress;
@@ -190,7 +190,9 @@ export class CheckoutComponent {
   dhlAddress!: DhlAddress;
 
   openDhlDialog(): void {
-    const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent);
+    const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent, {
+      panelClass: 'dialogPanel',
+    });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.dhlAddress = result;

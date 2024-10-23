@@ -187,3 +187,9 @@ mat-checkbox {
 // input.country-search {
 //   width: calc(100% - 40px) !important;
 // }
+
+.dialogPanel {
+  div.mat-mdc-dialog-surface{
+    border-radius: 10px !important;
+  }
+}

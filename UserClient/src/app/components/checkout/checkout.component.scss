@@ -300,3 +300,8 @@ button.cancel-order {
   align-items: center;
   gap: 15px;
 }
+
+button.dhl-locker {
+  background-color: inherit;
+  border: 1px solid $primary-200;
+}
