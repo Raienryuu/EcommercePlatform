@@ -103,7 +103,7 @@ public class ReserveProductOrderTests(DatabaseFixture db)
 		}
 	  ]
 	}, context => context.CorrelationId = orderId);
-
+	await Task.Delay(1000);  // debug use only
 	var orderCommandConsumed
 	  = await harness.Consumed.Any(x => x.Context.CorrelationId == orderId);
 	var publishedResponse = harness.Published
@@ -116,10 +116,5 @@ public class ReserveProductOrderTests(DatabaseFixture db)
 	  = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
 	var reservationRecord = await dbContext.OrdersReserved.FindAsync(orderId);
 	Assert.NotNull(reservationRecord);
-	Console.WriteLine("------------------------ CUSTOM LOGS -----------------------");
-
-	Console.WriteLine(harness.Bus.GetProbeResult().ResultId);
-	Console.WriteLine(orderCommandConsumed);
-	Console.WriteLine(reservationRecord.OrderId);
   }
 }

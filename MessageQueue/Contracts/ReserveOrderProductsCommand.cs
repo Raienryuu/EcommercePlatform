@@ -6,5 +6,5 @@ namespace MessageQueue.Contracts;
 public class ReserveOrderProductsCommand
 {
   public Guid OrderId { get; set; }
-  public OrderProductDTO[] Products { get; set; }
+  public OrderProductDTO[] Products { get; set; } = [];
 }
