@@ -103,7 +103,9 @@ public class ReserveProductOrderTests(DatabaseFixture db)
 		}
 	  ]
 	}, context => context.CorrelationId = orderId);
-	await Task.Delay(1000);  // debug use only
+
+	await Task.Delay(1000);  // required to pass github workflow
+
 	var orderCommandConsumed
 	  = await harness.Consumed.Any(x => x.Context.CorrelationId == orderId);
 	var publishedResponse = harness.Published
