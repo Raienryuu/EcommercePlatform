@@ -29,10 +29,10 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: Test Product
-      run: dotnet test ProductService.Tests/ProductService.Tests.csproj --verbosity diagnostic
+      run: dotnet test ProductService.Tests/ProductService.Tests.csproj
     - name: Test Identity
-      run: dotnet test IdentityService.Tests/IdentityService.Tests.csproj --verbosity normal
+      run: dotnet test IdentityService.Tests/IdentityService.Tests.csproj
     - name: Test Cart
-      run: dotnet test CartService.Tests/CartService.Tests.csproj --verbosity normal
+      run: dotnet test CartService.Tests/CartService.Tests.csproj
     - name: Test Order
-      run: dotnet test OrderService.Tests/OrderService.Tests.csproj --verbosity normal
+      run: dotnet test OrderService.Tests/OrderService.Tests.csproj
