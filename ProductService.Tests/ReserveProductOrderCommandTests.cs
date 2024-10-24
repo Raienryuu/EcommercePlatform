@@ -116,10 +116,10 @@ public class ReserveProductOrderTests(DatabaseFixture db)
 	  = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
 	var reservationRecord = await dbContext.OrdersReserved.FindAsync(orderId);
 	Assert.NotNull(reservationRecord);
-	System.Diagnostics.Debug.WriteLine("------------------------ CUSTOM LOGS -----------------------");
+	Console.WriteLine("------------------------ CUSTOM LOGS -----------------------");
 
-	System.Diagnostics.Debug.WriteLine(harness.Bus.GetProbeResult().ResultId);
-	System.Diagnostics.Debug.WriteLine(orderCommandConsumed);
-	System.Diagnostics.Debug.WriteLine(reservationRecord.OrderId);
+	Console.WriteLine(harness.Bus.GetProbeResult().ResultId);
+	Console.WriteLine(orderCommandConsumed);
+	Console.WriteLine(reservationRecord.OrderId);
   }
 }
