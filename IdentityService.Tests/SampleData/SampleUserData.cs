@@ -1,4 +1,5 @@
-﻿using IdentityService.Models;
+﻿using Docker.DotNet.Models;
+using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace IdentityService.Tests.SampleData
@@ -9,29 +10,31 @@ namespace IdentityService.Tests.SampleData
 	{
 	  UserName = "user111",
 	  Password = "passwd",
-	  Name = "Tom",
-	  Lastname = "Dodo",
-	  Email = "dodoto@mailtown.com",
-	  PhonePrefix = "48",
-	  PhoneNumber = "823928132",
-	  Address = "2231 Oliver Street",
-	  City = "Fort Worth",
-	  ZIPCode = "76147",
-	  Country = "United States"
+	  Address = new()
+	  {
+		FullName = "Tom Dodo",
+		Email = "dodoto@mailtown.com",
+		PhoneNumber = "+48823928132",
+		Address = "2231 Oliver Street",
+		City = "Fort Worth",
+		ZIPCode = "76147",
+		Country = "United States"
+	  }
 	};
 	public static readonly NewUser loginUser = new()
 	{
 	  UserName = "loginUser",
 	  Password = "passwd",
-	  Name = "Alex",
-	  Lastname = "Dodo",
-	  Email = "newMail@mailing.com",
-	  PhonePrefix = "48",
-	  PhoneNumber = "755392031",
-	  Address = "2232 Oliver Street",
-	  City = "Fort Worth",
-	  ZIPCode = "76147",
-	  Country = "United States"
+	  Address = new()
+	  {
+		FullName = "Alex Dodo",
+		Email = "newMail@mailing.com",
+		PhoneNumber = "+48755392031",
+		Address = "2232 Oliver Street",
+		City = "Fort Worth",
+		ZIPCode = "76147",
+		Country = "United States"
+	  }
 	};
 	public static readonly IdentityUser identityUser = new()
 	{
@@ -62,11 +65,9 @@ namespace IdentityService.Tests.SampleData
 	  City = "Chicago",
 	  Country = "United States of America",
 	  Email = "toomfoolery@mail.com",
-	  Lastname = "Fool",
-	  Name = "Thomas",
-	  PhoneNumber = "32132412312",
-	  PhonePrefix = "+1",
+	  FullName = "Thomas Fool",
+	  PhoneNumber = "+132132412312",
 	  ZIPCode = "1423-1234"
-  };
-  } 
+	};
+  }
 }

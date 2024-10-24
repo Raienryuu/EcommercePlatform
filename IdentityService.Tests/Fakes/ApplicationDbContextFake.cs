@@ -41,10 +41,8 @@ public class ApplicationDbContextFake : ApplicationDbContext
 	  City = "Sample City",
 	  Country = "United States of America",
 	  Email = "aliciala@mail.com",
-	  Lastname = "Testmark",
-	  Name = "Alice",
-	  PhoneNumber = "324876582",
-	  PhonePrefix = "+1",
+	  FullName = "Alice Testmark",
+	  PhoneNumber = "+1324876582",
 	  ZIPCode = "16789-968",
 	  UserId = aliceGuid
 	};

@@ -42,7 +42,7 @@ public class AddressController : ControllerBase
 	return CreatedAtAction("GetAddressById", addedAddress);
   }
 
-  // PUT api/<AddressController>/5
+  // PUT api/<AddressController>
   [HttpPut]
   public async Task<ActionResult<UserAddress>> Put([FromHeader(Name = "UserId")] Guid userId, [FromBody] UserAddress newAddresss)
   {

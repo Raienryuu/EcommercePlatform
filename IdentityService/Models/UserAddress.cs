@@ -8,10 +8,8 @@ public class UserAddress : IUserData
 {
   [Key]
   public int Id { get; set; }
-  public required string Name { get; set; }
-  public required string Lastname { get; set; }
+  public required string FullName { get; set; }
   public required string Email { get; set; }
-  public required string PhonePrefix { get; set; }
   public required string PhoneNumber { get; set; }
   public required string Address { get; set; }
   public required string City { get; set; }
@@ -25,15 +23,13 @@ public class UserAddress : IUserData
   {
 	UserAddress userAddress = new()
 	{
-	  Name = user.Name,
-	  Lastname = user.Lastname,
-	  Email = user.Email,
-	  PhonePrefix = user.PhonePrefix,
-	  PhoneNumber = user.PhoneNumber,
-	  Address = user.Address,
-	  City = user.City,
-	  ZIPCode = user.ZIPCode,
-	  Country = user.Country,
+	  FullName = user.Address.FullName,
+	  Email = user.Address.Email,
+	  PhoneNumber = user.Address.PhoneNumber,
+	  Address = user.Address.Address,
+	  City = user.Address.City,
+	  ZIPCode = user.Address.ZIPCode,
+	  Country = user.Address.Country,
 	  UserId = account.Id
 	};
 	return userAddress;

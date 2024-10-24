@@ -33,10 +33,8 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
 	  City = "Chicago",
 	  Country = "United States of America",
 	  Email = "toomfoolery@mail.com",
-	  Lastname = "Fool",
-	  Name = "Thomas",
-	  PhoneNumber = "32132412312",
-	  PhonePrefix = "+1",
+	  FullName = "Thomas Fool",
+	  PhoneNumber = "+132132412312",
 	  ZIPCode = "1423-1234",
 	  UserId = aliceUser!.Id
 	};
@@ -50,11 +48,11 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
   {
 	const int ADDRESS_ID = 1;
 	var aliceGuid = Guid.Parse("D0D480DA-1E50-4A78-A727-600D986D8075");
-	const string PHONE = "324876582";
+	const string ALICE_PHONE = "+1324876582";
 
 	var address = await _addresses.GetAddressAsync(ADDRESS_ID);
 
-	Assert.True(address.PhoneNumber == PHONE);
+	Assert.True(address?.PhoneNumber == ALICE_PHONE);
 	Assert.True(address.UserId == aliceGuid);
   }
 

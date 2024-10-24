@@ -46,7 +46,6 @@ namespace IdentityService.Controller
 	public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
 	{
 	  PasswordHasher<IdentityUser<Guid>> passwordHasher = new();
-	  Debug.WriteLine(registrationData.Name);
 	  bool isValid = new NewUserValidator().Validate(registrationData);
 
 	  if (!isValid)
@@ -57,8 +56,8 @@ namespace IdentityService.Controller
 	  IdentityUser<Guid> newUser = new()
 	  {
 		UserName = registrationData.UserName,
-		Email = registrationData.Email,
-		PhoneNumber = registrationData.PhoneNumber,
+		Email = registrationData.Address.Email,
+		PhoneNumber = registrationData.Address.PhoneNumber,
 		EmailConfirmed = true,
 		PhoneNumberConfirmed = true,
 		TwoFactorEnabled = false,
