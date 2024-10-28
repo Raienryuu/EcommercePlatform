@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
-import { AppComponent } from './app.component';
-import { provideHttpClient } from '@angular/common/http';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { CountrySelectComponent } from './country-select.component';
 import { NgOptimizedImage } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,15 +22,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { NgxStripeModule } from 'ngx-stripe';
-import { AppRoutingModule } from '../app-routing.module';
-import { CountrySelectComponent } from '../components/country-select/country-select.component';
-import { NavbarComponent } from '../components/navbar/navbar.component';
-import { FooterComponent } from '../components/footer/footer.component';
+import { AppRoutingModule } from 'src/app/app-routing.module';
 
-describe('AppComponent', () => {
-  beforeEach(() =>
-    TestBed.configureTestingModule({
-      imports: [
+describe('CountrySelectComponent', () => {
+  let component: CountrySelectComponent;
+  let fixture: ComponentFixture<CountrySelectComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CountrySelectComponent,
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -54,29 +54,16 @@ describe('AppComponent', () => {
         MatCheckboxModule,
         MatDialogModule,
         NgxMatInputTelComponent,
-        CountrySelectComponent,
-      ],
-      declarations: [AppComponent, NavbarComponent, FooterComponent],
-      providers: [provideHttpClient()],
-    }),
-  );
-
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+      ]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(CountrySelectComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
-  it(`should have as title 'userClient'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('userClient');
+  it('should create', () => {
+    expect(component).toBeTruthy();
   });
-
-  // it('should render title', () => {
-  //   const fixture = TestBed.createComponent(AppComponent);
-  //   fixture.detectChanges();
-  //   const compiled = fixture.nativeElement as HTMLElement;
-  //   expect(compiled.querySelector('.content span')?.textContent).toContain('userClient app is running!');
-  // });
 });

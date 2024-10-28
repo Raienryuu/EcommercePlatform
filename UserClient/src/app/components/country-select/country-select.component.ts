@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CountriesNoPhonesSorted } from '../components/register/RegisterRawData';
+import { CountriesNoPhonesSorted } from '../register/RegisterRawData';
 import {
   MatError,
   MatFormField,

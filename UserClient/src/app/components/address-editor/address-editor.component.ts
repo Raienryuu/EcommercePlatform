@@ -7,7 +7,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CountrySelectComponent } from 'src/app/country-select/country-select.component';
+import { CountrySelectComponent } from 'src/app/components/country-select/country-select.component';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { AddressService } from 'src/app/services/addressService/address.service';
 

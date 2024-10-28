@@ -27,7 +27,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { CartComponent } from './components/cart/cart.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { CheckoutComponent } from './components/checkout/checkout.component';
-import { CountrySelectComponent } from './country-select/country-select.component';
+import { CountrySelectComponent } from './components/country-select/country-select.component';
 import { NgxStripeModule } from 'ngx-stripe';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
