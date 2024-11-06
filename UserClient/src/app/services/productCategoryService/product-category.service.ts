@@ -12,7 +12,7 @@ export class ProductCategoryService {
   constructor(private httpClient: HttpClient) { }
 
   GetCategoryChildren(categoryId: string): Observable<ProductCategory[]> {
-    let url = environment.apiUrl + "v1/productscategories/children/" + categoryId;
+    const url = environment.apiUrl + "v1/productscategories/children/" + categoryId;
     return this.httpClient.get<ProductCategory[]>(url);
   }
 }

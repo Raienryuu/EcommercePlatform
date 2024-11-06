@@ -103,7 +103,7 @@
           <mat-icon class="material-icons-outlined" fontIcon="close" />
         </button>
       </div>
-      <div class="products" *ngIf="products.length != 0">
+      <div class="products" *ngIf="products.length !== 0">
         <div *ngFor="let product of products" class="product">
           <div class="product-details">
             <img
@@ -237,7 +237,7 @@
           height: 500px;
           width: 100%;
         "
-        *ngIf="products.length == 0"
+        *ngIf="products.length === 0"
       >
         <mat-spinner class="progress-spinner" diameter="200" />
       </div>

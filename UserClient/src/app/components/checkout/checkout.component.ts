@@ -1,10 +1,4 @@
-import {
-  Component,
-  HostListener,
-  Inject,
-  viewChild,
-  ViewChild,
-} from '@angular/core';
+import { Component, HostListener, Inject, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { FormsModule } from '@angular/forms';
 import {
@@ -222,17 +216,16 @@ export class LockerSelectorDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
   ) {}
 
-  onNoClick(): void {}
+  onNoClick(): void {
+    return;
+  }
 
   @HostListener('window:message', ['$event'])
-  relayMessage(event: any): DhlAddress {
-    let parseRes: DhlAddress;
-    try {
-      parseRes = JSON.parse(event.data);
-      if (parseRes.sap !== undefined) {
-        this.dialogRef.close(parseRes);
-      }
-    } catch {}
+  relayMessage(event: MessageEvent): DhlAddress {
+    const parseRes = JSON.parse(event.data);
+    if (parseRes.sap !== undefined) {
+      this.dialogRef.close(parseRes);
+    }
     return null!;
   }
 }

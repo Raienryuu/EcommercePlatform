@@ -13,31 +13,31 @@ export class ProductService {
   constructor(private httpClient: HttpClient) { }
 
   GetProductById(id: number): Observable<Product> {
-    var url = environment.apiUrl + `v1/products/${id}`;
+    const url = environment.apiUrl + `v1/products/${id}`;
     return this.httpClient.get<Product>(url);
   }
 
   GetProductsPage(pageNum: number, pageSize: number,
     filters: SearchFilters): Observable<Product[]> {
-    var url = environment.apiUrl + "v1/products/" + pageNum + "/" + pageSize;
+    let url = environment.apiUrl + "v1/products/" + pageNum + "/" + pageSize;
 
-    var url = ApplySearchFilters(url, filters);
+    url = ApplySearchFilters(url, filters);
     return this.httpClient
       .get<Product[]>(url);
   }
 
   GetNextPage(pageSize: number, filters: SearchFilters,
     edgeProduct: Product): Observable<Product[]> {
-    var url = environment.apiUrl + `v1/products/nextPage/${pageSize}`;
-    var url = ApplySearchFilters(url, filters);
+    let url = environment.apiUrl + `v1/products/nextPage/${pageSize}`;
+    url = ApplySearchFilters(url, filters);
     return this.httpClient.post<Product[]>( url, edgeProduct );
 
   }
 
   GetPreviousPage(pageSize: number, filters: SearchFilters,
     edgeProduct: Product): Observable<Product[]> {
-    var url = environment.apiUrl + `v1/products/previousPage/${pageSize}`;
-    var url = ApplySearchFilters(url, filters);
+    let url = environment.apiUrl + `v1/products/previousPage/${pageSize}`;
+    url = ApplySearchFilters(url, filters);
     return this.httpClient.post<Product[]>( url, edgeProduct );
     
   }

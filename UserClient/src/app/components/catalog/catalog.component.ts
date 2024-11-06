@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/models/product';
 import { ProductCategory } from 'src/app/models/product-category';
@@ -12,7 +12,7 @@ import { UserSettingsService } from 'src/app/services/userSettingsService/user-s
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
-export class CatalogComponent {
+export class CatalogComponent implements OnInit {
   products: Product[] = [
     {
       id: 1,

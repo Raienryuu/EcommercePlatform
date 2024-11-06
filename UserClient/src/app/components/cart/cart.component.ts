@@ -1,14 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
-import { CatalogComponent } from '../catalog/catalog.component';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss']
 })
-export class CartComponent {
+export class CartComponent implements OnInit {
   products: Product[] = [
     { id: 2, categoryId: 3, name: "Super long product name that will take multiple lines of text", description: "Description for Product B", price: 19.99, quantity: 5 },
     { id: 3, categoryId: 1, name: "Super long product name that will take multiple lines of text under the product's photo that is yet to be changed", description: "Description for Product C", price: 14.99, quantity: 8 },
@@ -21,8 +20,8 @@ export class CartComponent {
     this.RecalculateTotalCost();
   }
 
-  currencySymbol: string = '€';
-  promoCode: string = '';
+  currencySymbol = '€';
+  promoCode = '';
   totalCost: { price: string, tax: string, total: string } = { price: '', tax: '', total: '' };
 
   LoadUserSettings() {
@@ -36,9 +35,9 @@ export class CartComponent {
   }
 
   RecalculateTotalCost() {
-    let priceSum: number = 0;
-    let taxSum: number = 0;
-    let totalSum: number = 0;
+    let priceSum = 0;
+    let taxSum = 0;
+    let totalSum = 0;
     this.products.forEach(p => {
       priceSum += p.price * p.quantity;
     })
@@ -56,7 +55,7 @@ export class CartComponent {
   }
 
   ValidateQuantity(product: Product) {
-    const MAX_QUANTITY: number = 100;
+    const MAX_QUANTITY = 100;
     if (product.quantity < 0)
       product.quantity = 0;
     if (product.quantity > MAX_QUANTITY)

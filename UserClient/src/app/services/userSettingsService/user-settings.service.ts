@@ -2,13 +2,10 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserSettingsService {
-
-  constructor() { }
-
-  private currencySymbol: string = '€';
+  private currencySymbol = '€';
 
   GetCurrencySymbol(): Observable<string> {
     return of(this.currencySymbol);

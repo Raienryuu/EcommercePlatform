@@ -18,7 +18,7 @@ export class LoginComponent {
 
     Login(): void{
       this.loginService.LogIn(this.login, this.password).subscribe(
-        (result: any) => console.log(result));
+        (result: unknown) => console.log(result));
     }
 
 
