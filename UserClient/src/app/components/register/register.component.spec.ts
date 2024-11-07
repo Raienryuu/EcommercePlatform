@@ -27,7 +27,7 @@ import { CountrySelectComponent } from '../country-select/country-select.compone
 import { provideHttpClient } from '@angular/common/http';
 import { UserService } from 'src/app/services/userService/user.service';
 
-fdescribe('RegisterComponent', () => {
+describe('RegisterComponent', () => {
   let component: RegisterComponent;
   let fixture: ComponentFixture<RegisterComponent>;
   let userServiceSpy: jasmine.SpyObj<UserService>;

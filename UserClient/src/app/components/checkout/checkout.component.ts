@@ -1,4 +1,9 @@
-import { Component, HostListener, Inject, ViewChild } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  Inject,
+  ViewChild,
+} from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { FormsModule } from '@angular/forms';
 import {
@@ -27,6 +32,7 @@ import {
   AddressEditorComponent,
   AddressEditorResponse,
 } from '../address-editor/address-editor.component';
+import { MatRadioChange } from '@angular/material/radio';
 
 @Component({
   selector: 'app-checkout',
@@ -181,21 +187,32 @@ export class CheckoutComponent {
     dialog.componentInstance.countrySelector()?.writeValue(newValue.Country);
   }
 
+
+
   dhlAddress!: DhlAddress;
+  deliveryOptionValue: string | undefined;
+  
+  ChangeDeliveryValue($event: MatRadioChange){
+    this.deliveryOptionValue = $event.value;
+  }
 
   openDhlDialog(): void {
+    this.deliveryOptionValue = 'dhl';
+    
     const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent, {
       panelClass: 'dialogPanel',
     });
-
+    // Does this even works??
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.dhlAddress = result;
     });
   }
 }
 
+//#region locker selector
+
 @Component({
-  selector: 'app-locker-selctor',
+  selector: 'app-locker-selector',
   templateUrl: 'map.html',
   styleUrls: ['./checkout.component.scss'],
   standalone: true,
@@ -222,15 +239,21 @@ export class LockerSelectorDialogComponent {
 
   @HostListener('window:message', ['$event'])
   relayMessage(event: MessageEvent): DhlAddress {
-    const parseRes = JSON.parse(event.data);
-    if (parseRes.sap !== undefined) {
-      this.dialogRef.close(parseRes);
+    try {
+      const parseRes = JSON.parse(event.data);
+      if (parseRes.sap !== undefined) {
+        console.warn(event.data);
+        this.dialogRef.close(parseRes);
+      }
+    } catch {
+      return null!;
     }
     return null!;
   }
 }
 
 interface DhlAddress {
+  id: number;
   sap: number;
   name: string;
   zip: string;
@@ -239,3 +262,5 @@ interface DhlAddress {
   streetNo: string;
   houseNo: string;
 }
+
+//#endregion

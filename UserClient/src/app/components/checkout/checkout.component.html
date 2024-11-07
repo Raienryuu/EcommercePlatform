@@ -111,7 +111,7 @@
     <div id="delivery">
       <div class="header">Delivery</div>
       <div class="content">
-        <mat-radio-group aria-label="Select an option">
+        <mat-radio-group aria-label="Select an option" #deliverySelect [value]="deliveryOptionValue" (change)="ChangeDeliveryValue($event)">
           <span class="delivery-type-description">Pay now</span>
           <div class="delivery-method">
             <mat-radio-button value="1"> Standard </mat-radio-button>
@@ -124,7 +124,7 @@
             <span> {{ currencySymbol }}10 </span>
           </div>
           <div class="delivery-method">
-            <mat-radio-button value="3">
+            <mat-radio-button value="dhl" #dhlDelivery>
               <span class="locker-selection">
                 <img
                   src="../../../assets/logo_DHL.jpg"
@@ -134,7 +134,7 @@
                 DHL Parcel Box
               </span>
             </mat-radio-button>
-            <button mat-flat-button class="dhl-locker" (click)="openDhlDialog()">
+            <button mat-flat-button class="dhl-locker" (click)="openDhlDialog()" name="dhl-locker">
               Select locker
             </button>
             <span> {{ currencySymbol }}0 </span>

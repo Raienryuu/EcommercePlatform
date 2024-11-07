@@ -88,7 +88,7 @@ describe('LoginComponent', () => {
       By.css('[name=signin]'),
     ).nativeElement;
 
-    userLogin.LogIn.and.returnValue(of(null));
+    userLogin.LogIn.and.returnValue(of());
     button.click();
     expect(userLogin.LogIn).toHaveBeenCalled();
 

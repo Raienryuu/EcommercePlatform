@@ -19,21 +19,26 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTreeModule } from '@angular/material/tree';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { NgxStripeModule } from 'ngx-stripe';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { provideHttpClient } from '@angular/common/http';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+import { HarnessLoader } from '@angular/cdk/testing';
+import { MatRadioGroupHarness } from '@angular/material/radio/testing';
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
+  let loader: HarnessLoader;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [CheckoutComponent],
-      imports: [    BrowserModule,
+      imports: [
+        BrowserModule,
         FormsModule,
         AppRoutingModule,
         BrowserAnimationsModule,
@@ -56,15 +61,36 @@ describe('CheckoutComponent', () => {
         MatCheckboxModule,
         MatDialogModule,
         NgxMatInputTelComponent,
-        CountrySelectComponent,],
-        providers: [provideHttpClient()]
+        CountrySelectComponent,
+      ],
+      providers: [provideHttpClient()],
     });
     fixture = TestBed.createComponent(CheckoutComponent);
     component = fixture.componentInstance;
+    loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should open dhl locker selector dialog', async () => {
+    const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
+
+    dhlButton.triggerEventHandler('click');
+
+    const dhlMap = fixture.debugElement.query(By.css('.dhl-locker'));
+    expect(dhlMap.nativeElement).toBeInstanceOf(HTMLElement);
+  });
+
+  it('should select dhl locker delivery option', async () => {
+    const deliveryRadioGroup = await loader.getHarness(MatRadioGroupHarness);
+    const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
+
+    dhlButton.triggerEventHandler('click');
+
+    const currentRadioValue = await deliveryRadioGroup.getCheckedValue();
+    expect(currentRadioValue).toEqual('dhl');
   });
 });
