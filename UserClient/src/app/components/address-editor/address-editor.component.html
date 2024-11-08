@@ -71,15 +71,15 @@
         </div>
       }
       <div class="cta-buttons" style="align-self: flex-end">
-        <button mat-stroked-button (click)="CloseEditor()" class="cancel-order">
+        <button mat-stroked-button name="cancel-button" (click)="CloseEditor()" class="cancel-order">
           Cancel
         </button>
         @if (isNew) {
-          <button mat-flat-button (click)="AddAddress()" color="primary">
+          <button mat-flat-button name="add-button" (click)="AddAddress()" color="primary">
             Add
           </button>
         } @else {
-          <button mat-flat-button (click)="UpdateAddress()" color="primary">
+          <button mat-flat-button name="edit-button" (click)="UpdateAddress()" color="primary">
             Update
           </button>
         }

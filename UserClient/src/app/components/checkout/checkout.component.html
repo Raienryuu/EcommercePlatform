@@ -48,9 +48,7 @@
               name="edit"
               (click)="OpenAddressEditor(false, i)"
             >
-              <mat-icon [ngClass]="{ selected: i === activeSelection }">
-                edit
-              </mat-icon>
+              <mat-icon fontIcon="edit" [ngClass]="{ selected: i === activeSelection }" />
             </button>
             <tr>
               {{

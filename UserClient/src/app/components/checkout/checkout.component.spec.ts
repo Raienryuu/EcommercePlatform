@@ -26,13 +26,11 @@ import { NgxStripeModule } from 'ngx-stripe';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { provideHttpClient } from '@angular/common/http';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { HarnessLoader } from '@angular/cdk/testing';
-import { MatRadioGroupHarness } from '@angular/material/radio/testing';
+import { DebugElement } from '@angular/core';
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
-  let loader: HarnessLoader;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -67,7 +65,6 @@ describe('CheckoutComponent', () => {
     });
     fixture = TestBed.createComponent(CheckoutComponent);
     component = fixture.componentInstance;
-    loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.detectChanges();
   });
 
@@ -78,19 +75,56 @@ describe('CheckoutComponent', () => {
   it('should open dhl locker selector dialog', async () => {
     const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
 
-    dhlButton.triggerEventHandler('click');
+    dhlButton.nativeElement.click();
 
-    const dhlMap = fixture.debugElement.query(By.css('.dhl-locker'));
-    expect(dhlMap.nativeElement).toBeInstanceOf(HTMLElement);
+    const lockerSelector = new DebugElement(
+      document.querySelector('app-locker-selector')!
+    );
+    const dhlMapIframe = lockerSelector.query(By.css('.map')).nativeElement;
+    expect(dhlMapIframe).toBeInstanceOf(HTMLIFrameElement);
   });
 
-  it('should select dhl locker delivery option', async () => {
-    const deliveryRadioGroup = await loader.getHarness(MatRadioGroupHarness);
+  it('should select dhl locker delivery option', () => {
     const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
+    const dhlRadioButton = fixture.debugElement.query(By.css('[value="dhl"]'));
 
-    dhlButton.triggerEventHandler('click');
+    dhlButton.nativeElement.click();
 
-    const currentRadioValue = await deliveryRadioGroup.getCheckedValue();
-    expect(currentRadioValue).toEqual('dhl');
+    component.dialogDhl.closeAll();
+    fixture.detectChanges();
+    const ne = dhlRadioButton.nativeElement as HTMLElement;
+    expect(ne.classList.contains('mat-mdc-radio-checked')).toBeTruthy();
+  });
+
+  it('should open address editor in edit mode', async () => {
+    const editAddressButton = fixture.debugElement.query(
+      By.css('[fonticon=edit]'),
+    ).parent;
+    editAddressButton?.nativeElement.click();
+    await fixture.whenStable();
+
+    const editorElement = new DebugElement(
+      document.querySelector('app-address-editor')!,
+    );
+
+    const editButton = editorElement.query(By.css('[name=edit-button]'));
+
+    expect(editButton).withContext("didn't find the Edit button").toBeTruthy();
+  });
+
+  it('should open address editor in new mode', async () => {
+    const addAddressButton = fixture.debugElement.query(
+      By.css('[fonticon=add]'),
+    ).parent;
+    addAddressButton?.nativeElement.click();
+    await fixture.whenStable();
+
+    const editorElement = new DebugElement(
+      document.querySelector('app-address-editor')!,
+    );
+
+    const addButton = editorElement.query(By.css('[name=add-button]'));
+
+    expect(addButton).withContext("didn't find the Add button").toBeTruthy();
   });
 });
