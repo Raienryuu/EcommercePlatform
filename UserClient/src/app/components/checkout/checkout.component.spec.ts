@@ -1,40 +1,44 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CheckoutComponent } from './checkout.component';
-import { CountrySelectComponent } from '../country-select/country-select.component';
-import { NgOptimizedImage } from '@angular/common';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatGridListModule } from '@angular/material/grid-list';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatListModule } from '@angular/material/list';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatTreeModule } from '@angular/material/tree';
-import { BrowserModule, By } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
-import { NgxStripeModule } from 'ngx-stripe';
-import { AppRoutingModule } from 'src/app/app-routing.module';
-import { provideHttpClient } from '@angular/common/http';
-import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
-import { DebugElement } from '@angular/core';
+import {CheckoutComponent} from './checkout.component';
+import {CountrySelectComponent} from '../country-select/country-select.component';
+import {NgOptimizedImage} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDialogModule} from '@angular/material/dialog';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatListModule} from '@angular/material/list';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import {MatRadioModule} from '@angular/material/radio';
+import {MatSelectModule} from '@angular/material/select';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatStepperModule} from '@angular/material/stepper';
+import {MatTreeModule} from '@angular/material/tree';
+import {BrowserModule, By} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgxMatInputTelComponent} from 'ngx-mat-input-tel';
+import {NgxStripeModule} from 'ngx-stripe';
+import {AppRoutingModule} from 'src/app/app-routing.module';
+import {provideHttpClient} from '@angular/common/http';
+import {
+  HttpTestingController,
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
+import {DebugElement} from '@angular/core';
+import {AddressEditorComponent} from '../address-editor/address-editor.component';
 
-describe('CheckoutComponent', () => {
+fdescribe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      declarations: [CheckoutComponent],
+      declarations: [CheckoutComponent, AddressEditorComponent],
       imports: [
         BrowserModule,
         FormsModule,
@@ -61,11 +65,12 @@ describe('CheckoutComponent', () => {
         NgxMatInputTelComponent,
         CountrySelectComponent,
       ],
-      providers: [provideHttpClient()],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     fixture = TestBed.createComponent(CheckoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -78,7 +83,7 @@ describe('CheckoutComponent', () => {
     dhlButton.nativeElement.click();
 
     const lockerSelector = new DebugElement(
-      document.querySelector('app-locker-selector')!
+      document.querySelector('app-locker-selector')!,
     );
     const dhlMapIframe = lockerSelector.query(By.css('.map')).nativeElement;
     expect(dhlMapIframe).toBeInstanceOf(HTMLIFrameElement);
@@ -96,35 +101,153 @@ describe('CheckoutComponent', () => {
     expect(ne.classList.contains('mat-mdc-radio-checked')).toBeTruthy();
   });
 
-  it('should open address editor in edit mode', async () => {
-    const editAddressButton = fixture.debugElement.query(
-      By.css('[fonticon=edit]'),
-    ).parent;
-    editAddressButton?.nativeElement.click();
-    await fixture.whenStable();
-
-    const editorElement = new DebugElement(
-      document.querySelector('app-address-editor')!,
-    );
-
-    const editButton = editorElement.query(By.css('[name=edit-button]'));
-
-    expect(editButton).withContext("didn't find the Edit button").toBeTruthy();
-  });
-
-  it('should open address editor in new mode', async () => {
+  it('should add new address', async function () {
+    const httpTestingController = TestBed.inject(HttpTestingController);
     const addAddressButton = fixture.debugElement.query(
       By.css('[fonticon=add]'),
     ).parent;
     addAddressButton?.nativeElement.click();
-    await fixture.whenStable();
+
+    fixture.detectChanges();
+    const editorElement = new DebugElement(
+      document.querySelector('app-address-editor')!,
+    );
+    const editorComponent =
+      editorElement.componentInstance as AddressEditorComponent;
+
+    expect(editorComponent.isNew).toBeTruthy();
+    const oldNumberOfAddresses =
+      fixture.componentInstance.customerAddresses.length;
+    // Setting form values
+    editorComponent.addressForm.controls['address'].setValue('787 Dunbar Road');
+    editorComponent.addressForm.controls['fullname'].setValue(
+      'John California',
+    );
+    editorComponent.addressForm.controls['email'].setValue('johnyboy@mail.com');
+    editorComponent.addressForm.controls['phoneNumber'].setValue(
+      '+1 (213) 555-3890',
+    );
+    editorComponent.addressForm.controls['city'].setValue('San Jose, CA');
+    editorComponent.addressForm.controls['zipcode'].setValue('95127');
+    editorComponent.addressForm.controls['country'].setValue('United States');
+    editorComponent.addressForm.controls['id'].setValue(333);
+    //
+
+    const addButton = editorElement.query(By.css('[name=add-button]'));
+    expect(addButton).withContext("didn't find the Add button").toBeTruthy();
+    addButton.nativeElement.click();
+
+    const request = httpTestingController.expectOne(
+      {url: 'https://localhost:7107/api/address/', method: 'POST'},
+      'Request to save new address in database',
+    );
+    request.flush(editorComponent.address, {
+      status: 200,
+      statusText: 'All good',
+    });
+
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.customerAddresses.length)
+      .withContext(
+        'added new address so addresses lenght should be incremented',
+      )
+      .toEqual(oldNumberOfAddresses + 1);
+    const newAddress = component.customerAddresses.at(-1)!;
+
+    expect(newAddress.Country.length).toBeGreaterThan(0);
+    expect(newAddress.FullName.length).toBeGreaterThan(0);
+    component.dialogAddressEditor.closeAll();
+  });
+
+  fit('should update the address', async function () {
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const editAddressButton = fixture.debugElement.query(
+      By.css('[fonticon=edit]'),
+    ).parent;
+    editAddressButton?.nativeElement.click();
+    fixture.detectChanges();
 
     const editorElement = new DebugElement(
       document.querySelector('app-address-editor')!,
     );
+    const editorComponent =
+      editorElement.componentInstance as AddressEditorComponent;
 
-    const addButton = editorElement.query(By.css('[name=add-button]'));
+    expect(editorComponent.isNew).toBeFalsy();
 
-    expect(addButton).withContext("didn't find the Add button").toBeTruthy();
+    editorComponent.addressForm.controls['fullname'].setValue(
+      'Jimmy California',
+    );
+    fixture.detectChanges();
+
+    const editButton = editorElement.query(By.css('[name=edit-button]'));
+
+    expect(editButton).withContext("didn't find the Edit button").toBeTruthy();
+    editButton.nativeElement.click();
+
+    const request = httpTestingController.expectOne(
+      {url: 'https://localhost:7107/api/address/', method: 'PUT'},
+      'Request to save updated address in database',
+    );
+    request.flush(editorComponent.address, {
+      status: 200,
+      statusText: 'All good',
+    });
+
+    fixture.detectChanges();
+
+    expect(component.customerAddresses[0].FullName)
+      .withContext('should have new name value')
+      .toEqual('Jimmy California');
+    expect(component.customerAddresses[0].Country)
+      .withContext('should keep old country value')
+      .toEqual('United States');
+    component.dialogAddressEditor.closeAll();
+  });
+
+  fit('should delete address', async function () {
+    const httpTestingController = TestBed.inject(HttpTestingController);
+    const editAddressButton = fixture.debugElement.query(
+      By.css('[fonticon=edit]'),
+    ).parent;
+    editAddressButton?.nativeElement.click();
+    fixture.detectChanges();
+
+    const editorElement = new DebugElement(
+      document.querySelector('app-address-editor')!,
+    );
+    const editorComponent =
+      editorElement.componentInstance as AddressEditorComponent;
+    expect(editorComponent.isNew).toBeFalsy();
+
+    const oldNumberOfAddresses =
+      fixture.componentInstance.customerAddresses.length;
+
+    const deleteButton = editorElement.query(By.css('[name=delete-button]'));
+    expect(deleteButton)
+      .withContext("didn't find the Delete button")
+      .toBeTruthy();
+    deleteButton.nativeElement.click();
+    fixture.detectChanges();
+
+    const request = httpTestingController.expectOne(
+      {
+        url:
+          'https://localhost:7107/api/address/' +
+          component.customerAddresses[0].Id,
+        method: 'DELETE',
+      },
+      'Request to save new address in database',
+    );
+    request.flush(editorComponent.address, {
+      status: 200,
+      statusText: 'All good',
+    });
+
+    expect(fixture.componentInstance.customerAddresses.length)
+      .withContext('deleted address so addresses lenght should be decremented')
+      .toEqual(oldNumberOfAddresses - 1);
+    component.dialogAddressEditor.closeAll();
   });
 });

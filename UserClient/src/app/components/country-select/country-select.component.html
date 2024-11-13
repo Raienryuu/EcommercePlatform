@@ -5,6 +5,7 @@
     (selectionChange)="selectionChanged($event)"
     [required]="required"
     [formControl]="countryControl"
+    #country
   >
     @for (countryItem of countriesNoPhonesSorted; track countryItem) {
       <mat-option value="{{ countryItem }}">{{ countryItem }}</mat-option>

@@ -1,9 +1,4 @@
-import {
-  Component,
-  HostListener,
-  Inject,
-  ViewChild,
-} from '@angular/core';
+import { Component, HostListener, Inject, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { FormsModule } from '@angular/forms';
 import {
@@ -19,10 +14,6 @@ import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { MatButtonModule } from '@angular/material/button';
 import {
   MatDialog,
-  MatDialogTitle,
-  MatDialogContent,
-  MatDialogActions,
-  MatDialogClose,
   MatDialogRef,
   MAT_DIALOG_DATA,
 } from '@angular/material/dialog';
@@ -187,22 +178,20 @@ export class CheckoutComponent {
     dialog.componentInstance.countrySelector()?.writeValue(newValue.Country);
   }
 
-
-
   dhlAddress!: DhlAddress;
   deliveryOptionValue: string | undefined;
-  
-  ChangeDeliveryValue($event: MatRadioChange){
+
+  ChangeDeliveryValue($event: MatRadioChange) {
     this.deliveryOptionValue = $event.value;
   }
 
   openDhlDialog(): void {
     this.deliveryOptionValue = 'dhl';
-    
+
     const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent, {
       panelClass: 'dialogPanel',
     });
-    // Does this even works??
+
     dialogRef.afterClosed().subscribe((result) => {
       if (result) this.dhlAddress = result;
     });
@@ -216,16 +205,7 @@ export class CheckoutComponent {
   templateUrl: 'map.html',
   styleUrls: ['./checkout.component.scss'],
   standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-  ],
+  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
 })
 export class LockerSelectorDialogComponent {
   constructor(
@@ -242,7 +222,6 @@ export class LockerSelectorDialogComponent {
     try {
       const parseRes = JSON.parse(event.data);
       if (parseRes.sap !== undefined) {
-        console.warn(event.data);
         this.dialogRef.close(parseRes);
       }
     } catch {

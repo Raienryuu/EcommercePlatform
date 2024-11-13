@@ -8,7 +8,8 @@ import { environment } from 'src/enviroment';
   providedIn: 'root',
 })
 export class AddressService {
-  API: string = environment.apiUrl + 'api/address/';
+
+  API: string = environment.apiUrl + 'address/';
   constructor(private httpClient: HttpClient) {}
 
   GetAddresses(): Observable<CustomerAddress[]> {
@@ -18,7 +19,7 @@ export class AddressService {
   AddAddress(newAddress: CustomerAddress): Observable<CustomerAddress> {
     return this.httpClient.post<CustomerAddress>(this.API, newAddress);
   }
-  
+
   UpdateAddress(updatedAddress: CustomerAddress): Observable<CustomerAddress> {
     return this.httpClient.put<CustomerAddress>(this.API, updatedAddress);
   }

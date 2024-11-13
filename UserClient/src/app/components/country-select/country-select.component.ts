@@ -1,4 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output,
+} from '@angular/core';
 import { CountriesNoPhonesSorted } from '../register/RegisterRawData';
 import {
   MatError,
@@ -12,6 +18,7 @@ import {
   ControlValueAccessor,
   FormControl,
   FormsModule,
+  NG_VALUE_ACCESSOR,
 } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -30,13 +37,20 @@ import { ErrorStateMatcher } from '@angular/material/core';
     FormsModule,
     ReactiveFormsModule,
   ],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => CountrySelectComponent),
+      multi: true,
+    },
+  ],
 })
 export class CountrySelectComponent implements ControlValueAccessor {
   /**
    *
    */
   constructor() {
-    if (this.validate === false) {
+    if (!this.validate) {
       this.countryControl = new FormControl();
     }
   }
@@ -60,19 +74,20 @@ export class CountrySelectComponent implements ControlValueAccessor {
   selectionChanged(event: MatSelectChange) {
     this._onChange(event.value);
     this.countryChange.emit(event.value);
-    
   }
 
   _onChange: (_: unknown) => void = () => true;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _onTouched(_: unknown){
+  _onTouched(_: unknown) {
     this.countryControl.markAsTouched();
   }
 
-  writeValue(obj: unknown): void {
-    this.country = obj as string;
-    this.countryControl.setValue(obj as string);
+
+  writeValue(obj: string): void {
+    this._onChange(obj);
+    this.country = obj;
+    this.countryControl?.setValue(obj, { emitEvent: false });
   }
 
   registerOnChange(fn: (_: unknown) => void): void {
