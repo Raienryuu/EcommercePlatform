@@ -6,6 +6,7 @@ import { CatalogComponent } from './components/catalog/catalog.component';
 import { CartComponent } from './components/cart/cart.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
+import {CountrySelectComponent} from "./components/country-select/country-select.component";
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'address' },
@@ -15,7 +16,7 @@ const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent },
-  { path: 'address', component: AddressEditorComponent },
+  { path: 'address', component: CountrySelectComponent },
 ];
 
 @NgModule({

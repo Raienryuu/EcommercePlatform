@@ -22,7 +22,7 @@ import {
 } from "@angular/common/http/testing";
 import {MatDialogModule} from "@angular/material/dialog";
 
-fdescribe('AddressEditorComponent', () => {
+describe('AddressEditorComponent', () => {
   var component: AddressEditorComponent;
   var fixture: ComponentFixture<AddressEditorComponent>;
 

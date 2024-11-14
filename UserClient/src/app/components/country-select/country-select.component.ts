@@ -52,6 +52,8 @@ export class CountrySelectComponent implements ControlValueAccessor {
   constructor() {
     if (!this.validate) {
       this.countryControl = new FormControl();
+    } else {
+      this.country = this.countryControl.value;
     }
   }
 

@@ -1,5 +1,4 @@
 import {
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -10,7 +9,6 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {CountrySelectComponent} from 'src/app/components/country-select/country-select.component';
 import {CustomerAddress} from 'src/app/models/customer-address.model';
 import {AddressService} from 'src/app/services/addressService/address.service';
-import debugLog = jasmine.debugLog;
 
 @Component({
   selector: 'app-address-editor',
@@ -56,13 +54,8 @@ export class AddressEditorComponent {
   /**
    *
    */
-  constructor(private addressService: AddressService,
-              private changeDetectorRef: ChangeDetectorRef
+  constructor(private addressService: AddressService
   ) {
-  }
-
-  printAddress() {
-    console.log(this.address);
   }
 
   CloseEditor(): void {
