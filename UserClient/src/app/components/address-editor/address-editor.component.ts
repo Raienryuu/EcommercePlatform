@@ -6,10 +6,11 @@ import {
   Output,
   viewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CountrySelectComponent } from 'src/app/components/country-select/country-select.component';
-import { CustomerAddress } from 'src/app/models/customer-address.model';
-import { AddressService } from 'src/app/services/addressService/address.service';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {CountrySelectComponent} from 'src/app/components/country-select/country-select.component';
+import {CustomerAddress} from 'src/app/models/customer-address.model';
+import {AddressService} from 'src/app/services/addressService/address.service';
+import debugLog = jasmine.debugLog;
 
 @Component({
   selector: 'app-address-editor',
@@ -34,14 +35,6 @@ export class AddressEditorComponent {
 
   @Output()
   actionResponse = new EventEmitter<AddressEditorResponse | undefined>();
-
-  /**
-   *
-   */
-  constructor(private addressService: AddressService,
-    private changeDetectorRef : ChangeDetectorRef
-  ) {}
-
   addressForm = new FormGroup({
     id: new FormControl(0),
     fullname: new FormControl('', Validators.required),
@@ -58,11 +51,20 @@ export class AddressEditorComponent {
     country: new FormControl('', Validators.required),
     zipcode: new FormControl('', Validators.required),
   });
+  countrySelector = viewChild<CountrySelectComponent>('country');
+
+  /**
+   *
+   */
+  constructor(private addressService: AddressService,
+              private changeDetectorRef: ChangeDetectorRef
+  ) {
+  }
 
   printAddress() {
     console.log(this.address);
   }
-  
+
   CloseEditor(): void {
     this.actionResponse.emit(undefined);
   }
@@ -73,7 +75,7 @@ export class AddressEditorComponent {
     this.addressService
       .AddAddress(this.address)
       .subscribe((x) =>
-        this.actionResponse.emit({ Address: x, WasDeleted: false }),
+        this.actionResponse.emit({Address: x, WasDeleted: false}),
       );
   }
 
@@ -83,7 +85,7 @@ export class AddressEditorComponent {
     this.addressService
       .UpdateAddress(this.address)
       .subscribe((x) =>
-        this.actionResponse.emit({ Address: x, WasDeleted: false }),
+        this.actionResponse.emit({Address: x, WasDeleted: false}),
       );
   }
 
@@ -92,13 +94,13 @@ export class AddressEditorComponent {
 
     this.addressService.DeleteAddress(this.address.Id).subscribe({
       next: () =>
-        this.actionResponse.emit({ Address: this.address, WasDeleted: true }),
+        this.actionResponse.emit({Address: this.address, WasDeleted: true}),
       error: () => console.error('unable to delete'),
-      complete: () => console.warn('finished'),
+      complete: () => {
+        return
+      },
     });
   }
-
-  countrySelector = viewChild<CountrySelectComponent>('country');
 
   IsDataValid(): boolean {
     this.addressForm.markAllAsTouched();

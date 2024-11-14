@@ -32,7 +32,7 @@ import {
 import {DebugElement} from '@angular/core';
 import {AddressEditorComponent} from '../address-editor/address-editor.component';
 
-fdescribe('CheckoutComponent', () => {
+describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
 
@@ -160,7 +160,7 @@ fdescribe('CheckoutComponent', () => {
     component.dialogAddressEditor.closeAll();
   });
 
-  fit('should update the address', async function () {
+  it('should update the address', async function () {
     const httpTestingController = TestBed.inject(HttpTestingController);
     const editAddressButton = fixture.debugElement.query(
       By.css('[fonticon=edit]'),
@@ -206,7 +206,7 @@ fdescribe('CheckoutComponent', () => {
     component.dialogAddressEditor.closeAll();
   });
 
-  fit('should delete address', async function () {
+  it('should delete address', async function () {
     const httpTestingController = TestBed.inject(HttpTestingController);
     const editAddressButton = fixture.debugElement.query(
       By.css('[fonticon=edit]'),
