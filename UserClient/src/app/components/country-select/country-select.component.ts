@@ -18,7 +18,7 @@ import {
   ControlValueAccessor,
   FormControl,
   FormsModule,
-  NG_VALUE_ACCESSOR,
+  NG_VALUE_ACCESSOR, Validators,
 } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -53,7 +53,10 @@ export class CountrySelectComponent implements ControlValueAccessor {
     if (!this.validate) {
       this.countryControl = new FormControl();
     } else {
-      this.country = this.countryControl.value;
+      this.country = this.countryControl.value!;
+      if (this.countryControl.validator === null){
+        this.countryControl = new FormControl('', [Validators.required]);
+      }
     }
   }
 
@@ -71,7 +74,7 @@ export class CountrySelectComponent implements ControlValueAccessor {
   countryChange = new EventEmitter<string>();
 
   @Input()
-  countryControl: FormControl<string> = null!;
+  countryControl = new FormControl<string>('');
 
   selectionChanged(event: MatSelectChange) {
     this._onChange(event.value);
