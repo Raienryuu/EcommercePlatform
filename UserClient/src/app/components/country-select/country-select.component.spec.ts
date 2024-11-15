@@ -28,9 +28,9 @@ import {TestbedHarnessEnvironment} from "@angular/cdk/testing/testbed";
 import {MatSelectHarness} from "@angular/material/select/testing";
 
 
-fdescribe('CountrySelectComponent', () => {
+describe('CountrySelectComponent', () => {
   @Component({
-    selector: 'wrapper',
+    selector: 'app-wrapper',
     template: `
       <app-country-select [validate]="true" [countryControl]="countryControl"/>`,
     imports: [
@@ -38,7 +38,7 @@ fdescribe('CountrySelectComponent', () => {
     ],
     standalone: true
   })
-  class CountrySelectComponentWrapper {
+  class CountrySelectWrapperComponent {
     countryControl = new FormControl<string>('', [Validators.required]);
     component = viewChild<CountrySelectComponent>(
       CountrySelectComponent);
@@ -124,12 +124,12 @@ fdescribe('CountrySelectComponent', () => {
   }
 
   describe('validation enabled', function () {
-    let fixture: ComponentFixture<CountrySelectComponentWrapper>;
+    let fixture: ComponentFixture<CountrySelectWrapperComponent>;
     let component: Signal<CountrySelectComponent>;
     beforeEach(async () => {
       await TestBed.configureTestingModule({
         declarations: [],
-        imports: [CountrySelectComponent, CountrySelectComponentWrapper,
+        imports: [CountrySelectComponent, CountrySelectWrapperComponent,
           BrowserModule,
           FormsModule,
           AppRoutingModule,
@@ -157,7 +157,7 @@ fdescribe('CountrySelectComponent', () => {
       })
         .compileComponents();
 
-      fixture = TestBed.createComponent(CountrySelectComponentWrapper);
+      fixture = TestBed.createComponent(CountrySelectWrapperComponent);
       component = fixture.componentInstance.component as Signal<CountrySelectComponent>;
       fixture.detectChanges();
     });

@@ -54,12 +54,23 @@ export class CartComponent implements OnInit {
     this.RecalculateTotalCost();
   }
 
+  MAX_QUANTITY = 100;
   ValidateQuantity(product: Product) {
-    const MAX_QUANTITY = 100;
-    if (product.quantity < 0)
-      product.quantity = 0;
-    if (product.quantity > MAX_QUANTITY)
-      product.quantity = MAX_QUANTITY;
+    if (product.quantity < 1)
+      product.quantity = 1;
+    if (product.quantity > this.MAX_QUANTITY)
+      product.quantity = this.MAX_QUANTITY;
+  }
+
+  IsDecrementationInvalid(product: Product): boolean {
+    if (product.quantity === 1)
+      return true;
+    return false;
+  }
+  IsIncrementationInvalid(product: Product): boolean {
+    if (product.quantity === this.MAX_QUANTITY)
+      return true;
+    return false;
   }
 
 }

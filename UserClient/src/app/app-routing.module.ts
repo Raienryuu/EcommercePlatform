@@ -9,7 +9,7 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
 import {CountrySelectComponent} from "./components/country-select/country-select.component";
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'address' },
+  { path: '', pathMatch: 'full', redirectTo: 'cart' },
   { path: 'products/:categoryId', component: CatalogComponent },
   { path: 'products', component: CatalogComponent },
   { path: 'login', component: LoginComponent },

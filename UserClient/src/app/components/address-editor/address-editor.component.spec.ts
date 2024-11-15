@@ -23,8 +23,8 @@ import {
 import {MatDialogModule} from "@angular/material/dialog";
 
 describe('AddressEditorComponent', () => {
-  var component: AddressEditorComponent;
-  var fixture: ComponentFixture<AddressEditorComponent>;
+  let component: AddressEditorComponent;
+  let fixture: ComponentFixture<AddressEditorComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
