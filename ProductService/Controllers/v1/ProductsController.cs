@@ -127,11 +127,11 @@ public class ProductsController(
   /// <remarks>
   /// Requires <see cref="Product.ConcurrencyStamp"/>s to be equal.
   /// </remarks>
-  /// <param name="id"></param>
-  /// <param name="updatedProduct"></param>
+  /// <param name="id"> of product to be modified</param>
+  /// <param name="updatedProduct"> object with new values</param>
   /// <returns>Updated product.</returns>
   /// <response code="200">Product with updated values.</response>
-  /// <response code="404">If product id doesn't exists.</response>
+  /// <response code="404">If product id doesn't exist.</response>
   /// <response code="422">If ConcurrencyStamps don't match.</response>
   [HttpPatch("{id}")]
   [ProducesResponseType(StatusCodes.Status200OK)]

@@ -13,7 +13,12 @@
   <mat-sidenav-container class="catalog-main">
     <mat-sidenav class="side-drawer" mode="side" opened>
       <mat-list class="categories">
-        <a aria-label="go to broader category" class="categories-return" href="" mat-list-item>
+        <a
+          aria-label="go to broader category"
+          class="categories-return"
+          href=""
+          mat-list-item
+        >
           <div class="categories-back">
             <mat-icon class="categories-back-icon" inline="true"
               >arrow_upward</mat-icon
@@ -21,9 +26,12 @@
             <span> {{ categoryId }} </span>
           </div>
         </a>
-        <a mat-list-item *ngFor="let child of categoryChildren"
-          href="products/{{child.id}}"
-        >{{child.categoryName}}</a>
+        <a
+          mat-list-item
+          *ngFor="let child of categoryChildren"
+          href="products/{{ child.id }}"
+          >{{ child.categoryName }}</a
+        >
       </mat-list>
 
       <div class="filters">
@@ -48,7 +56,7 @@
               type="number"
               class="filter-field"
             />
-            <span matTextPrefix>{{currencySymbol}}&nbsp;</span>
+            <span matTextPrefix>{{ currencySymbol }}&nbsp;</span>
           </mat-form-field>
           <mat-form-field
             appearance="outline"
@@ -62,7 +70,7 @@
               type="number"
               class="filter-field"
             />
-            <span matTextPrefix>{{currencySymbol}}&nbsp;</span>
+            <span matTextPrefix>{{ currencySymbol }}&nbsp;</span>
           </mat-form-field>
         </div>
       </div>
@@ -76,7 +84,7 @@
           mat-stroked-button
           (click)="RemoveMinPriceFilter()"
         >
-          Price > {{ filters.MinPrice }}{{currencySymbol}}
+          Price > {{ filters.MinPrice }}{{ currencySymbol }}
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >
@@ -87,13 +95,13 @@
           mat-stroked-button
           (click)="RemoveMaxPriceFilter()"
         >
-          Price < {{ filters.MaxPrice }}{{currencySymbol}}
+          Price < {{ filters.MaxPrice }}{{ currencySymbol }}
           <mat-icon class="material-icons-outlined applied-filter-icon"
             >close</mat-icon
           >
         </button>
         <button
-          *ngIf="filters.Name.length !== 0"
+          *ngIf="filters.Name !== null"
           class="applied-filter"
           mat-stroked-button
           (click)="RemoveNameFilter()"
@@ -115,8 +123,14 @@
             />
             <div class="product-name">{{ product.name }}</div>
             <div class="horizontal-flex" style="width: 100%">
-              <div class="product-price">{{ product.price }} $</div>
-              <button aria-label="add to cart" class="product-btn" mat-flat-button>
+              <div class="product-price">
+                {{ product.price + currencySymbol }}
+              </div>
+              <button
+                aria-label="add to cart"
+                class="product-btn"
+                mat-flat-button
+              >
                 <mat-icon class="product-btn-icon">add_shopping_cart</mat-icon>
               </button>
             </div>
@@ -133,9 +147,9 @@
           >
             <mat-select
               aria-label="items per page"
-              [value]="pageSize"
+              [value]="filters.PageSize"
+              (selectionChange)="UpdatePageSize($event)"
               disableOptionCentering="false"
-              hideSingleSelectionIndicator
               class="paginator-item"
             >
               <mat-option [value]="5">
@@ -157,9 +171,12 @@
           </mat-form-field>
         </div>
         <div class="paginator-controls">
-          <button mat-button type="button" class="page-button"
-          *ngIf="IsPageAvaiable(-1)"
-          (click)="LoadNewPage(-1)"
+          <button
+            mat-button
+            type="button"
+            class="page-button"
+            *ngIf="IsPageAvaiable(-1)"
+            (click)="LoadNewPage(-1)"
           >
             <span class="page-direction"> Previous </span>
             <mat-icon> arrow_back_ios </mat-icon>
@@ -172,7 +189,7 @@
             class="page-button page-ref"
             (click)="LoadNewPage(-2)"
           >
-            {{ this.pageNum - 2 }}
+            {{ this.filters.PageNum - 2 }}
           </button>
 
           <button
@@ -181,9 +198,8 @@
             type="button"
             class="page-button page-ref"
             (click)="LoadNewPage(-1)"
-
           >
-            {{ this.pageNum - 1 }}
+            {{ this.filters.PageNum - 1 }}
           </button>
 
           <button
@@ -192,7 +208,7 @@
             class="page-button page-ref current-page-button"
             disabled="true"
           >
-            {{ this.pageNum }}
+            {{ this.filters.PageNum }}
           </button>
 
           <button
@@ -201,9 +217,8 @@
             type="button"
             class="page-button page-ref"
             (click)="LoadNewPage(1)"
-
           >
-            {{ this.pageNum + 1 }}
+            {{ this.filters.PageNum + 1 }}
           </button>
 
           <button
@@ -212,17 +227,19 @@
             type="button"
             class="page-button page-ref"
             (click)="LoadNewPage(2)"
-
           >
-            {{ this.pageNum + 2 }}
+            {{ this.filters.PageNum + 2 }}
           </button>
 
           <div class="mat-typography paginator-item" style="font-weight: 500">
             out of {{ maxPage }}
           </div>
-          <button mat-button type="button" class="page-button"
-          *ngIf="IsPageAvaiable(1)"
-          (click)="LoadNewPage(1)"
+          <button
+            mat-button
+            type="button"
+            class="page-button"
+            *ngIf="IsPageAvaiable(1)"
+            (click)="LoadNewPage(1)"
           >
             <span class="page-direction"> Next </span>
             <mat-icon iconPositionEnd> arrow_forward_ios</mat-icon>

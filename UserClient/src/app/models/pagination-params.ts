@@ -5,12 +5,14 @@ export enum SortType {
   QuantityAsc = 3
 }
 
-export interface SearchFilters {
-
+export interface PaginationParams {
+  PageNum: number;
+  PageSize: number;
   Name: string;
   MinPrice: number;
   MaxPrice: number;
   MinQuantity: number;
   Categories: number;
   Order: SortType;
+  
 }

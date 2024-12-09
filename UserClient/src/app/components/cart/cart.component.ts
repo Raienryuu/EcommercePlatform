@@ -34,7 +34,7 @@ export class CartComponent implements OnInit {
     return (product.price * product.quantity).toFixed(2);
   }
 
-  RecalculateTotalCost() {
+  RecalculateTotalCost() { // TODO: ask API for calculation instead
     let priceSum = 0;
     let taxSum = 0;
     let totalSum = 0;

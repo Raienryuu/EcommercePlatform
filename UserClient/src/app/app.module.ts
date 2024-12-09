@@ -4,7 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './core/app.component';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { CatalogComponent } from './components/catalog/catalog.component';
+import { ProductsComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
@@ -42,7 +42,7 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
     LoginComponent,
     RegisterComponent,
     NavbarComponent,
-    CatalogComponent,
+    ProductsComponent,
     FooterComponent,
     CartComponent,
     CheckoutComponent,
