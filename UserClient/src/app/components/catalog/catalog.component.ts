@@ -40,7 +40,6 @@ export class ProductsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userSettingsService: UserSettingsService,
-    private changeDetector: ChangeDetectorRef,
   ) {
     setInterval(() => console.log(this.filters.PageNum), 1000);
 
@@ -76,6 +75,15 @@ export class ProductsComponent implements OnInit {
     this.filters.PageSize = this.GetPageSizeFromRoute();
     this.GetProductsPage(0);
     this.GetCategoryTree();
+
+    this.HookUpBackAndForwardButtons();
+  }
+
+  private HookUpBackAndForwardButtons() {
+    this.route.queryParams.subscribe(() => {
+      this.filters.PageSize = this.GetPageSizeFromRoute();
+      this.filters.PageNum = this.GetPageFromRoute();
+    });
   }
 
   LoadUserSettings() {
@@ -173,14 +181,6 @@ export class ProductsComponent implements OnInit {
         .querySelector('div.applied-filters')!
         .classList.remove('opacity');
     }
-  }
-
-  @HostListener('window:popstate', ['$event'])
-  onPopState() {
-    this.route.queryParams.subscribe(() => {
-      this.filters.PageSize = this.GetPageSizeFromRoute();
-      this.filters.PageNum = this.GetPageFromRoute();
-    });
   }
 
   UpdatePageSize(event: MatSelectChange) {
