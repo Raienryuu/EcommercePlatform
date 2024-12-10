@@ -34,13 +34,12 @@ public class ProductsController(
   }
 
   [HttpGet]
-  [Route("{pageNum}/{pageSize}")]
   [ProducesResponseType<IEnumerable<Product>>(StatusCodes.Status200OK)]
   [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest)]
   public async Task<IActionResult> GetProductsPage(
-  int pageNum, int pageSize, [FromQuery] SearchFilters filters)
+  [FromQuery] PaginationParams filters)
   {
-    var validationResult = ValidatePaginationParams(pageSize, pageNum);
+    var validationResult = ValidatePaginationParams(filters.PageSize, filters.PageNum);
 
     if (validationResult is not null)
     {
@@ -48,7 +47,7 @@ public class ProductsController(
     }
 
     var pagination = new ProductsPagination(filters, db)
-      .GetOffsetPageQuery(pageNum, pageSize);
+      .GetOffsetPageQuery(filters.PageNum, filters.PageSize);
     var products = await pagination.ToListAsync();
 
     if (products.Count == 0) return Ok("No products found on given page.");
@@ -56,22 +55,20 @@ public class ProductsController(
   }
 
   [HttpPost]
-  [Route("nextPage/{pageSize}")]
+  [Route("nextPage")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetNextPage(
-  int pageSize,
-  [FromQuery] SearchFilters filters,
+  [FromQuery] PaginationParams filters,
   [FromBody] Product referenceProduct)
   {
 
-    if (pageSize < 1 || pageSize > 200)
+    if (filters.PageSize < 1 || filters.PageSize > 200)
       return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-      "PageSize greater than 1, and PageSize less " +
-      "than 200"));
+	  "PageSize should be between 1 and 200"));
 
-    var query = new ProductsPagination(filters, db)
-      .GetNextPageQuery(pageSize, referenceProduct);
+	var query = new ProductsPagination(filters, db)
+      .GetNextPageQuery(filters.PageSize, referenceProduct);
 
     var s = query.ToQueryString();
     Console.WriteLine(s);
@@ -81,21 +78,19 @@ public class ProductsController(
   }
 
   [HttpPost]
-  [Route("previousPage/{pageSize}")]
+  [Route("previousPage")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetPreviousPage(
-  int pageSize,
-  [FromQuery] SearchFilters filters,
+  [FromQuery] PaginationParams filters,
   [FromBody] Product referenceProduct)
   {
-    if (pageSize < 1 || pageSize > 200)
+    if (filters.PageSize < 1 || filters.PageSize > 200)
       return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-      "PageSize greater than 1, and PageSize less " +
-      "than 200"));
+      "PageSize should be between 1 and 200"));
 
     var query = new ProductsPagination(filters, db)
-      .GetPreviousPageQuery(pageSize, referenceProduct);
+      .GetPreviousPageQuery(filters.PageSize, referenceProduct);
 
     var s = query.ToQueryString();
     Console.WriteLine(s);
@@ -170,13 +165,13 @@ public class ProductsController(
     return result is not null;
   }
 
-  private IActionResult ValidatePaginationParams(int pageSize, int pageNum = 1)
+  private IActionResult? ValidatePaginationParams(int pageSize, int pageNum = 1)
   {
     if (pageNum < 1 || pageSize < 1 || pageSize > 200)
       return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
       "Page and PageSize must be greater than 0 and PageSize less " +
       "than 200"));
-    return null!;
+    return null;
   }
 
   /// <summary>

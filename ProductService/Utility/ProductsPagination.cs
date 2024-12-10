@@ -9,12 +9,12 @@ namespace ProductService.Utility;
 
 public class ProductsPagination
 {
-  private readonly Dictionary<SearchFilters.SortType, IOrderable<Product>>
+  private readonly Dictionary<PaginationParams.SortType, IOrderable<Product>>
 	_orderers = new()
 	{
-	  { SearchFilters.SortType.PriceAsc, new PriceAscendingOrder() },
-	  { SearchFilters.SortType.PriceDesc, new PriceDescendingOrder() },
-	  { SearchFilters.SortType.QuantityAsc, new QuantityAscendingOrder() },
+	  { PaginationParams.SortType.PriceAsc, new PriceAscendingOrder() },
+	  { PaginationParams.SortType.PriceDesc, new PriceDescendingOrder() },
+	  { PaginationParams.SortType.QuantityAsc, new QuantityAscendingOrder() },
 	};
 
 
@@ -22,7 +22,7 @@ public class ProductsPagination
   private readonly IEnumerable<IFilterable<Product>> _activeFilters;
   private readonly IOrderable<Product> _itemsOrderer;
 
-  public ProductsPagination(SearchFilters filters,
+  public ProductsPagination(PaginationParams filters,
 	ProductDbContext db)
   {
 	_query = db.Products.AsQueryable();
@@ -51,7 +51,7 @@ public class ProductsPagination
 
 
   private IEnumerable<IFilterable<Product>> CreateFilters(
-	SearchFilters filters)
+	PaginationParams filters)
   {
 	var list = new List<IFilterable<Product>>
 	{

@@ -7,7 +7,7 @@ using Exp =
 namespace ProductService.Utility.Filters;
 
 public class MaxPriceFilter(
-  SearchFilters.SortType order,
+  PaginationParams.SortType order,
   object? filterValue = null)
   : IFilterable<Product>
 {

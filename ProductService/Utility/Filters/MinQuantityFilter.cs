@@ -7,7 +7,7 @@ using Exp =
 namespace ProductService.Utility.Filters;
 
 public class MinQuantityFilter(
-  SearchFilters.SortType order,
+  PaginationParams.SortType order,
   object? filterValue = null)
   : IFilterable<Product>
 {
