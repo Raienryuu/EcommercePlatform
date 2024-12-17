@@ -43,7 +43,7 @@
 			}
 		},
 		{
-			"DownstreamPathTemplate": "/api/orders/{everything}", // orderService
+			"DownstreamPathTemplate": "/api/v1/orders/{everything}", // orderService
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -51,7 +51,7 @@
 					"Port": 8080
 				}
 			],
-			"UpstreamPathTemplate": "/api/orders/{everything}",
+			"UpstreamPathTemplate": "/api/v1/orders/{everything}",
 			"AuthenticationOptions": {
 				"AuthenticationProviderKeys": [ "Bearer" ]
 			},
@@ -63,7 +63,7 @@
 			}
 		},
 		{
-			"DownstreamPathTemplate": "/api/products/{everything}", // productService
+			"DownstreamPathTemplate": "/api/v1/products/{everything}", // productService
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -71,19 +71,10 @@
 					"Port": 8080
 				}
 			],
-			"UpstreamPathTemplate": "/api/products/{everything}",
-			"AuthenticationOptions": {
-				"AuthenticationProviderKeys": [ "Bearer" ]
-			},
-			"RouteClaimsRequirement": {
-				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
-			},
-			"AddHeadersToRequest": {
-				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
-			}
+			"UpstreamPathTemplate": "/api/v1/products/{everything}",
 		},
 		{
-			"DownstreamPathTemplate": "/api/productscategories/{everything}", // productService
+			"DownstreamPathTemplate": "/api/v1/productscategories/{everything}", // productService
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -91,16 +82,7 @@
 					"Port": 8080
 				}
 			],
-			"UpstreamPathTemplate": "/api/productscategories/{everything}",
-			"AuthenticationOptions": {
-				"AuthenticationProviderKeys": [ "Bearer" ]
-			},
-			"RouteClaimsRequirement": {
-				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
-			},
-			"AddHeadersToRequest": {
-				"UserId": " Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
-			}
+			"UpstreamPathTemplate": "/api/v1/productscategories/{everything}"
 		},
 		{
 			"DownstreamPathTemplate": "/api/cart/{everything}", // cartService
