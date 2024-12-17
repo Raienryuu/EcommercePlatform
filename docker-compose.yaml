@@ -83,12 +83,18 @@ services:
       RABBITMQ_DEFAULT_PASS: "guest"
 
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-CU12-GDR1-ubuntu-22.04
+    build:
+      dockerfile: sqlserver-docker
+      context: .
+      secrets:
+        - sqlpassword
     environment:
-      MSSQL_SA_PASSWORD: "passwordThatPassesConnectionStringParsing#$%"
       ACCEPT_EULA: "Y"
+    
     ports: 
       - "1434:1433"
+    secrets:
+      - sqlpassword
 
   mongodb:
     image: mongo:7.0.9
@@ -101,3 +107,6 @@ services:
     ports:
       - "6379:6379"
     
+secrets:
+  sqlpassword:
+    file: sqlpassword.txt
