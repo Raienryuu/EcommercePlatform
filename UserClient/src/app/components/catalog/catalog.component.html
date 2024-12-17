@@ -41,8 +41,15 @@
           floatLabel="always"
         >
           <mat-label>Name includes</mat-label>
-          <input [(ngModel)]="filters.Name" class="filter-input" matInput />
+          <input
+            [(ngModel)]="filters.Name"
+            class="filter-input"
+            matInput
+            (ngModelChange)="RefreshFilterDelay()"
+            (ngModelChange)="ClearNameFilterIfEmpty()"
+          />
         </mat-form-field>
+
         <div class="price-filter">
           <mat-form-field
             appearance="outline"
@@ -55,6 +62,7 @@
               matInput
               type="number"
               class="filter-field"
+              (ngModelChange)="RefreshFilterDelay()"
             />
             <span matTextPrefix>{{ currencySymbol }}&nbsp;</span>
           </mat-form-field>
@@ -69,6 +77,7 @@
               matInput
               type="number"
               class="filter-field"
+              (ngModelChange)="RefreshFilterDelay()"
             />
             <span matTextPrefix>{{ currencySymbol }}&nbsp;</span>
           </mat-form-field>
@@ -111,7 +120,7 @@
           <mat-icon class="material-icons-outlined" fontIcon="close" />
         </button>
       </div>
-      <div class="products" *ngIf="products.length !== 0">
+      <div class="products" *ngIf="products.length > 0">
         <div *ngFor="let product of products" class="product">
           <div class="product-details">
             <img
@@ -254,7 +263,19 @@
           height: 500px;
           width: 100%;
         "
-        *ngIf="products.length === 0"
+        *ngIf="products.length === 0 && !isLoading"
+      >
+        Sorry, we couldn't find any products that match your criteria.
+      </div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-around;
+          padding-top: 50px;
+          height: 500px;
+          width: 100%;
+        "
+        *ngIf="isLoading"
       >
         <mat-spinner class="progress-spinner" diameter="200" />
       </div>
