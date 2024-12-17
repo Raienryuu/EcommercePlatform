@@ -16,11 +16,7 @@ export class ProductService {
     return this.httpClient.get<Product>(url);
   }
 
-  GetProductsPage(
-    pageNum: number,
-    pageSize: number,
-    filters: PaginationParams,
-  ): Observable<Product[]> {
+  GetProductsPage(filters: PaginationParams): Observable<Product[]> {
     if (environment.sampleData === true) {
       const products: Product[] = [
         {
@@ -108,34 +104,32 @@ export class ProductService {
       return of(products).pipe(delay(1000));
     }
 
-    let url = environment.apiUrl + 'v1/products/' + pageNum + '/' + pageSize;
+    let url = environment.apiUrl + 'v1/products';
 
     url = ApplySearchFilters(url, filters);
     return this.httpClient.get<Product[]>(url);
   }
 
   GetNextPage(
-    pageSize: number,
     filters: PaginationParams,
     edgeProduct: Product,
   ): Observable<Product[]> {
     if (environment.sampleData === true) {
-      return this.GetProductsPage(1, 1, null!);
+      return this.GetProductsPage(null!);
     }
-    let url = environment.apiUrl + `v1/products/nextPage/${pageSize}`;
+    let url = environment.apiUrl + `v1/products/nextPage`;
     url = ApplySearchFilters(url, filters);
     return this.httpClient.post<Product[]>(url, edgeProduct);
   }
 
   GetPreviousPage(
-    pageSize: number,
     filters: PaginationParams,
     edgeProduct: Product,
   ): Observable<Product[]> {
     if (environment.sampleData === true) {
-      return this.GetProductsPage(1, 1, null!);
+      return this.GetProductsPage(null!);
     }
-    let url = environment.apiUrl + `v1/products/previousPage/${pageSize}`;
+    let url = environment.apiUrl + `v1/products/previousPage`;
     url = ApplySearchFilters(url, filters);
     return this.httpClient.post<Product[]>(url, edgeProduct);
   }
@@ -146,17 +140,22 @@ function ApplySearchFilters(url: string, filters: PaginationParams): string {
 
   url = url.concat('?');
 
-  if (filters.Name !== '') url = url.concat('&Name=' + filters.Name);
+  if (filters.PageNum) url = url.concat('PageNum=' + filters.PageNum + '&');
 
-  if (filters.MinPrice) url = url.concat('&MinPrice=' + filters.MinPrice);
+  if (filters.PageSize) url = url.concat('PageSize=' + filters.PageSize + '&');
 
-  if (filters.MaxPrice) url = url.concat('&MaxPrice=' + filters.MaxPrice);
+  if (filters.Name !== null) url = url.concat('Name=' + filters.Name + '&');
+
+  if (filters.MinPrice) url = url.concat('MinPrice=' + filters.MinPrice + '&');
+
+  if (filters.MaxPrice) url = url.concat('MaxPrice=' + filters.MaxPrice + '&');
 
   if (filters.MinQuantity)
-    url = url.concat('&MinQuantity=' + filters.MinQuantity);
+    url = url.concat('MinQuantity=' + filters.MinQuantity + '&');
 
-  if (filters.Order) url = url.concat('&Order=' + filters.Order);
+  if (filters.Order) url = url.concat('Order=' + filters.Order + '&');
 
-  if (filters.Categories) url = url.concat('&Categories=' + filters.Categories);
+  if (filters.Categories)
+    url = url.concat('Categories=' + filters.Categories + '&');
   return url;
 }

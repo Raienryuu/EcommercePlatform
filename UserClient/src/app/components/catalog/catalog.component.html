@@ -45,8 +45,7 @@
             [(ngModel)]="filters.Name"
             class="filter-input"
             matInput
-            (ngModelChange)="RefreshFilterDelay()"
-            (ngModelChange)="ClearNameFilterIfEmpty()"
+            (ngModelChange)="HandleKeyWordsSearch()"
           />
         </mat-form-field>
 

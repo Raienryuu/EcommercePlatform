@@ -50,7 +50,6 @@ public class ProductsController(
       .GetOffsetPageQuery(filters.PageNum, filters.PageSize);
     var products = await pagination.ToListAsync();
 
-    if (products.Count == 0) return Ok("No products found on given page.");
     return Ok(products);
   }
 

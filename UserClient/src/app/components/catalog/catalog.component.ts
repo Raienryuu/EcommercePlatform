@@ -1,9 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  HostListener,
-  OnInit,
-} from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Product } from 'src/app/models/product';
 import { ProductCategory } from 'src/app/models/product-category';
@@ -12,6 +7,7 @@ import { ProductCategoryService } from 'src/app/services/productCategoryService/
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
+import { debounceTime, delay, interval, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
@@ -22,8 +18,9 @@ export class ProductsComponent implements OnInit {
   products: Product[] = [];
 
   filters: PaginationParams;
-
+  isLoading = true;
   maxPage = 10;
+  filteringDelay = new EventEmitter();
   public categoryId: string | null = '';
   currencySymbol = '€';
 
@@ -41,8 +38,6 @@ export class ProductsComponent implements OnInit {
     private router: Router,
     private userSettingsService: UserSettingsService,
   ) {
-    setInterval(() => console.log(this.filters.PageNum), 1000);
-
     this.filters = {
       PageNum: 1,
       PageSize: 5,
@@ -53,6 +48,14 @@ export class ProductsComponent implements OnInit {
       MinQuantity: null!,
       Categories: null!,
     };
+
+    this.filteringDelay
+    .pipe(debounceTime(800))
+    .subscribe(() => {
+      this.UpdateUrlQuery();
+      this.LoadNewPage(0);
+    });
+
   }
 
   private GetPageFromRoute(): number {
@@ -73,7 +76,7 @@ export class ProductsComponent implements OnInit {
     this.LoadUserSettings();
     this.filters.PageNum = this.GetPageFromRoute();
     this.filters.PageSize = this.GetPageSizeFromRoute();
-    this.GetProductsPage(0);
+    this.GetProductsPage();
     this.GetCategoryTree();
 
     this.HookUpBackAndForwardButtons();
@@ -83,7 +86,38 @@ export class ProductsComponent implements OnInit {
     this.route.queryParams.subscribe(() => {
       this.filters.PageSize = this.GetPageSizeFromRoute();
       this.filters.PageNum = this.GetPageFromRoute();
+      this.GetFiltersFromRoute();
+      this.LoadNewPage(0);
     });
+  }
+
+  private GetFiltersFromRoute() {
+    const minPrice = this.route.snapshot.queryParamMap.get('MinPrice');
+    this.filters.MaxPrice = minPrice ? parseInt(minPrice) : null!;
+    const maxPrice = this.route.snapshot.queryParamMap.get('MaxPrice');
+    this.filters.MaxPrice = maxPrice ? parseInt(maxPrice) : null!;
+
+    const name = this.route.snapshot.queryParamMap.get('Name') ?? '';
+    if (name.length > 0) {
+      this.filters.Name = name;
+    } else {
+      this.RemoveNameFilter();
+    }
+  }
+
+  RefreshFilterDelay() {
+    this.filteringDelay.emit();
+  }
+
+  HandleKeyWordsSearch() {
+    this.filteringDelay.emit();
+    this.ClearNameFilterIfEmpty();
+  }
+
+  private ClearNameFilterIfEmpty() {
+    if (this.filters.Name.length < 1) {
+      this.RemoveNameFilter();
+    }
   }
 
   LoadUserSettings() {
@@ -92,24 +126,32 @@ export class ProductsComponent implements OnInit {
       .subscribe((symbol) => (this.currencySymbol = symbol));
   }
 
-  GetProductsPage(pageOffset: number): void {
-    this.productService
-      .GetProductsPage(
-        this.filters.PageNum + pageOffset,
-        this.filters.PageSize,
-        this.filters,
-      )
-      .subscribe((data) => (this.products = data));
+  GetProductsPage(): void {
+    this.productService.GetProductsPage(this.filters).subscribe((data) => {
+      this.InsertNewProducts(data);
+    });
+  }
+
+  private InsertNewProducts(data: Product[]) {
+    this.products = [];
+    this.products = data;
+    this.isLoading = false;
   }
 
   GetNextPage(): void {
     this.productService
-      .GetNextPage(
-        this.filters.PageSize,
-        this.filters,
-        this.products[this.products.length - 1],
-      )
-      .subscribe((data) => (this.products = data));
+      .GetNextPage(this.filters, this.products[this.products.length - 1])
+      .subscribe((data) => {
+        this.InsertNewProducts(data);
+      });
+  }
+
+  GetPreviousPage(): void {
+    this.productService
+      .GetPreviousPage(this.filters, this.products[0])
+      .subscribe((data) => {
+        this.InsertNewProducts(data);
+      });
   }
 
   private UpdateUrlQuery() {
@@ -117,14 +159,8 @@ export class ProductsComponent implements OnInit {
       queryParams: this.filters,
       relativeTo: this.route,
       queryParamsHandling: 'merge',
-      onSameUrlNavigation: 'reload',
+      onSameUrlNavigation: 'ignore',
     });
-  }
-
-  GetPreviousPage(): void {
-    this.productService
-      .GetPreviousPage(this.filters.PageSize, this.filters, this.products[0])
-      .subscribe((data) => (this.products = data));
   }
 
   IsPageAvaiable(pageOffset: number): boolean {
@@ -137,28 +173,30 @@ export class ProductsComponent implements OnInit {
   }
 
   LoadNewPage(pageOffset: number) {
-    this.products = [];
+    this.filters.PageNum += pageOffset;
     if (pageOffset === 1) {
       this.GetNextPage();
     } else if (pageOffset === -1) {
       this.GetPreviousPage();
     } else {
-      this.GetProductsPage(pageOffset);
+      this.GetProductsPage();
     }
-    this.filters.PageNum += pageOffset;
     this.UpdateUrlQuery();
   }
 
   RemoveNameFilter() {
-    this.filters.Name = '';
+    this.filters.Name = null!;
+    this.UpdateUrlQuery();
   }
 
   RemoveMinPriceFilter() {
     this.filters.MinPrice = null!;
+    this.UpdateUrlQuery();
   }
 
   RemoveMaxPriceFilter() {
     this.filters.MaxPrice = null!;
+    this.UpdateUrlQuery();
   }
 
   GetCategoryTree() {
@@ -185,5 +223,6 @@ export class ProductsComponent implements OnInit {
 
   UpdatePageSize(event: MatSelectChange) {
     this.filters.PageSize = event.value;
+    this.filteringDelay.emit();
   }
 }

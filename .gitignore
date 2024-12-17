@@ -367,3 +367,4 @@ FodyWeavers.xsd
 
 
 UserClient.Tests/tests/accessibility_local.spec.ts
+sql_db_pw.txt
