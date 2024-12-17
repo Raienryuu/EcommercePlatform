@@ -12,9 +12,8 @@ public class Startup
 
   public void ConfigureServices(IServiceCollection services)
   {
-
 	var env = Configuration["ASPNETCORE_ENVIRONMENT"];
-	if (env == Environments.Development)
+	if (env == Environments.Development || env == "docker")
 	{
 	  services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
 	  {
