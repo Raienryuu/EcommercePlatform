@@ -33,6 +33,25 @@ public class Program
 	{
 	  app.UseSwagger();
 	  app.UseSwaggerUI();
+
+	  using var scope = app.Services.CreateAsyncScope();
+	  var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+
+	  foreach (var x in Enumerable.Range(0, 3))
+	  {
+		CreateDevelopmentDatabase(dbContext);
+	  }
+
+	  static void CreateDevelopmentDatabase(OrderDbContext dbContext)
+	  {
+		try
+		{
+		  dbContext.Database.EnsureCreated();
+		}
+		catch
+		{// do nothing
+		}
+	  }
 	}
 
 	app.UseHttpsRedirection();
@@ -41,11 +60,7 @@ public class Program
 
 	app.MapControllers();
 
-	using (var scope = app.Services.CreateAsyncScope())
-	{
-	  var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
-	  dbContext.Database.EnsureCreated();
-	}
+	
 
 	app.Run();
   }
