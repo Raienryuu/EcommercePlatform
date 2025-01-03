@@ -7,10 +7,11 @@ import { ProductCategoryService } from 'src/app/services/productCategoryService/
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
-import { debounceTime, delay, interval, Observable, of } from 'rxjs';
+import { debounceTime } from 'rxjs';
 
 @Component({
   selector: 'app-catalog',
+  standalone: false,
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
 })
@@ -50,11 +51,11 @@ export class ProductsComponent implements OnInit {
     };
 
     this.filteringDelay
-    .pipe(debounceTime(800))
-    .subscribe(() => {
-      this.UpdateUrlQuery();
-      this.LoadNewPage(0);
-    });
+      .pipe(debounceTime(800))
+      .subscribe(() => {
+        this.UpdateUrlQuery();
+        this.LoadNewPage(0);
+      });
 
   }
 

@@ -27,6 +27,7 @@ import { MatRadioChange } from '@angular/material/radio';
 
 @Component({
   selector: 'app-checkout',
+  standalone: false,
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
 })
@@ -211,7 +212,7 @@ export class LockerSelectorDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<LockerSelectorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
-  ) {}
+  ) { }
 
   onNoClick(): void {
     return;

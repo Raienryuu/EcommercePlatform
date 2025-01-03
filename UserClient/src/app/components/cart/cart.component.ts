@@ -4,6 +4,7 @@ import { UserSettingsService } from 'src/app/services/userSettingsService/user-s
 
 @Component({
   selector: 'app-cart',
+  standalone: false,
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss']
 })
