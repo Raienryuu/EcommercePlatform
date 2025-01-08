@@ -68,10 +68,14 @@ services:
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+
     depends_on:
-      - rabbitmq
-      - sqlserver
-      - mongodb
+      rabbitmq:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      sqlserver:
+        condition: service_started
 
   rabbitmq:
     image: rabbitmq
@@ -81,7 +85,11 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "guest"
       RABBITMQ_DEFAULT_PASS: "guest"
-
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 1
   sqlserver:
     build:
       dockerfile: sqlserver-docker
