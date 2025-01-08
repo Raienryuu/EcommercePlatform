@@ -1,0 +1,36 @@
+<body>
+  <div class="wrapper">
+    <div class="photos main-panel">
+      <div class="header">Photos</div>
+      <div class="content">
+        <div class="images">
+          <button mat-icon-button class="left-button img-button">
+            <mat-icon fontIcon="arrow_back_ios"> </mat-icon>
+          </button>
+          <img src="../../../assets/kubek.webp" alt="product image" />
+          <button mat-icon-button class="img-button">
+            <mat-icon fontIcon="arrow_forward_ios"> </mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="cart main-panel">
+      <div class="header">Cart</div>
+      <div class="content">
+        <div class="name">{{ product.name }}</div>
+        <div class="price">{{ product.price }} {{ currencySymbol }}</div>
+        <button mat-flat-button type="button" color="primary">
+          Add to cart
+        </button>
+        <div class="quanitity">Items left: {{ product.quantity }}</div>
+      </div>
+    </div>
+    <div class="details main-panel">
+      <div class="header">Details</div>
+      <div class="content">
+        nothing yet
+        -----------------------------------------------------------------------------------
+      </div>
+    </div>
+  </div>
+</body>

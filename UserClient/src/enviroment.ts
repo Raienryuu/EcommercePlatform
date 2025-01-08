@@ -9,5 +9,5 @@ export const environment = {
   dhlPassword: 'N7lyZJ3cTes?,*i',
   dhlParcelLogin: ' PIOTRZAWROCKI_TEST_PS',
   dhlParcelPassword: 'DjmzVhOG,hbQBJO',
-  sampleData: false,
+  sampleData: true,
 };

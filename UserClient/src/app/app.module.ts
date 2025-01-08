@@ -35,6 +35,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
+import { ProductDetailsComponent } from './components/product-details/product-details.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
     CartComponent,
     CheckoutComponent,
     AddressEditorComponent,
+    ProductDetailsComponent,
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -77,4 +79,4 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
   ],
   providers: [provideHttpClient()],
 })
-export class AppModule {}
+export class AppModule { }
