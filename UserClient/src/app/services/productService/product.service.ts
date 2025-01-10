@@ -9,7 +9,7 @@ import { PaginationParams } from 'src/app/models/pagination-params';
   providedIn: 'root',
 })
 export class ProductService {
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient) { }
 
   GetProductById(id: number): Observable<Product> {
     const url = environment.apiUrl + `v1/products/${id}`;

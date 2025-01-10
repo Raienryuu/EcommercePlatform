@@ -25,18 +25,21 @@ body {
   }
 }
 
-.name {
-  font-weight: 500;
-  text-align: center;
-}
-
-.price {
-  font-size: 1.4rem;
-  font-weight: 500;
-  text-align: center;
-}
-
 .cart {
+  width: min(550px, max(30svw, 300px));
+
+  .name {
+    font-weight: 500;
+    text-align: center;
+    font-size: 1.1em;
+    letter-spacing: 0.5px;
+  }
+
+  .price {
+    font-size: 2rem;
+    font-weight: 500;
+    text-align: center;
+  }
 
   .content {
     display: flex;
@@ -45,8 +48,10 @@ body {
   }
 
   button {
-    font-size: 1rem;
+    height: 43px;
+    font-size: 1em;
   }
+
 }
 
 .main-panel {
@@ -90,6 +95,7 @@ body {
   position: inherit;
 }
 
-.images>button>.mat-mdc-button-persistent-ripple {
-  border-radius: 10px !important;
+.error {
+  text-align: center;
+  transform: translateY(50%);
 }
