@@ -1,5 +1,6 @@
 import { IMAGE_LOADER } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, InjectionToken, Injector, Input, OnInit } from '@angular/core';
+import { MAT_RADIO_GROUP, MatRadioGroup } from '@angular/material/radio';
 import { ActivatedRoute } from '@angular/router';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { ProductImagesMetadata } from 'src/app/images/ProductImagesMetadata';
@@ -14,7 +15,7 @@ import { environment } from 'src/enviroment';
   providers: [{
     provide: IMAGE_LOADER,
     useValue: imageLoader,
-  }]
+  }],
 })
 export class ProductDetailsComponent implements OnInit {
   /**
@@ -28,8 +29,10 @@ export class ProductDetailsComponent implements OnInit {
   imagesMetadata: ProductImagesMetadata = null!;
   noProductFound = false;
   isLoading = true;
+  imagesRanges = Array.from(Array(5).keys()).filter(x => x > 0);
 
   ngOnInit(): void {
+
     if (!environment.sampleData) {
       this.productService.GetProductById(this.id).subscribe(
         {
@@ -60,4 +63,7 @@ export class ProductDetailsComponent implements OnInit {
   @Input()
   id = parseInt(this.route.snapshot.paramMap.get("id")!) ?? 0;
 
+  SelectPhoto(photoNumber: number) {
+    console.info("Changing to " + photoNumber);
+  }
 }
