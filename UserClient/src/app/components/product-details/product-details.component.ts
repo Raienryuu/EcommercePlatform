@@ -1,6 +1,8 @@
+import { IMAGE_LOADER } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
+import { imageLoader } from 'src/app/images/imageLoader';
+import { ProductImagesMetadata } from 'src/app/images/ProductImagesMetadata';
 import { Product } from 'src/app/models/product';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { environment } from 'src/enviroment';
@@ -9,6 +11,10 @@ import { environment } from 'src/enviroment';
   standalone: false,
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
+  providers: [{
+    provide: IMAGE_LOADER,
+    useValue: imageLoader,
+  }]
 })
 export class ProductDetailsComponent implements OnInit {
   /**
@@ -19,6 +25,7 @@ export class ProductDetailsComponent implements OnInit {
   ) { }
 
   product: Product = null!;
+  imagesMetadata: ProductImagesMetadata = null!;
   noProductFound = false;
   isLoading = true;
 
