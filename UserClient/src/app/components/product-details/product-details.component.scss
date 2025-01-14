@@ -71,28 +71,7 @@ body {
 .images {
   position: relative;
   display: flex;
-}
-
-
-.img-button {
-  display: inline;
-  right: 0;
-  height: 100%;
-  position: absolute;
-  width: 78px;
-  bottom: 0;
-  border-radius: 10px;
-}
-
-.left-button {
-  left: 0;
-  right: auto;
-}
-
-.images mat-icon {
-  color: $gray-200;
-  transform: scale(4, 6);
-  position: inherit;
+  height: 620px;
 }
 
 .error {
@@ -100,11 +79,30 @@ body {
   transform: translateY(50%);
 }
 
-.bubble-navigation {
-  display: inline;
-  bottom: 0;
+div.preview {
+  margin-top: 120px;
   position: absolute;
-  border-radius: 10px;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  bottom: 0;
+  height: 140px;
   right: 50%;
   transform: translateX(50%);
+  overflow-x: scroll;
+  overflow-y: hidden;
+  border: 2px solid green;
+  max-width: 60%;
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+button.preview {
+  height: 140px;
+  width: 80px;
+  opacity: 0.8;
 }

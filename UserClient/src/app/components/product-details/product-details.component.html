@@ -19,28 +19,25 @@
         <div class="header">Photos</div>
         <div class="content">
           <div class="images">
-            <button mat-icon-button class="left-button img-button">
-              <mat-icon fontIcon="arrow_back_ios"> </mat-icon>
-            </button>
             <img
-              [ngSrc]="'product-' + product.id"
-              width="700"
-              height="400"
+              [ngSrc]="currentImageSrc"
+              width="800"
+              height="500"
               alt="product image"
               priority
             />
-            <mat-radio-group class="bubble-navigation">
-              <mat-radio-button value="0" checked (change)="SelectPhoto(0)" />
-              @for (x of imagesRanges; track $index) {
-                <mat-radio-button
-                  [value]="$index + 1"
-                  (change)="SelectPhoto($index + 1)"
-                />
+
+            <div class="preview">
+              @for (i of imagesRange; track $index) {
+                <button class="preview">
+                  <img
+                    [ngSrc]="'p-' + this.id + '-' + $index"
+                    width="80"
+                    height="120"
+                  />
+                </button>
               }
-            </mat-radio-group>
-            <button mat-icon-button class="img-button">
-              <mat-icon fontIcon="arrow_forward_ios"> </mat-icon>
-            </button>
+            </div>
           </div>
         </div>
       </div>
