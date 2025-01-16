@@ -1,8 +1,18 @@
 import { ImageLoaderConfig } from "@angular/common"
 import { environment } from "src/enviroment"
 
+//export const imageLoader = (config: ImageLoaderConfig) => {
+//  let url = environment.apiUrl + `images?id=${config.src}&width=${config.width}`;
+//  const loader = config.loaderParams;
+//  if (!loader) return url;
+//  if (loader['number']) {
+//    url += `&number=${loader['number']}`;
+//  }
+//  return url;
+//}
+
 export const imageLoader = (config: ImageLoaderConfig) => {
-  let url = environment.apiUrl + `image?id=${config.src}&width=${config.width}`;
+  let url = 'http://localhost:5271/api/v1/' + `name?productId=file`;
   const loader = config.loaderParams;
   if (!loader) return url;
   if (loader['number']) {
