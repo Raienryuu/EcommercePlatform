@@ -1,4 +1,5 @@
 using ImageService.Models;
+using ImageService.Services.Interfaces;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -8,53 +9,51 @@ public class MongoImageService : IImageService
 {
     private readonly MongoClient _client;
     private readonly ConnectionOptions _options;
+    private readonly INameFormatter _nameFormatter;
+    private readonly IProductImagesMetadataService _metadataService;
 
-    public MongoImageService(IOptions<ConnectionOptions> connectionOptions)
+    private const string DB_NAME = "ecommerce";
+
+    public MongoImageService(IOptions<ConnectionOptions> connectionOptions, INameFormatter nameFormatter, IProductImagesMetadataService metadataService)
     {
         _options = connectionOptions.Value;
         _client = new MongoClient(_options.ConnectionUri);
+        _nameFormatter = nameFormatter;
+        _metadataService = metadataService;
     }
 
-    public async Task AddProductImage(int productId, IFormFile file)
+    // try mitigate copying data to byte[] ??
+    public async Task AddProductImageAsync(int productId, IFormFile file)
     {
-        var collection = _client.GetDatabase("ecommerce")
-            .GetCollection<Image>("images");
-        byte[] imageBytes = new byte[file.Length];
-        var imageBytesStream = new MemoryStream();
+        var productMetadata = await _metadataService.GetProductImagesMetadataAsync(productId);
 
-        await file.OpenReadStream().ReadAsync(imageBytes);
+        var collection = _client.GetDatabase(DB_NAME)
+            .GetCollection<Image>("images");
+
+        byte[] imageBytes = new byte[file.Length];
+        await file.OpenReadStream().ReadExactlyAsync(imageBytes);
+
+        var nextImageNumber = _nameFormatter.GetNumberOfNextImage(productMetadata);
+
         var fileAsImage = new Image
         {
             ContentType = file.ContentType,
-            ContentDisposition = file.ContentDisposition,
             Length = file.Length,
-            Name = file.Name,
-            FileName = file.FileName,
+            Name = _nameFormatter.GetNameForProductImage(productId, nextImageNumber),
             Data = imageBytes,
         };
+
+        productMetadata.StoredImages.Add(fileAsImage.Name);
+        productMetadata.MetadataState.Apply(_metadataService, productMetadata);
         await collection.InsertOneAsync(fileAsImage);
     }
 
-    public async Task<IFormFile> GetProductImage(int productId, int imageNumber)
+    public async Task<Image?> GetProductImageAsync(int productId, int imageNumber)
     {
-        var collection = _client.GetDatabase("ecommerce")
-            .GetCollection<IFormFile>("images");
-        var filter = Builders<IFormFile>.Filter.Eq("id", productId);
-        var results = await collection.FindAsync(filter);
-        return await results.FirstAsync();
-    }
-
-    public Task GetProductImagesMetadata()
-    {
-        throw new NotImplementedException();
-    }
-
-    public async Task<Image> GetProductImageByName(string productId)
-    {
-        var collection = _client.GetDatabase("ecommerce")
+        var collection = _client.GetDatabase(DB_NAME)
             .GetCollection<Image>("images");
-        var filter = Builders<Image>.Filter.Eq("Name", productId);
-        var results = await collection.FindAsync(filter);
-        return results.First();
+        var fileName = _nameFormatter.GetNameForProductImage(productId, imageNumber);
+        var filter = Builders<Image>.Filter.Eq("Name", fileName);
+        return await collection.Find(filter).FirstOrDefaultAsync();
     }
 }

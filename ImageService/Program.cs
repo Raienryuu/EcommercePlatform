@@ -1,9 +1,11 @@
-using ImageService;
+using ImageService.Models;
 using ImageService.Services;
+using ImageService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+
+namespace ImageService;
 
 internal class Program
 {
@@ -20,7 +22,8 @@ internal class Program
             = new ObjectSerializer(ObjectSerializer.AllAllowedTypes);
         BsonSerializer.RegisterSerializer(objectSerializer);
         builder.Services.AddSingleton<IImageService, MongoImageService>();
-        builder.Services.AddSingleton<MongoImageService>();
+        builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
+        builder.Services.AddSingleton<INameFormatter, NameFormatter>();
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -28,42 +31,39 @@ internal class Program
         {
             app.MapOpenApi();
         }
+        BsonClassMap.RegisterClassMap<ProductImagesMetadata>(map =>
+                {
+                    map.MapCreator(p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvaiable()));
+
+                    map.AutoMap();
+                    map.UnmapProperty(p => p.MetadataState);
+                });
 
         app.UseHttpsRedirection();
-        app.MapGet("api/v1/name", async ([FromQuery] string productId,
-                [FromServices] MongoImageService images,
-                [FromQuery] int imageNumber = 0) =>
-            {
-                var tempController = new ControllerContext();
-                var image = await images.GetProductImageByName(productId);
-                return Results.File(image.Data, image.ContentType, image.FileName);
-            })
-            .WithName("GetProductImageByName");
-
         app.MapGet("api/v1/image", async ([FromQuery] int productId,
-                IOptions<ConnectionOptions> options,
-                [FromServices] IImageService images, [FromQuery] int imageNumber = 0) =>
+            [FromServices] IImageService images, [FromQuery] int imageNumber = 0) =>
+        {
+            var image = await images.GetProductImageAsync(productId, imageNumber);
+            if (image is null)
             {
-                Console.WriteLine("I got an productId: {0}", productId);
-                Console.WriteLine("my connection string is : {0}",
-                    options.Value.ConnectionUri);
-                // get picture from db and return
-                return await images.GetProductImage(productId, imageNumber);
-            })
-            .WithName("GetProductImagesMetadata");
+                return Results.NotFound("No image found");
+            }
+            return Results.File(image.Data, image.ContentType, image.Name);
+        }).WithName("GetProductImages");
 
         app.MapPost("api/v1/image", async ([FromForm] IFormFile file,
-            [FromQuery] int productId,
-            [FromServices] IImageService images) =>
-        {
-            if (file is null)
+                [FromQuery] int productId,
+                [FromServices] IImageService images) =>
             {
-                return "No file provided";
-            }
+                if (file is null)
+                {
+                    return "No file provided";
+                }
 
-            await images.AddProductImage(productId, file);
-            return "File saved";
-        }).DisableAntiforgery();
+                await images.AddProductImageAsync(productId, file);
+                return "File saved";
+            }).DisableAntiforgery()
+            .WithName("AddProductImage");
 
         app.Run();
     }
