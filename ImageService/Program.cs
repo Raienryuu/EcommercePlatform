@@ -24,18 +24,19 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-  app.MapOpenApi();
+  _ = app.MapOpenApi();
 }
-BsonClassMap.RegisterClassMap<ProductImagesMetadata>(map =>
+
+BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
         {
-          map.MapCreator(p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
+          _ = map.MapCreator(static p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
 
           map.AutoMap();
-          map.UnmapProperty(p => p.MetadataState);
+          map.UnmapProperty(static p => p.MetadataState);
         });
 
 app.UseHttpsRedirection();
-app.MapGet("api/v1/image", async ([FromQuery] int productId,
+app.MapGet("api/v1/image", static async ([FromQuery] int productId,
     [FromServices] IImageService images, [FromQuery] int imageNumber = 0) =>
 {
   var image = await images.GetProductImageAsync(productId, imageNumber);
@@ -46,7 +47,7 @@ app.MapGet("api/v1/image", async ([FromQuery] int productId,
   return Results.File(image.Data, image.ContentType, image.Name);
 }).WithName("GetProductImages");
 
-app.MapPost("api/v1/image", async ([FromForm] IFormFile file,
+app.MapPost("api/v1/image", static async ([FromForm] IFormFile file,
         [FromQuery] int productId,
         [FromServices] IImageService images) =>
     {

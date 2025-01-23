@@ -8,6 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="TestContainers" Version="4.1.0" />
+    <PackageReference Include="TestContainers.MongoDB" Version="4.1.0" />
     <PackageReference Include="TUnit" Version="0.6.156" />
   </ItemGroup>
 

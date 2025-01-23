@@ -1,32 +1,41 @@
+using System.Diagnostics.CodeAnalysis;
 using ImageService.Services;
 using ImageService.Tests.Data;
 using Microsoft.AspNetCore.Http;
 
 namespace ImageService.Tests;
-
-public class MongoImageServiceTests
+[ClassDataSource<MongoContainer>]
+[method: SetsRequiredMembers]
+public class MongoImageServiceTests(MongoContainer mongoContainer)
 {
+  private MongoImageService _mongoImageService = null!;
 
-  private readonly MongoImageService _mongoService;
-
-  public MongoImageServiceTests()
+  [Before(Test)]
+  public void SetUp()
   {
-    var options = new ConnectionOptions
-    {
-      ConnectionUri = "get from testcontainers",
-      DatabaseName = "mongoImageService-" + Guid.NewGuid(),
-    };
-
-    _mongoService = new(options, new NameFormatter(), new MongoProductImagesMetadataService(options));
+    _mongoImageService = mongoContainer.GetImageService();
   }
 
   [Test]
   [SampleImagesGenerator]
-  public async Task AddProductImageAsync_(int productId, IFormFile file)
+  public async Task AddProductImageAsync_Image_FileSavedInDb(int productId, IFormFile file)
   {
-    _mongoService.AddProductImageAsync(productId, file);
+    await _mongoImageService.AddProductImageAsync(productId, file);
+    var image = await _mongoImageService.GetProductImageAsync(productId, 0);
+
+    _ = await Assert.That(image).IsNotNull();
+    _ = await Assert.That(image!.Length).IsEqualTo(file.Length);
   }
+  [Test]
+  [SampleImagesGenerator]
+  public async Task GetProductImageAsync_ImageLocationDetails_FileFromDb(int productId, IFormFile file)
+  {
 
+    await _mongoImageService.AddProductImageAsync(productId, file);
+    var image = await _mongoImageService.GetProductImageAsync(productId, 0);
 
-  /*GetProductImageAsync*/
+    _ = await Assert.That(image).IsNotNull();
+    _ = await Assert.That(image!.Length).IsEqualTo(file.Length);
+
+  }
 }

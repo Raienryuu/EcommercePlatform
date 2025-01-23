@@ -32,8 +32,6 @@ public class MongoProductImagesMetadataService : IProductImagesMetadataService, 
     var builder = Builders<ProductImagesMetadata>.Update;
     var updateDefinition = builder.Set(x => x.StoredImages, productMetadata.StoredImages);
     _ = await _metadataCollection.FindOneAndReplaceAsync(x => x.ProductId == productMetadata.ProductId, productMetadata);
-
-
   }
 
   public void Dispose()
