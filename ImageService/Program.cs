@@ -28,37 +28,43 @@ if (app.Environment.IsDevelopment())
 }
 
 BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
-        {
-          _ = map.MapCreator(static p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
+{
+  _ = map.MapCreator(static p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
 
-          map.AutoMap();
-          map.UnmapProperty(static p => p.MetadataState);
-        });
+  map.AutoMap();
+  map.UnmapProperty(static p => p.MetadataState);
+});
 
 app.UseHttpsRedirection();
+
 app.MapGet("api/v1/image", static async ([FromQuery] int productId,
     [FromServices] IImageService images, [FromQuery] int imageNumber = 0) =>
 {
   var image = await images.GetProductImageAsync(productId, imageNumber);
-  if (image is null)
-  {
-    return Results.NotFound("No image found");
-  }
-  return Results.File(image.Data, image.ContentType, image.Name);
+  return image is null
+  ? Results.NotFound("No image found")
+  : Results.File(image.Data, image.ContentType, image.Name);
 }).WithName("GetProductImages");
 
-app.MapPost("api/v1/image", static async ([FromForm] IFormFile file,
-        [FromQuery] int productId,
-        [FromServices] IImageService images) =>
-    {
-      if (file is null)
-      {
-        return "No file provided";
-      }
+app.MapGet("api/v1/imageMetadata", static async ([FromQuery] int productId,
+    IProductImagesMetadataService metadataService) =>
+{
+  var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
+  return Results.Ok(metadata);
+}).WithName("GetImageMetadata");
 
-      await images.AddProductImageAsync(productId, file);
-      return "File saved";
-    }).DisableAntiforgery()
+app.MapPost("api/v1/image", static async ([FromForm] IFormFile file,
+  [FromQuery] int productId,
+  [FromServices] IImageService images) =>
+{
+  if (file is null)
+  {
+    return Results.BadRequest("No file provided");
+  }
+
+  await images.AddProductImageAsync(productId, file);
+  return Results.Ok("File saved");
+}).DisableAntiforgery()
     .WithName("AddProductImage");
 
 app.Run();

@@ -18,23 +18,24 @@ import { environment } from 'src/enviroment';
   }],
 })
 export class ProductDetailsComponent implements OnInit {
+
   /**
    *
    */
-  constructor(private route: ActivatedRoute,
-    private productService: ProductService,
-    private imageService: ImageService
-  ) { }
+
 
   product: Product = null!;
   imagesMetadata: ProductImagesMetadata = null!;
   noProductFound = false;
   isLoading = true;
-  imagesRange: Array<number> = [];
   currentImageSrc: string = '';
 
-  ngOnInit(): void {
+  constructor(private route: ActivatedRoute,
+    private productService: ProductService,
+    private imageService: ImageService
+  ) { }
 
+  ngOnInit() {
     if (!environment.sampleData) {
       this.productService.GetProductById(this.id).subscribe(
         {
@@ -51,11 +52,9 @@ export class ProductDetailsComponent implements OnInit {
       this.imageService.GetProductImagesMetadata(this.id)
         .subscribe(data => {
           this.imagesMetadata = data;
-          this.imagesRange = Array.from(Array(this.imagesMetadata.numberOfImages));
         });
     }
-    else {
-
+    else { // Sample data route
       this.product = {
         name: "WOW Cataclysm TROLL MAGE EU - PvP Giantstalker Level 30",
         id: this.id,
@@ -66,12 +65,13 @@ export class ProductDetailsComponent implements OnInit {
       }
       this.isLoading = false;
       this.imagesMetadata = {
-        numberOfImages: 9,
         productId: this.product.id,
+        storedImages: ["p-12-0", "p-12-1", "p-12-2"],
       }
     }
-    this.currentImageSrc = 'p-' + this.id + '-0';
-    this.imagesRange = Array.from(Array(this.imagesMetadata.numberOfImages).keys());
+
+    this.currentImageSrc = this.imagesMetadata.storedImages[0];
+    this.selectedImageNumber = parseInt(this.imagesMetadata.storedImages[0].split('-')[2]);
   }
 
   currencySymbol = "€";
@@ -80,5 +80,22 @@ export class ProductDetailsComponent implements OnInit {
 
   SelectPhoto(photoNumber: number) {
     console.info("Changing to " + photoNumber);
+  }
+
+  selectedImageNumber: number = 0;
+  ChangeFocusedImage(imageName: string) {
+    const imageNumber = this.GetNumberFromImageMetaName(imageName);
+    console.info("Changing selected image to number: ", imageNumber);
+    this.selectedImageNumber = imageNumber;
+    this.ScrollImagesPreviews(imageNumber);
+  }
+  GetNumberFromImageMetaName(name: string): number {
+    return parseInt(name.split('-')[2]);
+  }
+
+  private ScrollImagesPreviews(imageNumber: number) {
+    const previewImageWidth = 120;
+    const element = document.getElementById("preview");
+    element?.scroll({ left: imageNumber * previewImageWidth - 120 });
   }
 }

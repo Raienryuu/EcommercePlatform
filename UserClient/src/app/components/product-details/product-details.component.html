@@ -20,20 +20,24 @@
         <div class="content">
           <div class="images">
             <img
-              ngSrc="file"
-              width="800"
-              height="500"
+              [ngSrc]="'p-x-' + selectedImageNumber"
+              fill
               alt="product image"
+              [loaderParams]="{ id: currentImageSrc }"
               priority
             />
-
-            <div class="preview">
-              @for (i of imagesRange; track $index) {
-                <button class="preview">
+            <div class="preview" id="preview">
+              @for (imageName of imagesMetadata.storedImages; track imageName) {
+                <button
+                  style="border: $index blue solid"
+                  class="preview"
+                  (click)="ChangeFocusedImage(imageName)"
+                >
                   <img
-                    [ngSrc]="'p-' + this.id + '-' + $index"
-                    width="80"
-                    height="120"
+                    [ngSrc]="imageName"
+                    fill
+                    [loaderParams]="{ id: imageName }"
+                    priority
                   />
                 </button>
               }

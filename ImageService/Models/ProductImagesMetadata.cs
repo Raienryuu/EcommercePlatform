@@ -21,13 +21,13 @@ public class ProductImagesMetadata
 
 public interface IMetadataState
 {
-  void Apply(IProductImagesMetadataService _metadataService, ProductImagesMetadata p);
+  void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p);
 }
 public class NoMetadataAvailable : IMetadataState
 {
-  public void Apply(IProductImagesMetadataService _metadataService, ProductImagesMetadata p) => _metadataService.AddNewMetadataAsync(p);
+  public void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p) => metadataService.AddNewMetadataAsync(p);
 }
 public class MetadataAvailable : IMetadataState
 {
-  public void Apply(IProductImagesMetadataService _metadataService, ProductImagesMetadata p) => _metadataService.UpdateMetadataAsync(p);
+  public void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p) => metadataService.UpdateMetadataAsync(p);
 }

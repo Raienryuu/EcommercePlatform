@@ -1,3 +1,4 @@
+using ImageService.Models;
 using ImageService.Services;
 using ImageService.Tests.Data;
 
@@ -24,5 +25,6 @@ public class MongoProductImagesMetadataTests(MongoContainer mongoContainer)
 
     _ = await Assert.That(metadata).IsNotNull();
     _ = await Assert.That(metadata.ProductId).IsEqualTo(productId);
+    _ = await Assert.That(metadata.MetadataState).IsTypeOf<MetadataAvailable>();
   }
 }

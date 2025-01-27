@@ -85,13 +85,13 @@ div.preview {
   display: inline-flex;
   flex-wrap: nowrap;
   bottom: 0;
-  height: 140px;
   right: 50%;
   transform: translateX(50%);
   overflow-x: scroll;
   overflow-y: hidden;
-  border: 2px solid green;
+  border: 2px solid purple;
   max-width: 60%;
+
 
   ::-webkit-scrollbar {
     display: none;
@@ -102,7 +102,10 @@ div.preview {
 }
 
 button.preview {
-  height: 140px;
-  width: 80px;
+  position: relative;
+  height: 80px;
+  width: 120px;
   opacity: 0.8;
+  aspect-ratio: calc(16/9);
+  object-fit: contain;
 }
