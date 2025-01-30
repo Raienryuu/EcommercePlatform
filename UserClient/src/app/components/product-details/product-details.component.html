@@ -23,16 +23,12 @@
               [ngSrc]="'p-x-' + selectedImageNumber"
               fill
               alt="product image"
-              [loaderParams]="{ id: currentImageSrc }"
+              [loaderParams]="{ id: 'p-' + id }"
               priority
             />
             <div class="preview" id="preview">
               @for (imageName of imagesMetadata.storedImages; track imageName) {
-                <button
-                  style="border: $index blue solid"
-                  class="preview"
-                  (click)="ChangeFocusedImage(imageName)"
-                >
+                <button class="preview" (click)="ChangeFocusedImage(imageName)">
                   <img
                     [ngSrc]="imageName"
                     fill

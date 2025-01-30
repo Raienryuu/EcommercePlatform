@@ -1,7 +1,6 @@
-
+using System.Globalization;
 using ImageService.Models;
 using ImageService.Services.Interfaces;
-using System.Globalization;
 
 namespace ImageService.Services;
 public class NameFormatter : INameFormatter
@@ -9,9 +8,9 @@ public class NameFormatter : INameFormatter
   // Gets name in format: p-@productId-@imageNumber
   public string GetNameForProductImage(int productId, int imageNumber)
   {
-    const string Prefix = "p-";
-    var Suffix = '-' + imageNumber.ToString(CultureInfo.InvariantCulture);
-    return Prefix + productId.ToString(CultureInfo.InvariantCulture) + Suffix;
+    const string PREFIX = "p-";
+    var suffix = '-' + imageNumber.ToString(CultureInfo.InvariantCulture);
+    return PREFIX + productId.ToString(CultureInfo.InvariantCulture) + suffix;
   }
 
   public int GetNumberOfNextImage(ProductImagesMetadata metadata)
@@ -52,7 +51,6 @@ public class NameFormatter : INameFormatter
       {
 
       }
-
     }
     throw new NotImplementedException();
   }
@@ -61,13 +59,13 @@ public class NameFormatter : INameFormatter
   private static int FormattedComparer(string x, string y)
   {
     var result = GetImageNumber(x) - GetImageNumber(y);
+
     return result switch
     {
       < 0 => -1,
       0 => 0,
       _ => result
     };
-
   }
-
 }
+

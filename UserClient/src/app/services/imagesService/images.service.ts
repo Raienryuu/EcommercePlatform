@@ -12,6 +12,6 @@ export class ImageService {
   constructor(private httpClient: HttpClient) { }
 
   GetProductImagesMetadata(id: number): Observable<ProductImagesMetadata> {
-    return this.httpClient.get<ProductImagesMetadata>(environment.apiUrl + `v1/image/imageMetadata?${id}`);
+    return this.httpClient.get<ProductImagesMetadata>(environment.tempImagesUrl + `v1/imageMetadata?productId=${id}`);
   }
 }

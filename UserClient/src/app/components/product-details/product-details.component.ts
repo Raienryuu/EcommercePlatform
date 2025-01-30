@@ -25,7 +25,10 @@ export class ProductDetailsComponent implements OnInit {
 
 
   product: Product = null!;
-  imagesMetadata: ProductImagesMetadata = null!;
+  imagesMetadata: ProductImagesMetadata = {
+    productId: 0,
+    storedImages: [],
+  }
   noProductFound = false;
   isLoading = true;
   currentImageSrc: string = '';
@@ -52,6 +55,8 @@ export class ProductDetailsComponent implements OnInit {
       this.imageService.GetProductImagesMetadata(this.id)
         .subscribe(data => {
           this.imagesMetadata = data;
+          this.currentImageSrc = this.imagesMetadata.storedImages[0];
+          this.selectedImageNumber = parseInt(this.imagesMetadata.storedImages[0].split('-')[2]);
         });
     }
     else { // Sample data route
@@ -68,10 +73,9 @@ export class ProductDetailsComponent implements OnInit {
         productId: this.product.id,
         storedImages: ["p-12-0", "p-12-1", "p-12-2"],
       }
+      this.currentImageSrc = this.imagesMetadata.storedImages[0];
+      this.selectedImageNumber = parseInt(this.imagesMetadata.storedImages[0].split('-')[2]);
     }
-
-    this.currentImageSrc = this.imagesMetadata.storedImages[0];
-    this.selectedImageNumber = parseInt(this.imagesMetadata.storedImages[0].split('-')[2]);
   }
 
   currencySymbol = "€";
@@ -89,6 +93,7 @@ export class ProductDetailsComponent implements OnInit {
     this.selectedImageNumber = imageNumber;
     this.ScrollImagesPreviews(imageNumber);
   }
+
   GetNumberFromImageMetaName(name: string): number {
     return parseInt(name.split('-')[2]);
   }
