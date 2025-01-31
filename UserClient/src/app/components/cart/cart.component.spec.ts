@@ -26,14 +26,14 @@ import { AppRoutingModule } from 'src/app/app-routing.module';
 import { CountrySelectComponent } from '../country-select/country-select.component';
 import { provideHttpClient } from '@angular/common/http';
 
-fdescribe('CartComponent', () => {
+describe('CartComponent', () => {
   let component: CartComponent;
   let fixture: ComponentFixture<CartComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [CartComponent],
-      imports: [    BrowserModule,
+      imports: [BrowserModule,
         FormsModule,
         AppRoutingModule,
         BrowserAnimationsModule,
@@ -57,7 +57,7 @@ fdescribe('CartComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,],
-        providers: [provideHttpClient()]
+      providers: [provideHttpClient()]
     });
     fixture = TestBed.createComponent(CartComponent);
     component = fixture.componentInstance;
@@ -68,7 +68,7 @@ fdescribe('CartComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('increasing quantity should change total price of a product', function () {
+  it('increasing quantity should change total price of a product', function() {
     const product = fixture.debugElement.query(By.css('.product'));
     expect(product).withContext('expected to find product row').toBeTruthy();
     const productQuantityPanel = product.query(By.css('.quantity-wrapper'));
@@ -83,7 +83,7 @@ fdescribe('CartComponent', () => {
     expect(currentProductTotal).withContext('should be greater with bigger quanitity').toBeGreaterThan(previousProductTotal);
   });
 
-  it('decreasing quantity should change total price of a product', function () {
+  it('decreasing quantity should change total price of a product', function() {
     const product = fixture.debugElement.query(By.css('.product'));
     expect(product).withContext('expected to find product row').toBeTruthy();
     const productQuantityPanel = product.query(By.css('.quantity-wrapper'));
@@ -98,7 +98,7 @@ fdescribe('CartComponent', () => {
     expect(currentProductTotal).withContext('should be greater with bigger quanitity').toBeLessThan(previousProductTotal);
   });
 
-  it('should not decrement quanitity to less than 1', async function () {
+  it('should not decrement quanitity to less than 1', async function() {
 
     const product = fixture.debugElement.query(By.css('.product'));
     expect(product).withContext('expected to find product row').toBeTruthy();

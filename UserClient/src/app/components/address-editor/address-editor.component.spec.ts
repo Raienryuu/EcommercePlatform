@@ -1,26 +1,27 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {AddressEditorComponent} from './address-editor.component';
+import { AddressEditorComponent } from './address-editor.component';
 
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatSelectModule} from '@angular/material/select';
-import {BrowserModule, By} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgxMatInputTelComponent} from 'ngx-mat-input-tel';
-import {AppRoutingModule} from 'src/app/app-routing.module';
-import {CountrySelectComponent} from '../country-select/country-select.component';
-import {provideHttpClient} from '@angular/common/http';
-import {MatFormFieldModule} from "@angular/material/form-field";
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { BrowserModule, By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
+import { AppRoutingModule } from 'src/app/app-routing.module';
+import { CountrySelectComponent } from '../country-select/country-select.component';
+import { provideHttpClient } from '@angular/common/http';
+import { MatFormFieldModule } from "@angular/material/form-field";
 import {
   HttpTestingController,
   provideHttpClientTesting
 } from "@angular/common/http/testing";
-import {MatDialogModule} from "@angular/material/dialog";
+import { MatDialogModule } from "@angular/material/dialog";
+import { environment } from 'src/enviroment';
 
 describe('AddressEditorComponent', () => {
   let component: AddressEditorComponent;
@@ -59,11 +60,11 @@ describe('AddressEditorComponent', () => {
 
   });
 
-  it('with empty value form should be invalid', function () {
+  it('with empty value form should be invalid', function() {
     expect(component.addressForm.invalid).toBeTruthy();
   });
 
-  describe('Filled form with valid values', function () {
+  describe('Filled form with valid values', function() {
     let emitterSpy: jasmine.Spy;
     let httpController: HttpTestingController;
     beforeEach(() => {
@@ -86,11 +87,11 @@ describe('AddressEditorComponent', () => {
       component.addressForm.controls['id'].setValue(333);
     });
 
-    it('form should be valid', async function () {
+    it('form should be valid', async function() {
       expect(component.addressForm.valid).toBeTruthy();
     });
 
-    it('emits close window event', async function () {
+    it('emits close window event', async function() {
       const cancelButton = fixture.debugElement.query(
         By.css('[name=cancel-button]')).nativeElement as HTMLButtonElement;
 
@@ -101,7 +102,7 @@ describe('AddressEditorComponent', () => {
       expect(emitterSpy).toHaveBeenCalledOnceWith(undefined);
     });
 
-    it('emits delete address event', async function () {
+    it('emits delete address event', async function() {
       const deleteButton = fixture.debugElement.query(
         By.css('[name=delete-button]')).nativeElement as HTMLButtonElement;
       expect(deleteButton).withContext('no button found').toBeTruthy();
@@ -114,15 +115,15 @@ describe('AddressEditorComponent', () => {
       expect(deleteSpy).withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: 'https://localhost:7107/api/address/' + component.address.Id,
+        url: environment.apiUrl + 'address/' + component.address.Id,
         method: 'DELETE',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({Address: component.address, WasDeleted: true});
+      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: true });
     });
 
-    it('emits add address event', async function () {
+    it('emits add address event', async function() {
       component.isNew = true;
       fixture.detectChanges();
       const addButton = fixture.debugElement.query(
@@ -137,16 +138,16 @@ describe('AddressEditorComponent', () => {
       expect(addSpy).withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: 'https://localhost:7107/api/address/',
+        url: environment.apiUrl + 'address/',
         method: 'POST',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({Address: component.address, WasDeleted: false});
+      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: false });
 
     });
 
-    it('emits edit address event', async function () {
+    it('emits edit address event', async function() {
       const editButton = fixture.debugElement.query(
         By.css('[name=edit-button]')).nativeElement as HTMLButtonElement;
       expect(editButton).withContext('no button found').toBeTruthy();
@@ -159,12 +160,12 @@ describe('AddressEditorComponent', () => {
       expect(editSpy).withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: 'https://localhost:7107/api/address/',
+        url: environment.apiUrl + 'address/',
         method: 'PUT',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({Address: component.address, WasDeleted: false});
+      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: false });
     });
 
   })

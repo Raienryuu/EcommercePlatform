@@ -46,7 +46,13 @@
         <div class="content">
           <div class="name">{{ product.name }}</div>
           <div class="price">{{ product.price }} {{ currencySymbol }}</div>
-          <button mat-flat-button type="button" color="primary">
+          <button
+            mat-flat-button
+            type="button"
+            color="primary"
+            name="cartbtn"
+            (click)="AddToCart()"
+          >
             Add to cart
           </button>
           <div class="quanitity">Items left: {{ product.quantity }}</div>

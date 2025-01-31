@@ -103,4 +103,8 @@ export class ProductDetailsComponent implements OnInit {
     const element = document.getElementById("preview");
     element?.scroll({ left: imageNumber * previewImageWidth - 120 });
   }
+
+  public AddToCart() {
+    console.info("Clicked Add to cart button.")
+  }
 }
