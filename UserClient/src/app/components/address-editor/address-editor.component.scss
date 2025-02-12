@@ -1,27 +1,9 @@
 @import "src/color-palette.scss";
 
 .header {
-  background-color: $primary-200;
-  // padding: 1svw;
-  padding: calc(0.5vh + 0.5vw);
-  max-width: min(700px, 70vw);
-  min-height: 48px;
-  height: 8vh;
-  border-radius: 10px 10px 0 0;
-  font-weight: 700;
-  font-size: 1.5em;
-  color: $gray-600;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  margin-top: 0;
 }
 
-.content {
-  max-width: min(700px, 70vw);
-  background-color: $primary-100;
-  padding: calc(0.5vh + 0.5vw);
-  border-radius: 0 0 10px 10px;
-}
 
 form.layout {
   display: grid;
@@ -39,7 +21,7 @@ mat-form-field.full-width {
 .cta-buttons {
   display: flex;
   justify-content: center;
-  padding:  1svw 2svw 2svh;
+  padding: 1svw 2svw 2svh;
 }
 
 .cta-buttons button {
@@ -60,7 +42,7 @@ button.delete-button {
 }
 
 .backdrop {
-  div.mat-mdc-dialog-surface{
+  div.mat-mdc-dialog-surface {
     border-radius: 10px !important;
   }
 }

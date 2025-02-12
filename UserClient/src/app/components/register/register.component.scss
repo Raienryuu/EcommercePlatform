@@ -1,7 +1,6 @@
 div.registerPanel {
   margin: auto;
-  width: clamp(400px, 80vw, 1000px);
-  font-size: clamp(0.8em, 0.7svw, 1.4rem) !important;
+  max-width: min(1200px, 70vw);
 }
 
 .registerForm {
@@ -10,13 +9,12 @@ div.registerPanel {
   border-style: solid;
   border-radius: 10px;
   border-color: #dfdfdf;
-  padding: 3svw 3svw 6rem;
+  padding: 3svw 3svw 1svw;
   display: grid;
   grid-template-columns: auto auto;
   place-items: center;
   grid-gap: 2svh 2svw;
   box-sizing: border-box;
-  font-size: inherit;
 }
 
 .inputs {
@@ -46,4 +44,3 @@ div.registerPanel {
 button {
   width: min(300px, 70svw);
 }
-
