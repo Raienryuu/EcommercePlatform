@@ -20,5 +20,8 @@ test("regression checkout", async ({ page }) => {
   await page.goto("https://raienryuu.github.io/EcommercePlatform/#/checkout");
   await expect(page).toHaveScreenshot();
 });
-
+test("regression details", async ({ page }) => {
+  await page.goto("https://raienryuu.github.io/EcommercePlatform/#/details/1");
+  await expect(page).toHaveScreenshot();
+});
 
