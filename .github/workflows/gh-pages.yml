@@ -8,7 +8,6 @@ on:
     paths:
       - UserClient
 
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -40,7 +39,7 @@ jobs:
         working-directory: UserClient
       - run: npm install -g @angular/cli
         working-directory: UserClient
-      - run: ng build --output-path dist/user-client --base-href '/EcommercePlatform/'
+      - run: ng build --configuration ghPages --output-path dist/user-client --base-href '/EcommercePlatform/'
         working-directory: UserClient
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
