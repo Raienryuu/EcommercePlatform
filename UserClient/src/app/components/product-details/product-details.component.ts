@@ -31,7 +31,7 @@ export class ProductDetailsComponent implements OnInit {
   }
   noProductFound = false;
   isLoading = true;
-  currentImageSrc: string = '';
+  currentImageSrc = '';
 
   constructor(private route: ActivatedRoute,
     private productService: ProductService,
@@ -86,7 +86,7 @@ export class ProductDetailsComponent implements OnInit {
     console.info("Changing to " + photoNumber);
   }
 
-  selectedImageNumber: number = 0;
+  selectedImageNumber = 0;
   ChangeFocusedImage(imageName: string) {
     const imageNumber = this.GetNumberFromImageMetaName(imageName);
     console.info("Changing selected image to number: ", imageNumber);

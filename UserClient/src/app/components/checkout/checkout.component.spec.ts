@@ -32,9 +32,8 @@ import {
 import { DebugElement } from '@angular/core';
 import { AddressEditorComponent } from '../address-editor/address-editor.component';
 import { environment } from 'src/enviroment';
-import { elementAt } from 'rxjs';
 
-fdescribe('CheckoutComponent', () => {
+describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
   let fixture: ComponentFixture<CheckoutComponent>;
 
@@ -73,7 +72,7 @@ fdescribe('CheckoutComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
     fixture.whenStable();
-    var scripts = document.querySelectorAll('ngx-stripe-elements');
+    const scripts = document.querySelectorAll('ngx-stripe-elements');
     scripts.forEach(element => {
       element.remove();
     })

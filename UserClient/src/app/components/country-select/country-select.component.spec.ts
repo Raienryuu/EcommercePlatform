@@ -1,31 +1,31 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {CountrySelectComponent} from './country-select.component';
-import {NgOptimizedImage} from '@angular/common';
-import {FormControl, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatIconModule} from '@angular/material/icon';
-import {MatInputModule} from '@angular/material/input';
-import {MatListModule} from '@angular/material/list';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatRadioModule} from '@angular/material/radio';
-import {MatSelectModule} from '@angular/material/select';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatStepperModule} from '@angular/material/stepper';
-import {MatTreeModule} from '@angular/material/tree';
-import {BrowserModule, By} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgxMatInputTelComponent} from 'ngx-mat-input-tel';
-import {NgxStripeModule} from 'ngx-stripe';
-import {AppRoutingModule} from 'src/app/app-routing.module';
-import {Component, Signal, viewChild} from "@angular/core";
-import {TestbedHarnessEnvironment} from "@angular/cdk/testing/testbed";
-import {MatSelectHarness} from "@angular/material/select/testing";
+import { CountrySelectComponent } from './country-select.component';
+import { NgOptimizedImage } from '@angular/common';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { MatListModule } from '@angular/material/list';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatTreeModule } from '@angular/material/tree';
+import { BrowserModule, By } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
+import { NgxStripeModule } from 'ngx-stripe';
+import { AppRoutingModule } from 'src/app/app-routing.module';
+import { Component, Signal, viewChild } from "@angular/core";
+import { TestbedHarnessEnvironment } from "@angular/cdk/testing/testbed";
+import { MatSelectHarness } from "@angular/material/select/testing";
 
 
 describe('CountrySelectComponent', () => {
@@ -44,7 +44,7 @@ describe('CountrySelectComponent', () => {
       CountrySelectComponent);
   }
 
-  describe('validation disabled', function () {
+  describe('validation disabled', function() {
     let component: CountrySelectComponent;
     let fixture: ComponentFixture<CountrySelectComponent>;
     beforeEach(async () => {
@@ -94,11 +94,11 @@ describe('CountrySelectComponent', () => {
     -Validation error is displayed
      */
 
-    it('should start with empty value', function () {
+    it('should start with empty value', function() {
       expect(component.country).toEqual('');
     });
 
-    it('should select first value from list', async function () {
+    it('should select first value from list', async function() {
       const [selectedCountryName, selectElement] = SelectFirstCountryFromList(fixture);
 
       expect(component.country).withContext('country name should match chosen one')
@@ -109,7 +109,7 @@ describe('CountrySelectComponent', () => {
     });
   });
 
-  function SelectFirstCountryFromList(fixture: ComponentFixture<any>): [string, HTMLSelectElement] {
+  function SelectFirstCountryFromList(fixture: ComponentFixture<CountrySelectComponent | CountrySelectWrapperComponent>): [string, HTMLSelectElement] {
     const select = fixture.debugElement.query(By.css('#country')).nativeElement as HTMLSelectElement;
 
     select.click();
@@ -123,7 +123,7 @@ describe('CountrySelectComponent', () => {
     return [firstCountryOption.nativeNode.innerText, select];
   }
 
-  describe('validation enabled', function () {
+  describe('validation enabled', function() {
     let fixture: ComponentFixture<CountrySelectWrapperComponent>;
     let component: Signal<CountrySelectComponent>;
     beforeEach(async () => {
@@ -163,7 +163,7 @@ describe('CountrySelectComponent', () => {
     });
 
 
-    it('should select first value from list', async function () {
+    it('should select first value from list', async function() {
       const [selectedCountryName, selectElement] = SelectFirstCountryFromList(fixture);
 
       expect(component().countryControl.value).withContext('country name should match chosen one')
@@ -172,7 +172,7 @@ describe('CountrySelectComponent', () => {
         .toEqual(selectedCountryName);
     });
 
-    it('should show error when closed with empty value', async function () {
+    it('should show error when closed with empty value', async function() {
       const loader = TestbedHarnessEnvironment.loader(fixture);
       const selectHarness = await loader.getHarness(MatSelectHarness);
       const select = fixture.debugElement.query(By.css('#country')).nativeElement as HTMLSelectElement;

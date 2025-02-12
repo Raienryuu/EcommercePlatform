@@ -117,7 +117,6 @@ describe('ProductDetailsComponent', () => {
     component.isLoading = false;
 
     fixture.detectChanges();
-    const divs = native.getElementsByClassName('error');
     const error = native.getElementsByClassName('error')[0];
 
     expect(error).withContext('coudln\'t find the error message').toBeTruthy();
