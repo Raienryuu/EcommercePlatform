@@ -74,8 +74,8 @@
               ],
               "outputHashing": "all",
               "fileReplacements": [{
-                "replace": "enviroment.ts",
-                "with" : "environment.ghPages.ts",
+                "replace": "src/enviroment.ts",
+                "with" : "src/environment.ghPages.ts",
               }],
             },
             "development": {
