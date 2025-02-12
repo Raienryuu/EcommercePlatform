@@ -1,7 +1,7 @@
 name: Playwright Tests
 on:
   workflow_run:
-    workflows: [gh-pages]
+    workflows: [Deploy UserClient to GitHubPages]
     types: completed
   # push:
   #   branches: [main, master]
