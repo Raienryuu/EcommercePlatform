@@ -24,11 +24,13 @@ import {
   AddressEditorResponse,
 } from '../address-editor/address-editor.component';
 import { MatRadioChange } from '@angular/material/radio';
+import { SampleCustomerAddresses, SampleProducts } from 'src/app/develSamples';
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
+  standalone: false
 })
 export class CheckoutComponent {
   products: Product[] = null!;
@@ -36,28 +38,7 @@ export class CheckoutComponent {
   currencySymbol = '€';
   total = { base: 155.88, tax: 15.88, delivery: 15, total: 170.88 };
 
-  customerAddresses: CustomerAddress[] = [
-    {
-      Id: 2,
-      FullName: 'John California',
-      Address: '787 Dunbar Road',
-      Email: 'johnyboy@mail.com',
-      PhoneNumber: '+1 (213) 555-3890',
-      City: 'San Jose, CA',
-      ZIPCode: '95127',
-      Country: 'United States',
-    },
-    {
-      Id: 1,
-      FullName: 'John Senior California',
-      Address: '788B Dunbar Road',
-      Email: 'oljohny@mail.com',
-      PhoneNumber: '+1 (213) 555-3890',
-      City: 'San Jose, CA',
-      ZIPCode: '95127',
-      Country: 'United States',
-    },
-  ];
+  customerAddresses: CustomerAddress[] = SampleCustomerAddresses;
   activeSelection: number = this.customerAddresses.length - 1;
 
   constructor(
@@ -65,16 +46,7 @@ export class CheckoutComponent {
     public dialogDhl: MatDialog,
     public dialogAddressEditor: MatDialog,
   ) {
-    this.products = [
-      {
-        id: 5,
-        categoryId: 3,
-        name: 'Product E',
-        description: 'Description for Product E',
-        price: 12.99,
-        quantity: 12,
-      },
-    ];
+    this.products = SampleProducts;
   }
 
   stripe = this.factoryService.create(environment.stripeApiKey);

@@ -64,10 +64,10 @@ public class ProductsController(
 
     if (filters.PageSize < 1 || filters.PageSize > 200)
       return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-	  "PageSize should be between 1 and 200"));
+    "PageSize should be between 1 and 200"));
 
-	var query = new ProductsPagination(filters, db)
-      .GetNextPageQuery(filters.PageSize, referenceProduct);
+    var query = new ProductsPagination(filters, db)
+        .GetNextPageQuery(filters.PageSize, referenceProduct);
 
     var s = query.ToQueryString();
     Console.WriteLine(s);
@@ -177,10 +177,10 @@ public class ProductsController(
   /// Gets IEnumerable of Product for given Ids.
   /// </summary>
   /// <param name="productsIds"></param>
-  /// <returns>Updated product.</returns>
-  /// <response code="200">Product with updated values.</response>
-  /// <response code="404">If product id doesn't exists.</response>
-  [HttpGet("batch")]
+  /// <returns>List of products.</returns>
+  /// <response code="200">List of products.</response>
+  /// <response code="404">If product ids doesn't exists.</response>
+  [HttpPost("batch")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<ActionResult<IEnumerable<Product>>> GetSelectiveProducts([FromBody] int[] productsIds)

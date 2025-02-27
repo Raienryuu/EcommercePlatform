@@ -1,23 +1,23 @@
-﻿using CartService.Requests;
+using CartService.Requests;
 using FastEndpoints;
 using FluentValidation;
 
-namespace CartService.Validators
-{
-  public class CartValidator : Validator<Cart>
-  {
-	public CartValidator()
-	{
-	  RuleFor(c => c.Products).NotEmpty();
-	  RuleForEach(c => c.Products).SetValidator(new ProductValidator());
-	}
-  }
+namespace CartService.Validators;
 
-  public class ProductValidator : Validator<Product>
+public class CartValidator : Validator<Cart>
+{
+  public CartValidator()
   {
-	public ProductValidator()
-	{
-	  RuleFor(x => x.Amount).GreaterThan(0);
-	}
+    RuleFor(c => c.Products).NotEmpty();
+    RuleForEach(c => c.Products).SetValidator(new ProductValidator());
   }
 }
+
+public class ProductValidator : Validator<Product>
+{
+  public ProductValidator()
+  {
+    RuleFor(x => x.Amount).GreaterThan(0);
+  }
+}
+

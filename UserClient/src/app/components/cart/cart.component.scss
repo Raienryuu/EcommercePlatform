@@ -121,3 +121,13 @@ body {
 button.promotion-element {
   color: $primary-500;
 }
+
+
+.empty-cart {
+  margin: auto;
+  background-color: $primary-100;
+  width: 50%;
+  border-radius: 10px;
+  text-align: center;
+  padding: 10% 0;
+}

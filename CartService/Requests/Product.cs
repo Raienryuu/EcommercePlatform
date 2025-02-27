@@ -1,8 +1,7 @@
-﻿namespace CartService.Requests
+namespace CartService.Requests;
+
+public class Product
 {
-  public class Product
-  {
-	public Guid Id { get;set; }
-	public int Amount { get; set; }
-  }
+  public required string Id { get; set; }
+  public int Amount { get; set; }
 }

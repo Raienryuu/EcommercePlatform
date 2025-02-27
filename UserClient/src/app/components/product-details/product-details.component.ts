@@ -1,6 +1,7 @@
 import { IMAGE_LOADER } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { SampleImageMetadata, SampleProduct } from 'src/app/develSamples';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { ProductImagesMetadata } from 'src/app/images/ProductImagesMetadata';
 import { Product } from 'src/app/models/product';
@@ -60,19 +61,11 @@ export class ProductDetailsComponent implements OnInit {
         });
     }
     else { // Sample data route
-      this.product = {
-        name: "WOW Cataclysm TROLL MAGE EU - PvP Giantstalker Level 30",
-        id: this.id,
-        price: 88.32,
-        quantity: 5,
-        description: "to be implmented",
-        categoryId: 1
-      }
+      this.product = SampleProduct;
+      this.product.id = this.id;
       this.isLoading = false;
-      this.imagesMetadata = {
-        productId: this.product.id,
-        storedImages: ["p-12-0", "p-12-1", "p-12-2"],
-      }
+      this.imagesMetadata = SampleImageMetadata;
+      this.imagesMetadata.productId = this.id;
       this.currentImageSrc = this.imagesMetadata.storedImages[0];
       this.selectedImageNumber = parseInt(this.imagesMetadata.storedImages[0].split('-')[2]);
     }

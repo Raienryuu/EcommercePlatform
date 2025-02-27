@@ -8,6 +8,9 @@ import { ProductService } from 'src/app/services/productService/product.service'
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
 import { debounceTime } from 'rxjs';
+import { environment } from 'src/enviroment';
+import { CartService } from 'src/app/services/cartService/cart.service';
+import { LotsOfSampleProducts } from 'src/app/develSamples';
 
 @Component({
   selector: 'app-catalog',
@@ -16,7 +19,9 @@ import { debounceTime } from 'rxjs';
   styleUrls: ['./catalog.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-  products: Product[] = [];
+
+
+  products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];
 
   filters: PaginationParams;
   isLoading = true;
@@ -38,6 +43,7 @@ export class ProductsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userSettingsService: UserSettingsService,
+    private cartService: CartService,
   ) {
     this.filters = {
       PageNum: 1,
@@ -56,7 +62,6 @@ export class ProductsComponent implements OnInit {
         this.UpdateUrlQuery();
         this.LoadNewPage(0);
       });
-
   }
 
   private GetPageFromRoute(): number {
@@ -77,10 +82,14 @@ export class ProductsComponent implements OnInit {
     this.LoadUserSettings();
     this.filters.PageNum = this.GetPageFromRoute();
     this.filters.PageSize = this.GetPageSizeFromRoute();
-    this.GetProductsPage();
     this.GetCategoryTree();
-
     this.HookUpBackAndForwardButtons();
+
+    if (environment.sampleData === true) {
+      this.InsertNewProducts(LotsOfSampleProducts);
+      return;
+    }
+    this.GetProductsPage();
   }
 
   private HookUpBackAndForwardButtons() {
@@ -225,5 +234,9 @@ export class ProductsComponent implements OnInit {
   UpdatePageSize(event: MatSelectChange) {
     this.filters.PageSize = event.value;
     this.filteringDelay.emit();
+  }
+
+  AddToCart(productId: number) {
+    this.cartService.AddToCart(productId, 1).subscribe(cartId =>{ this.cartService.remoteCartId = cartId; console.log("cart was updated")});
   }
 }

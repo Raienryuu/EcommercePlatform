@@ -71,7 +71,7 @@ services:
 
     depends_on:
       rabbitmq:
-        condition: service_healthy
+        condition: service_started
       mongodb:
         condition: service_started
       sqlserver:
@@ -98,8 +98,8 @@ services:
         - sqlpassword
     environment:
       ACCEPT_EULA: "Y"
-    
-    ports: 
+
+    ports:
       - "1434:1433"
     secrets:
       - sqlpassword
@@ -114,7 +114,7 @@ services:
     image: valkey/valkey:7.2.5
     ports:
       - "6379:6379"
-    
+
 secrets:
   sqlpassword:
     file: sqlpassword.txt
