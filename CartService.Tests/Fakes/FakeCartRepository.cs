@@ -1,27 +1,12 @@
 using CartService.Helpers;
-using CartService.Requests;
+using CartService.Models;
 using CartService.Services;
 
 namespace CartService.Tests.Fakes;
 
 public class FakeCartRepository : ICartRepository
 {
-
   private readonly Dictionary<Guid, Cart> _products = [];
-
-  public Task<Guid> UpdateCart(UpdateCart c)
-  {
-    var cart = _products.FirstOrDefault(x => x.Key == c.CartGuid);
-    if (cart.Key == Guid.Empty)
-    {
-      return CreateNewCart(c.Cart);
-    }
-    cart.Value.Products.AddRange(c.Cart.Products);
-
-    var newCart = CartHelper.MergeCart(cart.Value);
-    _products[c.CartGuid] = newCart;
-    return Task.FromResult(cart.Key);
-  }
 
   public Task<Guid> CreateNewCart(Cart c)
   {
@@ -43,15 +28,15 @@ public class FakeCartRepository : ICartRepository
     return Task.FromResult(cart);
   }
 
-  public Task<Guid> UpdateWholeCart(UpdateCart c)
+  public Task<Guid> UpdateCart(Guid id, Cart c)
   {
-    c.Cart = CartHelper.MergeCart(c.Cart);
-    if (!_products.TryGetValue(c.CartGuid, out _))
+    c = CartHelper.MergeCart(c);
+    if (!_products.TryGetValue(id, out _))
     {
-      return CreateNewCart(c.Cart);
+      return CreateNewCart(c);
     }
 
-    _products[c.CartGuid] = c.Cart;
-    return Task.FromResult(c.CartGuid);
+    _products[id] = c;
+    return Task.FromResult(id);
   }
 }

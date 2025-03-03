@@ -1,7 +1,6 @@
-
 namespace CartService.Requests;
 
-public class Cart
+public class ResponseCartDTO
 {
   public required List<Product> Products { get; set; }
 }

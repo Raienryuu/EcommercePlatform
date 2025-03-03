@@ -1,4 +1,4 @@
-using CartService.Requests;
+using CartService.Models;
 
 namespace CartService.Helpers;
 
