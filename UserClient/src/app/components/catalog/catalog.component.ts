@@ -19,8 +19,6 @@ import { LotsOfSampleProducts } from 'src/app/develSamples';
   styleUrls: ['./catalog.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-
-
   products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];
 
   filters: PaginationParams;
@@ -56,12 +54,10 @@ export class ProductsComponent implements OnInit {
       Categories: null!,
     };
 
-    this.filteringDelay
-      .pipe(debounceTime(800))
-      .subscribe(() => {
-        this.UpdateUrlQuery();
-        this.LoadNewPage(0);
-      });
+    this.filteringDelay.pipe(debounceTime(800)).subscribe(() => {
+      this.UpdateUrlQuery();
+      this.LoadNewPage(0);
+    });
   }
 
   private GetPageFromRoute(): number {
@@ -236,7 +232,10 @@ export class ProductsComponent implements OnInit {
     this.filteringDelay.emit();
   }
 
-  AddToCart(productId: number) {
-    this.cartService.AddToCart(productId, 1).subscribe(cartId =>{ this.cartService.remoteCartId = cartId; console.log("cart was updated")});
+  AddToCart(productId: string) {
+    this.cartService.AddToCart(productId, 1).subscribe((cartId) => {
+      this.cartService.remoteCartId = cartId;
+      console.log('cart was updated');
+    });
   }
 }

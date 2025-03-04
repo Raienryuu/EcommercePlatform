@@ -5,10 +5,6 @@ import {
   StripeFactoryService,
   StripePaymentElementComponent,
 } from 'ngx-stripe';
-import {
-  StripeElementsOptions,
-  StripePaymentElementOptions,
-} from '@stripe/stripe-js';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,12 +21,13 @@ import {
 } from '../address-editor/address-editor.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { SampleCustomerAddresses, SampleProducts } from 'src/app/develSamples';
+import { StripeConfig } from 'src/app/stripe-settings';
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class CheckoutComponent {
   products: Product[] = null!;
@@ -50,40 +47,15 @@ export class CheckoutComponent {
   }
 
   stripe = this.factoryService.create(environment.stripeApiKey);
-  YOUR_CLIENT_SECRET: string | null =
-    'pi_3POFD5C7yfdpfbDs1K4y1MF5_secret_mbpshCsI0kRJtroB8J1zNQXNm';
+  stripeConfig = new StripeConfig();
+  YOUR_CLIENT_SECRET = this.stripeConfig.YOUR_CLIENT_SECRET;
   paymentIntent: unknown;
 
   @ViewChild(StripePaymentElementComponent)
   paymentElement!: StripePaymentElementComponent;
 
-  elementsOptions: StripeElementsOptions = {
-    locale: 'en',
-    clientSecret: this.YOUR_CLIENT_SECRET!,
-    appearance: {
-      theme: 'stripe',
-      variables: {
-        colorBackground: '#F0F2FF',
-        colorText: '#000000de',
-        fontLineHeight: '50px',
-
-        // fontSizeBase: '20px'
-      },
-      labels: 'floating',
-      rules: {
-        '.Input': {
-          lineHeight: '1.5rem',
-        },
-      },
-    },
-  };
-  paymentElementOptions: StripePaymentElementOptions = {
-    layout: {
-      type: 'tabs',
-      defaultCollapsed: false,
-    },
-  };
-
+  elementsOptions = this.stripeConfig.stripeElementsOptions;
+  paymentElementOptions = this.stripeConfig.paymentElementOptions;
   SelectAddress(id: number) {
     this.activeSelection = id;
   }
@@ -183,7 +155,7 @@ export class LockerSelectorDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<LockerSelectorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
-  ) { }
+  ) {}
 
   onNoClick(): void {
     return;

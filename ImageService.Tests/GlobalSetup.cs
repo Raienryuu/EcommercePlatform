@@ -14,16 +14,17 @@ public class GlobalHooks
   public static void SetUp()
   {
     _ = BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
-        {
-          _ = map.MapCreator(static p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
-          map.AutoMap();
-          map.UnmapProperty(static p => p.MetadataState);
-        });
-
+    {
+      _ = map.MapCreator(static p => new ProductImagesMetadata(
+        p.ProductId,
+        p.StoredImages,
+        new MetadataAvailable()
+      ));
+      map.AutoMap();
+      map.UnmapProperty(static p => p.MetadataState);
+    });
   }
 
   [After(TestSession)]
-  public static void CleanUp()
-  {
-  }
+  public static void CleanUp() { }
 }

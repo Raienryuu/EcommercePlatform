@@ -9,9 +9,9 @@ import { PaginationParams } from 'src/app/models/pagination-params';
   providedIn: 'root',
 })
 export class ProductService {
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
-  GetProductById(id: number): Observable<Product> {
+  GetProductById(id: string): Observable<Product> {
     const url = environment.apiUrl + `v1/products/${id}`;
     return this.httpClient.get<Product>(url);
   }
@@ -76,4 +76,3 @@ function ApplySearchFilters(url: string, filters: PaginationParams): string {
     url = url.concat('Categories=' + filters.Categories + '&');
   return url;
 }
-

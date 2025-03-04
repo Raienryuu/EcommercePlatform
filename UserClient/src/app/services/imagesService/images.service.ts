@@ -5,13 +5,14 @@ import { ProductImagesMetadata } from 'src/app/images/ProductImagesMetadata';
 import { environment } from 'src/enviroment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ImageService {
+  constructor(private httpClient: HttpClient) {}
 
-  constructor(private httpClient: HttpClient) { }
-
-  GetProductImagesMetadata(id: number): Observable<ProductImagesMetadata> {
-    return this.httpClient.get<ProductImagesMetadata>(environment.tempImagesUrl + `v1/imageMetadata?productId=${id}`);
+  GetProductImagesMetadata(id: string): Observable<ProductImagesMetadata> {
+    return this.httpClient.get<ProductImagesMetadata>(
+      environment.tempImagesUrl + `v1/imageMetadata?productId=${id}`,
+    );
   }
 }

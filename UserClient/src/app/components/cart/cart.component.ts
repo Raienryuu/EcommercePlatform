@@ -85,11 +85,12 @@ export class CartComponent implements OnInit {
       this.cartUpdateDelayedEvent.next(null);
       return;
     }
+
     this.cartUpdateDelayedEvent.pipe(debounceTime(800)).subscribe({
       next: () => {
         this.cartService
           .ChangeProductQuantity(product.id, product.quantity)
-          .subscribe((_) => this.RecalculateTotalCost());
+          .subscribe(() => this.RecalculateTotalCost());
       },
     });
     this.cartUpdateDelayedEvent.next(null);

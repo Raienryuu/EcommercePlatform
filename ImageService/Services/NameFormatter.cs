@@ -6,11 +6,11 @@ namespace ImageService.Services;
 public class NameFormatter : INameFormatter
 {
   // Gets name in format: p-@productId-@imageNumber
-  public string GetNameForProductImage(int productId, int imageNumber)
+  public string GetNameForProductImage(Guid productId, int imageNumber)
   {
     const string PREFIX = "p-";
     var suffix = '-' + imageNumber.ToString(CultureInfo.InvariantCulture);
-    return PREFIX + productId.ToString(CultureInfo.InvariantCulture) + suffix;
+    return PREFIX + productId.ToString() + suffix;
   }
 
   public int GetNumberOfNextImage(ProductImagesMetadata metadata)
@@ -43,6 +43,7 @@ public class NameFormatter : INameFormatter
 
   public List<string> ResetImagesNumeration(List<string> storedImages)
   {
+    throw new NotImplementedException();
     var currentNumber = 0;
     foreach (var name in storedImages)
     {
@@ -52,9 +53,8 @@ public class NameFormatter : INameFormatter
 
       }
     }
-    throw new NotImplementedException();
   }
-  private static int GetImageNumber(string formattedProductName) => int.Parse(formattedProductName.Split('-')[2], CultureInfo.InvariantCulture);
+  private static int GetImageNumber(string formattedProductName) => int.Parse(formattedProductName.Split('-')[^1], CultureInfo.InvariantCulture);
 
   private static int FormattedComparer(string x, string y)
   {
