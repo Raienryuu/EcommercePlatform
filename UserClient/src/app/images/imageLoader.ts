@@ -8,7 +8,7 @@ export const imageLoader = (config: ImageLoaderConfig) => {
   const imageNumber = config.src.slice(idEndIndex + 1);
   const productId = config.src.slice(idStartIndex + 1, idEndIndex);
 
-  let url = environment.tempImagesUrl + `v1/image?`;
+  let url = environment.apiUrl + `v1/image?`;
 
   if (productId != null || productId !== '') {
     url += 'productId=' + productId;

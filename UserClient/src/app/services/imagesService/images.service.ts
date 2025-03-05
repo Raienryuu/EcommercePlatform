@@ -12,7 +12,7 @@ export class ImageService {
 
   GetProductImagesMetadata(id: string): Observable<ProductImagesMetadata> {
     return this.httpClient.get<ProductImagesMetadata>(
-      environment.tempImagesUrl + `v1/imageMetadata?productId=${id}`,
+      environment.apiUrl + `v1/imageMetadata?productId=${id}`,
     );
   }
 }

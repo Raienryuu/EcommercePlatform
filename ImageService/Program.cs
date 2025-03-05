@@ -20,7 +20,10 @@ builder.Services.AddSingleton<IImageService, MongoImageService>();
 builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
 
-if (builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development)
+if (
+  builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development
+  || builder.Configuration["ASPNETCORE_ENVIRONMENT"] == "docker"
+)
 {
   _ = builder.Services.AddCors(static c =>
   {
@@ -51,7 +54,7 @@ BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
   map.UnmapProperty(static p => p.MetadataState);
 });
 
-app.UseHttpsRedirection();
+/*app.UseHttpsRedirection();*/
 
 app.MapGet(
     "api/v1/image",

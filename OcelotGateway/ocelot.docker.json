@@ -94,6 +94,17 @@
 				}
 			],
 			"UpstreamPathTemplate": "/api/cart/{everything}",
+		},
+    {
+			"DownstreamPathTemplate": "/api/v1/image{everything}", // imageService
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "imageservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/image{everything}",
 		}
 	]
 }

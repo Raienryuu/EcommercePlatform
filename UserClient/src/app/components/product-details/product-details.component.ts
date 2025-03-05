@@ -78,14 +78,9 @@ export class ProductDetailsComponent implements OnInit {
   @Input()
   id = this.route.snapshot.paramMap.get('id') ?? '';
 
-  SelectPhoto(photoNumber: number) {
-    console.info('Changing to ' + photoNumber);
-  }
-
   selectedImageNumber = 0;
   ChangeFocusedImage(imageName: string) {
     const imageNumber = this.GetNumberFromImageMetaName(imageName);
-    console.info('Changing selected image to number: ', imageNumber);
     this.currentImageSrc = imageName;
     this.ScrollImagesPreviews(imageNumber);
   }

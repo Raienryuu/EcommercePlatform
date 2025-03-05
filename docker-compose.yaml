@@ -10,6 +10,19 @@ services:
        - ASPNETCORE_URLS=http://+:8080;https://+:7070;
        - RedisConfig__ConnectionString=valkey
 
+  imageservice:
+    build:
+      dockerfile: ImageService/Dockerfile
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDb__HostAddress=mongodb://mongodb
+      - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+    ports:
+      - "5271:8080"
+    depends_on:
+      - mongodb
+
   orderservice:
     build:
       dockerfile: OrderService/Dockerfile
