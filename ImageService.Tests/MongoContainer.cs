@@ -10,32 +10,27 @@ namespace ImageService.Tests;
 
 public class MongoContainer : IAsyncInitializer, IAsyncDisposable
 {
-  private IOptions<ConnectionOptions> _options = null!;
   private const string META_COLLECTION_NAME = "productImagesMetadata";
+  private readonly string _databaseName = "mongoImageService-" + Guid.NewGuid();
 
   public static string GetMetaCollectionName() => META_COLLECTION_NAME;
 
-  private readonly MongoDbContainer _dbContainer = new MongoDbBuilder()
+  private static readonly MongoDbContainer s_dbContainer = new MongoDbBuilder()
     .WithImage("mongo:7.0.9")
     .WithPortBinding(27017, true)
     .Build();
 
   public IOptions<ConnectionOptions> GetConnectionOptions()
   {
-    if (_options is not null)
-    {
-      return _options;
-    }
     var options = new ConnectionOptions()
     {
-      ConnectionUri = _dbContainer.GetConnectionString(),
-      DatabaseName = "mongoImageService-" + Guid.NewGuid(),
+      ConnectionUri = s_dbContainer.GetConnectionString(),
+      DatabaseName = _databaseName,
     };
-    _options = Options.Create(options);
-    return _options;
+    return Options.Create(options);
   }
 
-  public string GetConnectionString() => _dbContainer.GetConnectionString();
+  public static string GetConnectionString() => s_dbContainer.GetConnectionString();
 
   public MongoImageService GetImageService() =>
     new(
@@ -48,13 +43,13 @@ public class MongoContainer : IAsyncInitializer, IAsyncDisposable
 
   public async ValueTask DisposeAsync()
   {
-    await _dbContainer.DisposeAsync();
+    await s_dbContainer.DisposeAsync();
     GC.SuppressFinalize(this);
   }
 
   public async Task InitializeAsync()
   {
-    await _dbContainer.StartAsync();
+    await s_dbContainer.StartAsync();
   }
 }
 

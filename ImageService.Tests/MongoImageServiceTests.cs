@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace ImageService.Tests;
 
-[ClassDataSource<MongoContainer>]
+[ClassDataSource<MongoContainer>(Shared = SharedType.PerTestSession)]
 [method: SetsRequiredMembers]
 public class MongoImageServiceTests(MongoContainer mongoContainer)
 {

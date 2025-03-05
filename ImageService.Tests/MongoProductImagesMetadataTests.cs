@@ -4,7 +4,7 @@ using ImageService.Tests.Data;
 
 namespace ImageService.Tests;
 
-[ClassDataSource<MongoContainer>]
+[ClassDataSource<MongoContainer>(Shared = SharedType.PerTestSession)]
 public class MongoProductImagesMetadataTests(MongoContainer mongoContainer)
 {
   private MongoProductImagesMetadataService _mongoImageMetadataService = null!;
