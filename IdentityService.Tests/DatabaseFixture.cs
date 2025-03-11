@@ -8,6 +8,8 @@ public class DatabaseFixture : IAsyncLifetime
 {
   private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build();
 
+  public string GetConnectionString() => _dbContainer.GetConnectionString();
+
   async Task IAsyncLifetime.DisposeAsync()
   {
     await _dbContainer.DisposeAsync();

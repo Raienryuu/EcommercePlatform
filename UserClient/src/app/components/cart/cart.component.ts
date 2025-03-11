@@ -31,13 +31,21 @@ export class CartComponent implements OnInit {
     const productsList = this.cartService.GetCartProductsIds();
     this.productService.GetProductsBatch(productsList).subscribe((products) => {
       products.forEach((p) => {
-        const localProduct = this.cartService.localCart.Products.find(
+        const localProduct = this.cartService.localCart.products.find(
           (fnd) => fnd.id === p.id.toString(),
         );
-        p.quantity = localProduct!.amount;
+        p.quantity = this.GetProductAmount(p.quantity, localProduct!.amount);
         this.products.push(p);
       });
     });
+  }
+
+  private GetProductAmount(storage: number, needed: number) {
+    if (storage > needed) {
+      return needed;
+    } else {
+      return 0; // do something on view to show that product is unavilable
+    }
   }
 
   currencySymbol = '€';

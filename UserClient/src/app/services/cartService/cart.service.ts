@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, share } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
-import { UpdateCartDTO } from 'src/app/models/updateCartDTO.model';
 import { environment } from 'src/enviroment';
 
 @Injectable({
@@ -13,39 +12,46 @@ export class CartService {
   cartKey = 'cartKey';
 
   constructor(private httpClient: HttpClient) {
-    if (this.remoteCartId === null && this.localCart.Products.length > 0) {
+    this.remoteCartId = localStorage.getItem(this.cartKey);
+    this.localCart = JSON.parse(
+      localStorage.getItem(this.cart) ?? '{"products":[]}',
+    );
+    console.info('local cart is null', this.localCart == null, this.localCart);
+    if (this.remoteCartId == null && this.localCart.products.length > 0) {
       this.CreateNewCart().subscribe((res) => {
         this.remoteCartId = res;
         this.UpdateLocalStorage();
       });
       console.info('Creating new cart since localId was null');
+    } else if (this.remoteCartId !== null) {
+      this.GetCart().subscribe({
+        next: (cart) => {
+          this.localCart = cart;
+          this.UpdateLocalCart();
+          console.info(
+            'cart is filled with ' + localStorage.getItem(this.cart),
+          );
+        },
+      });
     }
-    console.info('cart is filled with ' + localStorage.getItem(this.cart));
   }
 
-  public remoteCartId: string = localStorage.getItem(this.cartKey)!;
-  public localCart: Cart = JSON.parse(
-    localStorage.getItem(this.cart) ?? '{"Products":[]}',
-  );
+  public remoteCartId: string | null;
+  public localCart: Cart;
 
   CreateNewCart(): Observable<string> {
-    const observable = this.httpClient.post<string>(
+    return this.httpClient.post<string>(
       environment.apiUrl + 'cart',
       this.localCart,
     );
-    observable.subscribe((cartId) => {
-      this.remoteCartId = cartId;
-      this.UpdateLocalCartKey();
-    });
-    return observable;
   }
 
   AddToCart(productId: string, quantity = 1): Observable<string> {
     if (localStorage.getItem(this.cart) === null) {
-      this.localCart = { Products: [] };
+      this.localCart = { products: [] };
     }
-    this.localCart.Products.push({
-      id: productId.toString(),
+    this.localCart.products.push({
+      id: productId,
       amount: quantity,
     });
     this.UpdateLocalCart();
@@ -65,10 +71,10 @@ export class CartService {
   }
 
   RemoveFromCart(productId: number): Observable<string> {
-    const productIndex = this.localCart.Products.findIndex(
+    const productIndex = this.localCart.products.findIndex(
       (p) => p.id === productId.toString(),
     );
-    this.localCart.Products.splice(productIndex, 1);
+    this.localCart.products.splice(productIndex, 1);
     return this.UpdateCart();
   }
 
@@ -76,13 +82,13 @@ export class CartService {
     productId: string,
     newQuantity: number,
   ): Observable<string> {
-    const productIndex = this.localCart.Products.findIndex(
+    const productIndex = this.localCart.products.findIndex(
       (p) => p.id === productId,
     );
     if (newQuantity > 0) {
-      this.localCart.Products[productIndex].amount = newQuantity;
+      this.localCart.products[productIndex].amount = newQuantity;
     } else {
-      this.localCart.Products.splice(productIndex);
+      this.localCart.products.splice(productIndex);
     }
     return this.UpdateCart();
   }
@@ -94,17 +100,17 @@ export class CartService {
     if (this.remoteCartId === null) {
       return this.CreateNewCart();
     }
-    const newCartState: UpdateCartDTO = {
-      CartGuid: this.remoteCartId,
-      Cart: this.localCart,
-    };
+
     return this.httpClient
-      .put<string>(environment.apiUrl + 'cart/updateCart', newCartState)
+      .put<string>(
+        environment.apiUrl + `cart/${this.remoteCartId}`,
+        this.localCart,
+      )
       .pipe(share());
   }
 
   private UpdateLocalCartKey() {
-    localStorage.setItem(this.cartKey, this.remoteCartId);
+    localStorage.setItem(this.cartKey, this.remoteCartId!);
   }
 
   private UpdateLocalCart() {
@@ -118,7 +124,7 @@ export class CartService {
 
   GetCartProductsIds(): number[] {
     const ids: number[] = [];
-    this.localCart.Products.forEach((product) =>
+    this.localCart.products.forEach((product) =>
       ids.push(parseInt(product.id)),
     );
     return ids;

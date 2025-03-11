@@ -1,26 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
-namespace OrderService.Models
+namespace OrderService.Models;
+
+[PrimaryKey(nameof(OrderId))]
+[method: JsonConstructor]
+public class Order()
 {
-  [PrimaryKey(nameof(OrderId))]
-  public class Order
-  {
-	public Guid OrderId { get; set; }
-	[Required]
-	public int UserId { get; set; }
-	public bool IsConfirmed { get; set; }
-	public OrderStatus.Type Status { get; set; }
-	public string? Notes { get; set; }
-	public DateTime Created { get; set; } = DateTime.UtcNow;
-	public DateTime LastModified { get; set; } = DateTime.UtcNow;
-	public ICollection<OrderProduct> Products { get; set; } = [];
-
-	[JsonConstructor]
-	public Order()
-	{
-	  LastModified = DateTime.UtcNow;
-	}
-  }
+  public Guid OrderId { get; set; }
+  public Guid UserId { get; set; }
+  public bool IsConfirmed { get; set; }
+  public OrderStatus.Type Status { get; set; }
+  public string? Notes { get; set; }
+  public DateTime Created { get; set; } = DateTime.UtcNow;
+  public DateTime LastModified { get; set; } = DateTime.UtcNow;
+  public ICollection<OrderProduct> Products { get; set; } = [];
 }

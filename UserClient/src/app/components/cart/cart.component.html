@@ -22,37 +22,41 @@
           <span class="product-property name">
             {{ product.name }}
           </span>
-          <span class="product-property quantity-wrapper">
-            <button
-              aria-label="decrease quantity"
-              mat-icon-button
-              (click)="AddQuantity(product, -1)"
-              [disabled]="IsDecrementationInvalid(product)"
-            >
-              <mat-icon> chevron_left </mat-icon>
-            </button>
-            <mat-form-field
-              style="width: 60px"
-              appearance="outline"
-              floatLabel="always"
-            >
-              <input
-                aria-label="quantity of product"
-                type="number"
-                matInput
-                [(ngModel)]="product.quantity"
-                (change)="ValidateQuantity(product)"
-              />
-            </mat-form-field>
-            <button
-              aria-label="increase quantity"
-              mat-icon-button
-              (click)="AddQuantity(product, 1)"
-              [disabled]="IsIncrementationInvalid(product)"
-            >
-              <mat-icon>chevron_right</mat-icon>
-            </button>
-          </span>
+          @if (product.quantity > 0) {
+            <span class="product-property quantity-wrapper">
+              <button
+                aria-label="decrease quantity"
+                mat-icon-button
+                (click)="AddQuantity(product, -1)"
+                [disabled]="IsDecrementationInvalid(product)"
+              >
+                <mat-icon> chevron_left </mat-icon>
+              </button>
+              <mat-form-field
+                style="width: 60px"
+                appearance="outline"
+                floatLabel="always"
+              >
+                <input
+                  aria-label="quantity of product"
+                  type="number"
+                  matInput
+                  [(ngModel)]="product.quantity"
+                  (change)="ValidateQuantity(product)"
+                />
+              </mat-form-field>
+              <button
+                aria-label="increase quantity"
+                mat-icon-button
+                (click)="AddQuantity(product, 1)"
+                [disabled]="IsIncrementationInvalid(product)"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </span>
+          } @else {
+            <span class="product-property unavailable">Not available</span>
+          }
           <span class="product-property">
             {{ currencySymbol }}{{ product.price }}
           </span>
@@ -63,7 +67,11 @@
             </span>
           </span>
           <span class="product-property">
-            <button class="remove-button" (click)="AddQuantity(product, -product.quantity)" mat-button>
+            <button
+              class="remove-button"
+              (click)="AddQuantity(product, -product.quantity)"
+              mat-button
+            >
               <mat-icon> delete </mat-icon>
               <span class="icon-text"> Remove </span>
             </button>

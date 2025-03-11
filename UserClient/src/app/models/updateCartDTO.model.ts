@@ -1,6 +1,5 @@
-import { Cart } from "./cart.model";
+import { CartProduct } from './cart-product';
 
 export interface UpdateCartDTO {
-  CartGuid: string;
-  Cart: Cart;
+  Products: CartProduct[];
 }

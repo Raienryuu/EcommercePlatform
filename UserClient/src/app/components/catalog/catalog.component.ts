@@ -7,7 +7,7 @@ import { ProductCategoryService } from 'src/app/services/productCategoryService/
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
-import { debounceTime } from 'rxjs';
+import { debounceTime, interval, of } from 'rxjs';
 import { environment } from 'src/enviroment';
 import { CartService } from 'src/app/services/cartService/cart.service';
 import { LotsOfSampleProducts } from 'src/app/develSamples';
@@ -25,6 +25,7 @@ export class ProductsComponent implements OnInit {
   isLoading = true;
   maxPage = 10;
   filteringDelay = new EventEmitter();
+  filterApplyDelay = new EventEmitter();
   public categoryId: string | null = '';
   currencySymbol = '€';
 
@@ -53,9 +54,11 @@ export class ProductsComponent implements OnInit {
       MinQuantity: null!,
       Categories: null!,
     };
+    this.filterApplyDelay
+      .pipe(debounceTime(800))
+      .subscribe(() => this.UpdateUrlQuery());
 
     this.filteringDelay.pipe(debounceTime(800)).subscribe(() => {
-      this.UpdateUrlQuery();
       this.LoadNewPage(0);
     });
   }
@@ -85,15 +88,14 @@ export class ProductsComponent implements OnInit {
       this.InsertNewProducts(LotsOfSampleProducts);
       return;
     }
-    this.GetProductsPage();
   }
 
   private HookUpBackAndForwardButtons() {
     this.route.queryParams.subscribe(() => {
+      this.filteringDelay.emit();
       this.filters.PageSize = this.GetPageSizeFromRoute();
       this.filters.PageNum = this.GetPageFromRoute();
       this.GetFiltersFromRoute();
-      this.LoadNewPage(0);
     });
   }
 
@@ -112,12 +114,12 @@ export class ProductsComponent implements OnInit {
   }
 
   RefreshFilterDelay() {
-    this.filteringDelay.emit();
+    this.filterApplyDelay.emit();
   }
 
   HandleKeyWordsSearch() {
-    this.filteringDelay.emit();
     this.ClearNameFilterIfEmpty();
+    this.filteringDelay.emit();
   }
 
   private ClearNameFilterIfEmpty() {
@@ -178,8 +180,10 @@ export class ProductsComponent implements OnInit {
     return false;
   }
 
+  /** pageOffset: -1 or 1 correspond to previousPage and nextPage respectively */
   LoadNewPage(pageOffset: number) {
     this.filters.PageNum += pageOffset;
+    this.UpdateUrlQuery();
     if (pageOffset === 1) {
       this.GetNextPage();
     } else if (pageOffset === -1) {
@@ -187,7 +191,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.GetProductsPage();
     }
-    this.UpdateUrlQuery();
   }
 
   RemoveNameFilter() {

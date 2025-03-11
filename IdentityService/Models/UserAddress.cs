@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IdentityService.Models;
+
 public class UserAddress : IUserData
 {
   [Key]
@@ -16,33 +17,33 @@ public class UserAddress : IUserData
   public required string ZIPCode { get; set; }
   public required string Country { get; set; }
   public IdentityUser<Guid>? User { get; set; }
+
   [ForeignKey("User")]
   public Guid? UserId { get; set; }
 
   public static UserAddress CreateFrom(NewUser user, IdentityUser<Guid> account)
   {
-	UserAddress userAddress = new()
-	{
-	  FullName = user.Address.FullName,
-	  Email = user.Address.Email,
-	  PhoneNumber = user.Address.PhoneNumber,
-	  Address = user.Address.Address,
-	  City = user.Address.City,
-	  ZIPCode = user.Address.ZIPCode,
-	  Country = user.Address.Country,
-	  UserId = account.Id
-	};
-	return userAddress;
+    UserAddress userAddress = new()
+    {
+      FullName = user.Address.FullName,
+      Email = user.Address.Email,
+      PhoneNumber = user.Address.PhoneNumber,
+      Address = user.Address.Address,
+      City = user.Address.City,
+      ZIPCode = user.Address.ZIPCode,
+      Country = user.Address.Country,
+      UserId = account.Id,
+    };
+    return userAddress;
   }
 
   private static Guid GetGuidFromString(string value)
   {
-	var isSuccess = Guid.TryParse(value, out var guid);
-	if (!isSuccess)
-	{
-	  throw new ArgumentException("String value should contain valid Guid");
-	}
-	return guid;
+    var isSuccess = Guid.TryParse(value, out var guid);
+    if (!isSuccess)
+    {
+      throw new ArgumentException("String value should contain valid Guid");
+    }
+    return guid;
   }
-
 }

@@ -105,11 +105,12 @@ services:
       retries: 1
   sqlserver:
     build:
-      dockerfile: sqlserver-docker
+      dockerfile: sqlserver.Dockerfile
       context: .
       secrets:
         - sqlpassword
     environment:
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/sqlpassword
       ACCEPT_EULA: "Y"
 
     ports:

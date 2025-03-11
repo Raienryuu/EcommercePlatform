@@ -9,7 +9,7 @@ public class UpdateCartEndpoint(ICartRepository cartRepository) : Endpoint<Updat
 {
   public override void Configure()
   {
-    Put("api/cart/@cartGuid", static x => new { x.Id });
+    Put("api/cart/{@cartGuid}", static x => new { x.Id });
     AllowAnonymous();
   }
 

@@ -1,7 +1,0 @@
-HTTP/1.1 405 Method Not Allowed
-Content-Length: 0
-Date: Tue, 18 Feb 2025 12:41:12 GMT
-Server: Kestrel
-Allow: GET
-Allow: PATCH
-
