@@ -1,4 +1,4 @@
 export interface ProductImagesMetadata {
-  productId: number,
-  storedImages: string[],
+  productId: string;
+  storedImages: string[];
 }

@@ -1,28 +1,21 @@
-﻿using CartService.Requests;
+using CartService.Models;
+using CartService.Requests;
 using CartService.Services;
 using FastEndpoints;
 
-namespace CartService.Endpoints
+namespace CartService.Endpoints;
+
+public class GetCartEndpoint(ICartRepository cartProvider) : Endpoint<GetCartRequest, Cart?>
 {
-  public class GetCartEndpoint : Endpoint<string, Cart?>
+  public override void Configure()
   {
-	private readonly ICartRepository _cartProvider;
+    Get("api/cart/{@cartGuid}", static x => new { x.Id });
+    AllowAnonymous();
+  }
 
-	public GetCartEndpoint(ICartRepository cartProvider)
-	{
-	  _cartProvider = cartProvider;
-	}
-	public override void Configure()
-	{
-	  Get("api/cart/{cartGuid}");
-	  AllowAnonymous();
-	}
-
-	public override async Task HandleAsync(string req, CancellationToken ct)
-	{
-	  var idAsGuid = Guid.Parse(req);
-	  var cart = await _cartProvider.GetCart(idAsGuid);
-	  await SendAsync(cart, cancellation: CancellationToken.None);
-	}
+  public override async Task HandleAsync(GetCartRequest request, CancellationToken ct)
+  {
+    var cart = await cartProvider.GetCart(request.Id);
+    await SendAsync(cart, cancellation: ct);
   }
 }

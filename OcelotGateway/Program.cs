@@ -1,13 +1,14 @@
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using OcelotGateway;
 
 new WebHostBuilder()
   .UseKestrel()
   .UseContentRoot(Directory.GetCurrentDirectory())
-  .ConfigureAppConfiguration((hostingContext, config) =>
+  .ConfigureAppConfiguration(static (hostingContext, config) =>
   {
-    IWebHostEnvironment env = hostingContext.HostingEnvironment;
-    config
+    var env = hostingContext.HostingEnvironment;
+    _ = config
       .AddEnvironmentVariables()
       .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
       .AddJsonFile("appsettings.json", true, true)
@@ -15,16 +16,16 @@ new WebHostBuilder()
       .AddJsonFile("ocelot.json")
       .AddJsonFile($"ocelot.{env.EnvironmentName}.json", false, true);
   })
-  .ConfigureServices((context, s) =>
+  .ConfigureServices(static (context, s) =>
   {
     new Startup(context.Configuration).ConfigureServices(s);
-    s.AddOcelot();
+    _ = s.AddOcelot();
   })
-  .ConfigureLogging((hostingContext, logging) =>
+  .ConfigureLogging(static (hostingContext, logging) =>
   {
-    logging.SetMinimumLevel(LogLevel.Trace);
-    logging.AddConsole();
+    _ = logging.SetMinimumLevel(LogLevel.Trace);
+    _ = logging.AddConsole();
   })
-  .Configure(app => { app.UseOcelot().Wait(); })
+  .Configure(static app => { app.UseOcelot().Wait(); })
   .Build()
   .Run();

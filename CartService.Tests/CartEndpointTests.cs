@@ -1,181 +1,160 @@
 using CartService.Endpoints;
+using CartService.Models;
 using CartService.Requests;
-using CartService.Tests.Fakes;
 using CartService.Tests.Fixtures;
 using FastEndpoints;
 using FastEndpoints.Testing;
 using MassTransit;
 
-namespace CartService.Tests
+namespace CartService.Tests;
+
+public class CartServiceTests(CartApp app) : TestBase<CartApp>
 {
-  public class CartServiceTests(CartApp app) : TestBase<CartApp>
+  [Fact]
+  public async Task CreateNewCart_ValidCart_NewCardId()
   {
-    [Fact]
-    public async void CreateNewCart_ValidCart_NewCardId()
+    var createRequest = new CreateNewCartRequest
     {
-      var cart = new Cart
-      {
-        Products =
-        [
-          new()
-          {
-            Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
-            Amount = 5
-          }
-        ]
-      };
-      var cut = Factory.Create<CreateNewCartEndpoint>(new FakeCartRepository());
+      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 }],
+    };
 
-      await cut.HandleAsync(cart, default);
-      var res = (Guid)cut.Response!;
+    var (_, response) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createRequest
+    );
 
-      Assert.IsType<Guid>(res);
-    }
+    _ = Assert.IsType<Guid>(response);
+  }
 
-    [Fact]
-    public async void CreateNewCart_EmptyCart_ErrorCode()
+  [Fact]
+  public async Task CreateNewCart_EmptyCart_ErrorCode()
+  {
+    var createRequest = new CreateNewCartRequest { Products = [] };
+
+    var (_, response) = await app.Client.POSTAsync<
+      CreateNewCartEndpoint,
+      CreateNewCartRequest,
+      ErrorResponse
+    >(createRequest);
+
+    Assert.Contains("must not be empty", response.Errors.ElementAt(0).Value.ElementAt(0));
+  }
+
+  [Fact]
+  public async Task CreateNewCart_AmountIsZeroOrLess_ErrorCode()
+  {
+    var createRequest = new CreateNewCartRequest
     {
-      var cart = new Cart
-      {
-        Products = []
-      };
+      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 0 }],
+    };
 
-      var (_, res) = await app.Client
-        .POSTAsync<CreateNewCartEndpoint, Cart, ErrorResponse>(cart);
+    var (_, res) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, ErrorResponse>(
+      createRequest
+    );
 
-      Assert.Contains("must not be empty",
-        res.Errors.ElementAt(0).Value.ElementAt(0));
-    }
+    Assert.Contains("greater than '0'", res.Errors.ElementAt(0).Value.ElementAt(0));
+  }
 
-    [Fact]
-    public async void CreateNewCart_AmountIsZeroOrLess_ErrorCode()
+  [Fact]
+  public async Task DeleteCart_ExistingCartId_OKResponse()
+  {
+    var createRequest = new CreateNewCartRequest
     {
-      var cart = new Cart
-      {
-        Products =
-        [
-          new()
-          {
-            Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
-            Amount = 0
-          }
-        ]
-      };
+      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 }],
+    };
+    var (_, res) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createRequest
+    );
 
-      var (_, res) = await app.Client
-        .POSTAsync<CreateNewCartEndpoint, Cart, ErrorResponse>(cart);
+    var deleteCartRequest = new DeleteCartRequest { Id = res };
+    var httpResponse = await app.Client.DELETEAsync<DeleteCartEndpoint, DeleteCartRequest>(deleteCartRequest);
 
-      Assert.Contains("greater than '0'",
-        res.Errors.ElementAt(0).Value.ElementAt(0));
-    }
+    Assert.NotNull(httpResponse);
+    Assert.True(httpResponse.IsSuccessStatusCode);
+  }
 
-    [Fact]
-    public async void UpdateCart_ValidItem_CartId()
+  [Fact]
+  public async Task DeleteCart_NonExistentCartId_OKResponse()
+  {
+    var guid = NewId.NextGuid();
+    var deleteCartRequest = new DeleteCartRequest { Id = guid };
+
+    var httpRes = await app.Client.DELETEAsync<DeleteCartEndpoint, DeleteCartRequest>(deleteCartRequest);
+
+    Assert.True(httpRes.IsSuccessStatusCode);
+  }
+
+  [Fact]
+  public async Task GetCart_ExistingCardId_Cart()
+  {
+    var createNewCartRequest = new CreateNewCartRequest
     {
-      var cart = new Cart
-      {
-        Products =
-        [
-          new()
-          {
-            Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
-            Amount = 5
-          }
-        ]
-      };
-      var (_, res) = await app.Client
-        .POSTAsync<CreateNewCartEndpoint, Cart, Guid>(cart);
-      var updateCart = new UpdateCart
-      {
-        CartGuid = res,
-        Cart = new Cart
-        {
-          Products =
-          [
-            new()
-            {
-              Id = Guid.Parse("11187665-97a9-4200-a354-f1c2cbcb63e0"),
-              Amount = 2
-            }
-          ]
-        }
-      };
+      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 }],
+    };
+    var (_, newCartGuid) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createNewCartRequest
+    );
+    var getCartRequest = new GetCartRequest { Id = newCartGuid };
+    var (_, cart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
 
-      await app.Client
-        .PATCHAsync<UpdateCartEndpoint, UpdateCart, Guid>(updateCart);
+    Assert.NotNull(cart);
+    Assert.True(cart.Products.Count > 0);
+  }
 
-      var (_, finalCart)
-        = await app.Client.GETAsync<GetCartEndpoint, string, Cart>(
-          res.ToString());
-      Assert.True(finalCart.Products.Count == 2);
-    }
+  [Fact]
+  public async Task GetCart_NonExistentCardId_NullCart()
+  {
+    var id = Guid.NewGuid();
+    var getCartRequest = new GetCartRequest { Id = id };
+    var (_, cart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
 
-    [Fact]
-    public async void DeleteCart_ExistingCartId_OKResponse()
+    Assert.Null(cart);
+  }
+
+  [Fact]
+  public async Task CreateNewCart_CartWithDuplicateProducts_CartWithMergedProduct()
+  {
+    const int PRODUCTS_AFTER_MERGING = 1;
+    var createNewCartRequest = new CreateNewCartRequest
     {
-      var cart = new Cart
-      {
-        Products =
-        [
-          new()
-          {
-            Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
-            Amount = 5
-          }
-        ]
-      };
-      var (_, res) = await app.Client
-        .POSTAsync<CreateNewCartEndpoint, Cart, Guid>(cart);
+      Products =
+      [
+        new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 },
+        new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 8 },
+      ],
+    };
+    var (_, id) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createNewCartRequest
+    );
 
-      var httpRes = await app.Client
-        .DELETEAsync<DeleteCartEndpoint, string>(res.ToString());
+    var getCartRequest = new GetCartRequest { Id = id };
+    var (_, finalCart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
 
-      Assert.True(httpRes.IsSuccessStatusCode);
-    }
+    Assert.Equal(PRODUCTS_AFTER_MERGING, finalCart?.Products.Count);
+  }
 
-    [Fact]
-    public async void DeleteCart_NonExistentCartId_OKResponse()
+  [Fact]
+  public async Task UpdateWholeCart_ValidItem_CartWithMergedProducts()
+  {
+    const int PRODUCTS_COUNT_AFTER_UPDATE = 1;
+    var expectedGuid = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0");
+    var createNewCartRequest = new CreateNewCartRequest
     {
-      var guid = NewId.NextGuid().ToString();
-
-      var httpRes = await app.Client
-        .DELETEAsync<DeleteCartEndpoint, string>(guid);
-
-      Assert.True(httpRes.IsSuccessStatusCode);
-    }
-
-    [Fact]
-    public async void GetCart_ExistingCardId_Cart()
+      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 }],
+    };
+    var (_, newId) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createNewCartRequest
+    );
+    var updateCartRequest = new UpdateCartRequest
     {
-      var newCart = new Cart
-      {
-        Products =
-        [
-          new()
-          {
-            Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0"),
-            Amount = 5
-          }
-        ]
-      };
-      var (_, res) = await app.Client
-        .POSTAsync<CreateNewCartEndpoint, Cart, Guid>(newCart);
+      Id = newId,
+      Products = [new() { Id = expectedGuid.ToString(), Amount = PRODUCTS_COUNT_AFTER_UPDATE }],
+    };
 
-      var (httpRes, cart) = await app.Client
-        .GETAsync<GetCartEndpoint, string, Cart>(res.ToString());
+    var _ = await app.Client.PUTAsync<UpdateCartEndpoint, UpdateCartRequest, Guid>(updateCartRequest);
 
-      Assert.True(cart.Products.Count > 0);
-    }
-
-    [Fact]
-    public async void GetCart_NonExistentCardId_Cart()
-    {
-      var idString = Guid.NewGuid().ToString();
-
-      var (_, cart) = await app.Client
-        .GETAsync<GetCartEndpoint, string, Cart>(idString);
-
-      Assert.True(cart is null);
-    }
+    var getCartRequest = new GetCartRequest { Id = newId };
+    var (_, finalCart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
+    Assert.Equal(PRODUCTS_COUNT_AFTER_UPDATE, finalCart?.Products.Count);
+    Assert.Equal(expectedGuid.ToString(), finalCart?.Products.First().Id);
   }
 }

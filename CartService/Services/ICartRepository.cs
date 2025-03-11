@@ -1,12 +1,11 @@
-﻿using CartService.Requests;
+using CartService.Models;
 
-namespace CartService.Services
+namespace CartService.Services;
+
+public interface ICartRepository
 {
-  public interface ICartRepository
-  {
-	public Task<Cart?> GetCart(Guid c);
-	public Task<Guid> CreateNewCart(Cart c);
-	public Task<Guid> UpdateCart(UpdateCart c);
-	public Task DeleteCart(Guid c);
-  }
+  Task<Cart?> GetCart(Guid g);
+  Task<Guid> CreateNewCart(Cart c);
+  Task<Guid> UpdateCart(Guid id, Cart c);
+  Task DeleteCart(Guid g);
 }

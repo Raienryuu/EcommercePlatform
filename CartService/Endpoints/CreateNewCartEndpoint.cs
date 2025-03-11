@@ -1,31 +1,22 @@
-﻿using CartService.Requests;
+using CartService.Mappers;
+using CartService.Requests;
 using CartService.Services;
-using CartService.Validators;
 using FastEndpoints;
-using MassTransit;
-using StackExchange.Redis;
-using System.Text.Json;
 
-namespace CartService.Endpoints
+namespace CartService.Endpoints;
+
+public class CreateNewCartEndpoint(ICartRepository cartProvider) : Endpoint<CreateNewCartRequest, Guid>
 {
-  public class CreateNewCartEndpoint : Endpoint<Cart>
+  public override void Configure()
   {
-	private readonly ICartRepository _cartProvider;
-	public CreateNewCartEndpoint(ICartRepository cartProvider)
-	{
-	  _cartProvider = cartProvider;
-	}
+    Post("api/cart");
+    AllowAnonymous();
+  }
 
-	public override void Configure()
-	{
-	  Post("api/cart");
-	  AllowAnonymous();
-	}
-
-	public override async Task HandleAsync(Cart req, CancellationToken ct)
-	{
-	  var newId = await _cartProvider.CreateNewCart(req);
-	  await SendCreatedAtAsync("api/cart/{guid}", newId, newId, cancellation: CancellationToken.None);
-	}
+  public override async Task HandleAsync(CreateNewCartRequest req, CancellationToken ct)
+  {
+    var cart = req.ToCart();
+    var newId = await cartProvider.CreateNewCart(cart);
+    await SendCreatedAtAsync("api/cart/{guid}", newId, newId, cancellation: ct);
   }
 }

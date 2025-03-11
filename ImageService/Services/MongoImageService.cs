@@ -23,7 +23,7 @@ public class MongoImageService : IImageService, IDisposable
   }
 
   // try mitigate copying data to byte[] ??
-  public async Task AddProductImageAsync(int productId, IFormFile file)
+  public async Task AddProductImageAsync(Guid productId, IFormFile file)
   {
     var productMetadata = await _metadataService.GetProductImagesMetadataAsync(productId);
 
@@ -48,7 +48,7 @@ public class MongoImageService : IImageService, IDisposable
     await collection.InsertOneAsync(fileAsImage);
   }
 
-  public async Task<Image?> GetProductImageAsync(int productId, int imageNumber)
+  public async Task<Image?> GetProductImageAsync(Guid productId, int imageNumber)
   {
     var collection = _client.GetDatabase(DB_NAME)
         .GetCollection<Image>("images");

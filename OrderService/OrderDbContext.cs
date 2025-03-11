@@ -1,23 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OrderService.Models;
 
 namespace OrderService;
 
-public class OrderDbContext : DbContext
+public class OrderDbContext(DbContextOptions options) : DbContext(options)
 {
-  public OrderDbContext(DbContextOptions options) : base(options) { }
-
   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
   {
-	base.OnConfiguring(optionsBuilder);
+    base.OnConfiguring(optionsBuilder);
   }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
-	base.OnModelCreating(modelBuilder);
+    base.OnModelCreating(modelBuilder);
 
-	modelBuilder.Entity<Order>().Property("LastModified").ValueGeneratedOnUpdate();
+    _ = modelBuilder.Entity<Order>().Property("LastModified").ValueGeneratedOnUpdate();
   }
 
-  public DbSet<Order> Orders { get; set; }
+  public required DbSet<Order> Orders { get; set; }
+  public required DbSet<StagedCart> StagedCarts { get; set; }
 }

@@ -9,10 +9,10 @@ GO
 
 USE ProductService;
 
-DROP USER  IF EXISTS  productManager;  
+DROP USER  IF EXISTS  productManager;
 DROP LOGIN productManager;
 
-CREATE LOGIN productManager 
+CREATE LOGIN productManager
     WITH PASSWORD = 'totallynotamangerpassword!@#$5';
 CREATE USER productManager FOR LOGIN productManager;
 
@@ -31,15 +31,17 @@ EXEC sp_addrolemember db_owner, orderManager;
 
 USE [aspnet-IdentityService];
 
-DROP USER  IF EXISTS  identityManager;  
+DROP USER  IF EXISTS  identityManager;
 DROP LOGIN identityManager;
 
-CREATE LOGIN identityManager 
+CREATE LOGIN identityManager
     WITH PASSWORD = 'totallynotamangerpassword!@#$5';
 CREATE USER identityManager FOR LOGIN identityManager;
 
 EXEC sp_addrolemember db_owner, identityManager;
 
+ALTER LOGIN sa WITH
+  PASSWORD = 'debbugingOnly!@#$5'
 
 GO
 

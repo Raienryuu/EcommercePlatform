@@ -8,10 +8,7 @@ namespace ProductService.Controllers.v1;
 [ApiController]
 [Route("/api/v1/[controller]")]
 [Produces("application/json")]
-public class ProductsController(
-  ILogger<ProductsController> logger,
-  ProductDbContext db)
-  : ControllerBase
+public class ProductsController(ILogger<ProductsController> logger, ProductDbContext db) : ControllerBase
 {
   private readonly ILogger<ProductsController> _logger = logger;
 
@@ -26,18 +23,16 @@ public class ProductsController(
   [Route("{id}")]
   [ProducesResponseType<Product>(StatusCodes.Status200OK)]
   [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
-  public async Task<IActionResult> GetProduct(int id)
+  public async Task<IActionResult> GetProduct(Guid id)
   {
     var result = await db.Products.FindAsync(id);
-    if (result is not null) return Ok(result);
-    return NotFound(($"No product found with given ID: {id}.", id));
+    return result is not null ? Ok(result) : NotFound(($"No product found with given ID: {id}.", id));
   }
 
   [HttpGet]
   [ProducesResponseType<IEnumerable<Product>>(StatusCodes.Status200OK)]
   [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest)]
-  public async Task<IActionResult> GetProductsPage(
-  [FromQuery] PaginationParams filters)
+  public async Task<IActionResult> GetProductsPage([FromQuery] PaginationParams filters)
   {
     var validationResult = ValidatePaginationParams(filters.PageSize, filters.PageNum);
 
@@ -46,8 +41,10 @@ public class ProductsController(
       return validationResult;
     }
 
-    var pagination = new ProductsPagination(filters, db)
-      .GetOffsetPageQuery(filters.PageNum, filters.PageSize);
+    var pagination = new ProductsPagination(filters, db).GetOffsetPageQuery(
+      filters.PageNum,
+      filters.PageSize
+    );
     var products = await pagination.ToListAsync();
 
     return Ok(products);
@@ -58,19 +55,17 @@ public class ProductsController(
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetNextPage(
-  [FromQuery] PaginationParams filters,
-  [FromBody] Product referenceProduct)
+    [FromQuery] PaginationParams filters,
+    [FromBody] Product referenceProduct
+  )
   {
-
-    if (filters.PageSize < 1 || filters.PageSize > 200)
-      return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-	  "PageSize should be between 1 and 200"));
-
-	var query = new ProductsPagination(filters, db)
-      .GetNextPageQuery(filters.PageSize, referenceProduct);
-
-    var s = query.ToQueryString();
-    Console.WriteLine(s);
+    if (filters.PageSize is < 1 or > 200)
+    {
+      return BadRequest(
+        ProductsControllerHelpers.CreateErrorResponse("PageSize should be between 1 and 200")
+      );
+    }
+    var query = new ProductsPagination(filters, db).GetNextPageQuery(filters.PageSize, referenceProduct);
 
     var products = await query.ToListAsync();
     return Ok(products);
@@ -81,18 +76,17 @@ public class ProductsController(
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult<IEnumerable<Product>>> GetPreviousPage(
-  [FromQuery] PaginationParams filters,
-  [FromBody] Product referenceProduct)
+    [FromQuery] PaginationParams filters,
+    [FromBody] Product referenceProduct
+  )
   {
-    if (filters.PageSize < 1 || filters.PageSize > 200)
-      return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-      "PageSize should be between 1 and 200"));
-
-    var query = new ProductsPagination(filters, db)
-      .GetPreviousPageQuery(filters.PageSize, referenceProduct);
-
-    var s = query.ToQueryString();
-    Console.WriteLine(s);
+    if (filters.PageSize is < 1 or > 200)
+    {
+      return BadRequest(
+        ProductsControllerHelpers.CreateErrorResponse("PageSize should be between 1 and 200")
+      );
+    }
+    var query = new ProductsPagination(filters, db).GetPreviousPageQuery(filters.PageSize, referenceProduct);
 
     var products = await query.ToListAsync();
     return Ok(products);
@@ -102,15 +96,15 @@ public class ProductsController(
   [ProducesResponseType(StatusCodes.Status201Created)]
   public async Task<ActionResult> AddNewProduct([FromBody] Product newProduct)
   {
-    newProduct.Category = await db.ProductCategories
-      .SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
+    newProduct.Category = await db.ProductCategories.SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
 
     if (newProduct.Category is null)
+    {
       return BadRequest(ProductsControllerHelpers.CreateErrorResponse("Category not found"));
-
+    }
     newProduct.RefreshConcurrencyStamp();
-    db.Products.Add(newProduct);
-    await db.SaveChangesAsync();
+    _ = db.Products.Add(newProduct);
+    _ = await db.SaveChangesAsync();
 
     return CreatedAtAction("GetProduct", new { id = newProduct.Id }, newProduct);
   }
@@ -131,59 +125,59 @@ public class ProductsController(
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-  public async Task<ActionResult<Product>> UpdateProduct(int id,
-  [FromBody] Product updatedProduct)
+  public async Task<ActionResult<Product>> UpdateProduct(Guid id, [FromBody] Product updatedProduct)
   {
     var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == id);
     if (oldProduct is null)
+    {
       return NotFound(ProductsControllerHelpers.CreateErrorResponse("Product not found"));
-
+    }
     if (!await DoesCategoryExists(updatedProduct.CategoryId))
+    {
       return NotFound(ProductsControllerHelpers.CreateErrorResponse("Given category does not exists"));
-
+    }
     if (updatedProduct.ConcurrencyStamp != oldProduct.ConcurrencyStamp)
-      return UnprocessableEntity(
-      ProductsControllerHelpers
-      .CreateErrorResponse("ConcurrencyStamp mismatch"));
-
-    await ProductsControllerHelpers
-      .AssignNewValuesToProduct(db, updatedProduct, oldProduct);
+    {
+      return UnprocessableEntity(ProductsControllerHelpers.CreateErrorResponse("ConcurrencyStamp mismatch"));
+    }
+    await ProductsControllerHelpers.AssignNewValuesToProduct(db, updatedProduct, oldProduct);
 
     oldProduct.RefreshConcurrencyStamp();
     System.Diagnostics.Debug.WriteLine(oldProduct.ConcurrencyStamp);
 
-    await db.SaveChangesAsync();
+    _ = await db.SaveChangesAsync();
 
     return Ok(oldProduct);
   }
 
   private async Task<bool> DoesCategoryExists(int categoryId)
   {
-    var result = await db.ProductCategories.FirstOrDefaultAsync(
-      cat => cat.Id == categoryId);
+    var result = await db.ProductCategories.FirstOrDefaultAsync(cat => cat.Id == categoryId);
     return result is not null;
   }
 
   private IActionResult? ValidatePaginationParams(int pageSize, int pageNum = 1)
   {
-    if (pageNum < 1 || pageSize < 1 || pageSize > 200)
-      return BadRequest(ProductsControllerHelpers.CreateErrorResponse(
-      "Page and PageSize must be greater than 0 and PageSize less " +
-      "than 200"));
-    return null;
+    return pageNum < 1 || pageSize < 1 || pageSize > 200
+      ? BadRequest(
+        ProductsControllerHelpers.CreateErrorResponse(
+          "Page and PageSize must be greater than 0 and PageSize less " + "than 200"
+        )
+      )
+      : (IActionResult?)null;
   }
 
   /// <summary>
   /// Gets IEnumerable of Product for given Ids.
   /// </summary>
   /// <param name="productsIds"></param>
-  /// <returns>Updated product.</returns>
-  /// <response code="200">Product with updated values.</response>
-  /// <response code="404">If product id doesn't exists.</response>
-  [HttpGet("batch")]
+  /// <returns>List of products.</returns>
+  /// <response code="200">List of products.</response>
+  /// <response code="404">If product ids doesn't exists.</response>
+  [HttpPost("batch")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<ActionResult<IEnumerable<Product>>> GetSelectiveProducts([FromBody] int[] productsIds)
+  public async Task<ActionResult<IEnumerable<Product>>> GetSelectiveProducts([FromBody] Guid[] productsIds)
   {
     if (productsIds is null)
     {

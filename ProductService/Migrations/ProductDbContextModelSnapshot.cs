@@ -17,7 +17,7 @@ namespace ProductService.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -40,18 +40,16 @@ namespace ProductService.Migrations
 
             modelBuilder.Entity("ProductService.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("ConcurrencyStamp")
+                    b.Property<int>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -80,9 +78,9 @@ namespace ProductService.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("87817c15-d25f-4621-9135-2e7851b484b3"),
                             CategoryId = 2,
-                            ConcurrencyStamp = new byte[] { 75, 72, 22, 190 },
+                            ConcurrencyStamp = 0,
                             Description = "White mug",
                             Name = "Mug",
                             Price = 10m,
@@ -90,9 +88,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("22ea176b-ea99-445f-97b3-c1afa5585562"),
                             CategoryId = 3,
-                            ConcurrencyStamp = new byte[] { 236, 99, 131, 91 },
+                            ConcurrencyStamp = 0,
                             Description = "White cup",
                             Name = "Cpu",
                             Price = 10m,
@@ -100,9 +98,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = new Guid("f12e47a0-82f9-4231-abce-63280e7d3d99"),
                             CategoryId = 4,
-                            ConcurrencyStamp = new byte[] { 139, 99, 223, 24 },
+                            ConcurrencyStamp = 0,
                             Description = "Apple laptop",
                             Name = "MacBook Air M2",
                             Price = 1000m,
@@ -110,9 +108,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = new Guid("d8f65542-f0e7-4ca7-b9c1-002898cdc379"),
                             CategoryId = 4,
-                            ConcurrencyStamp = new byte[] { 4, 108, 99, 39 },
+                            ConcurrencyStamp = 0,
                             Description = "Apple laptop",
                             Name = "Lenovo ThindPad E14",
                             Price = 1000m,
@@ -148,12 +146,12 @@ namespace ProductService.Migrations
                         new
                         {
                             Id = 1,
-                            CategoryName = "Tableware"
+                            CategoryName = "Mugs"
                         },
                         new
                         {
                             Id = 2,
-                            CategoryName = "Mugs"
+                            CategoryName = "Tableware"
                         },
                         new
                         {

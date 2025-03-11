@@ -1,53 +1,45 @@
-﻿using CartService.Requests;
+using System.Text.Json;
+using CartService.Helpers;
+using CartService.Models;
 using MassTransit;
 using StackExchange.Redis;
-using System.Text;
-using System.Text.Json;
 
-namespace CartService.Services
+namespace CartService.Services;
+
+public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartRepository
 {
-  public class RedisCartRepository : ICartRepository
+  private readonly IDatabase _db = dbFactory.connection.GetDatabase();
+
+  public async Task<Guid> CreateNewCart(Cart c)
   {
-	private readonly IDatabase _db;
-	public RedisCartRepository(RedisConnectionFactory dbFactory)
-	{
-	  _db = dbFactory.connection.GetDatabase();
-	}
+    var newId = NewId.NextSequentialGuid();
+    c = CartHelper.MergeCart(c);
 
-	public async Task<Guid> UpdateCart(UpdateCart c)
-	{
-	  var cartJson = await _db.StringGetAsync(c.CartGuid.ToString());
+    return await _db.StringSetAsync(newId.ToString(), JsonSerializer.Serialize(c))
+      ? newId
+      : throw new RedisCommandException("Could not create new cart");
+  }
 
-	  if (cartJson.IsNullOrEmpty)
-	  {
-		var newCartId = await CreateNewCart(c.Cart);
-		return newCartId;
-	  }
+  public async Task DeleteCart(Guid g)
+  {
+    var idString = g.ToString();
+    _ = await _db.KeyDeleteAsync(idString);
+  }
 
-	  var cart = JsonSerializer.Deserialize<Cart>(cartJson!);
-	  cart!.Products.AddRange(c.Cart.Products);
+  public async Task<Cart?> GetCart(Guid g)
+  {
+    var objectJson = await _db.StringGetAsync(g.ToString());
+    var cartAsString = objectJson.ToString();
 
-	  await _db.StringSetAsync(c.CartGuid.ToString(), JsonSerializer.Serialize(c));
-	  return c.CartGuid;
-	}
+    return objectJson.IsNullOrEmpty ? null : JsonSerializer.Deserialize<Cart?>(cartAsString);
+  }
 
-	public async Task<Guid> CreateNewCart(Cart c)
-	{
-	  var newId = NewId.NextSequentialGuid();
-	  await _db.StringSetAsync(newId.ToString(), JsonSerializer.Serialize(c));
-	  return newId;
-	}
-
-	public async Task DeleteCart(Guid c)
-	{
-	  var idString = c.ToString();
-	  await _db.KeyDeleteAsync(idString);
-	}
-
-	public async Task<Cart?> GetCart(Guid c)
-	{
-	  var objectJson = await _db.StringGetAsync(c.ToString());
-	  return JsonSerializer.Deserialize<Cart>(objectJson);
-	}
+  public async Task<Guid> UpdateCart(Guid id, Cart c)
+  {
+    c = CartHelper.MergeCart(c);
+    var objectJson = await _db.StringGetAsync(id.ToString());
+    return objectJson.IsNullOrEmpty ? await CreateNewCart(c)
+      : await _db.StringSetAsync(id.ToString(), JsonSerializer.Serialize(c)) ? id
+      : throw new RedisCommandException("Could not create new cart");
   }
 }

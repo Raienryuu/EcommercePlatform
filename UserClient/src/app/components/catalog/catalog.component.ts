@@ -7,7 +7,10 @@ import { ProductCategoryService } from 'src/app/services/productCategoryService/
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
-import { debounceTime } from 'rxjs';
+import { debounceTime, interval, of } from 'rxjs';
+import { environment } from 'src/enviroment';
+import { CartService } from 'src/app/services/cartService/cart.service';
+import { LotsOfSampleProducts } from 'src/app/develSamples';
 
 @Component({
   selector: 'app-catalog',
@@ -16,12 +19,13 @@ import { debounceTime } from 'rxjs';
   styleUrls: ['./catalog.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-  products: Product[] = [];
+  products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];
 
   filters: PaginationParams;
   isLoading = true;
   maxPage = 10;
   filteringDelay = new EventEmitter();
+  filterApplyDelay = new EventEmitter();
   public categoryId: string | null = '';
   currencySymbol = '€';
 
@@ -38,6 +42,7 @@ export class ProductsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private userSettingsService: UserSettingsService,
+    private cartService: CartService,
   ) {
     this.filters = {
       PageNum: 1,
@@ -49,14 +54,13 @@ export class ProductsComponent implements OnInit {
       MinQuantity: null!,
       Categories: null!,
     };
-
-    this.filteringDelay
+    this.filterApplyDelay
       .pipe(debounceTime(800))
-      .subscribe(() => {
-        this.UpdateUrlQuery();
-        this.LoadNewPage(0);
-      });
+      .subscribe(() => this.UpdateUrlQuery());
 
+    this.filteringDelay.pipe(debounceTime(800)).subscribe(() => {
+      this.LoadNewPage(0);
+    });
   }
 
   private GetPageFromRoute(): number {
@@ -77,18 +81,21 @@ export class ProductsComponent implements OnInit {
     this.LoadUserSettings();
     this.filters.PageNum = this.GetPageFromRoute();
     this.filters.PageSize = this.GetPageSizeFromRoute();
-    this.GetProductsPage();
     this.GetCategoryTree();
-
     this.HookUpBackAndForwardButtons();
+
+    if (environment.sampleData === true) {
+      this.InsertNewProducts(LotsOfSampleProducts);
+      return;
+    }
   }
 
   private HookUpBackAndForwardButtons() {
     this.route.queryParams.subscribe(() => {
+      this.filteringDelay.emit();
       this.filters.PageSize = this.GetPageSizeFromRoute();
       this.filters.PageNum = this.GetPageFromRoute();
       this.GetFiltersFromRoute();
-      this.LoadNewPage(0);
     });
   }
 
@@ -107,12 +114,12 @@ export class ProductsComponent implements OnInit {
   }
 
   RefreshFilterDelay() {
-    this.filteringDelay.emit();
+    this.filterApplyDelay.emit();
   }
 
   HandleKeyWordsSearch() {
-    this.filteringDelay.emit();
     this.ClearNameFilterIfEmpty();
+    this.filteringDelay.emit();
   }
 
   private ClearNameFilterIfEmpty() {
@@ -173,8 +180,10 @@ export class ProductsComponent implements OnInit {
     return false;
   }
 
+  /** pageOffset: -1 or 1 correspond to previousPage and nextPage respectively */
   LoadNewPage(pageOffset: number) {
     this.filters.PageNum += pageOffset;
+    this.UpdateUrlQuery();
     if (pageOffset === 1) {
       this.GetNextPage();
     } else if (pageOffset === -1) {
@@ -182,7 +191,6 @@ export class ProductsComponent implements OnInit {
     } else {
       this.GetProductsPage();
     }
-    this.UpdateUrlQuery();
   }
 
   RemoveNameFilter() {
@@ -225,5 +233,12 @@ export class ProductsComponent implements OnInit {
   UpdatePageSize(event: MatSelectChange) {
     this.filters.PageSize = event.value;
     this.filteringDelay.emit();
+  }
+
+  AddToCart(productId: string) {
+    this.cartService.AddToCart(productId, 1).subscribe((cartId) => {
+      this.cartService.remoteCartId = cartId;
+      console.log('cart was updated');
+    });
   }
 }

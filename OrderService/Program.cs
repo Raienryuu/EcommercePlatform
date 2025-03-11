@@ -28,7 +28,6 @@ public class Program
 
     var app = builder.Build();
 
-
     if (app.Environment.IsDevelopment())
     {
       app.UseSwagger();
@@ -61,17 +60,15 @@ public class Program
 
       app.MapControllers();
 
-
-
       app.Run();
-
     }
   }
+
   static string BuildConnectionString(WebApplicationBuilder builder)
   {
-    return builder.Configuration.GetConnectionString("Host") +
-         builder.Configuration.GetConnectionString("User") +
-         builder.Configuration.GetConnectionString("Password") +
-         builder.Configuration.GetConnectionString("DefaultConnection");
+    return builder.Configuration.GetConnectionString("Host")
+      + builder.Configuration.GetConnectionString("User")
+      + builder.Configuration.GetConnectionString("Password")
+      + builder.Configuration.GetConnectionString("DefaultConnection");
   }
 }

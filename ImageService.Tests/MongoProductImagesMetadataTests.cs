@@ -4,7 +4,7 @@ using ImageService.Tests.Data;
 
 namespace ImageService.Tests;
 
-[ClassDataSource<MongoContainer>]
+[ClassDataSource<MongoContainer>(Shared = SharedType.PerTestSession)]
 public class MongoProductImagesMetadataTests(MongoContainer mongoContainer)
 {
   private MongoProductImagesMetadataService _mongoImageMetadataService = null!;
@@ -12,14 +12,13 @@ public class MongoProductImagesMetadataTests(MongoContainer mongoContainer)
   [Before(Test)]
   public async Task SetUp()
   {
-    _ = await mongoContainer.SeedMetadata();
     _mongoImageMetadataService = mongoContainer.GetImagesMetadataService();
+    _ = await mongoContainer.SeedMetadata();
   }
 
   [Test]
   [MethodDataSource(typeof(MetadataSamplesGenerator), nameof(MetadataSamplesGenerator.GetSeededMetadataIds))]
-  public async Task GetProductImagesMetadataAsync_ExistingProductId_ProductMetadata(
-       int productId)
+  public async Task GetProductImagesMetadataAsync_ExistingProductId_ProductMetadata(Guid productId)
   {
     var metadata = await _mongoImageMetadataService.GetProductImagesMetadataAsync(productId);
 

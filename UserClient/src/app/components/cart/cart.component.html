@@ -8,66 +8,79 @@
       <span class="header"> Total </span>
       <span class="header"></span>
     </div>
-    @for (product of products; track $index) {
-      <div class="product">
-        <img
-          alt="productImg"
-          height="120"
-          width="170"
-          ngSrc="assets/garnek"
-          priority="true"
-          style="float: left"
-        />
-        <span class="product-property name">
-          {{ product.name }}
-        </span>
-        <span class="product-property quantity-wrapper">
-          <button
-            aria-label="decrease quantity"
-            mat-icon-button
-            (click)="AddQuantity(product, -1)"
-            [disabled]="IsDecrementationInvalid(product)"
-          >
-            <mat-icon> chevron_left </mat-icon>
-          </button>
-          <mat-form-field
-            style="width: 60px"
-            appearance="outline"
-            floatLabel="always"
-          >
-            <input
-              aria-label="quantity of product"
-              type="number"
-              matInput
-              [(ngModel)]="product.quantity"
-              (change)="ValidateQuantity(product)"
-            />
-          </mat-form-field>
-          <button
-            aria-label="increase quantity"
-            mat-icon-button
-            (click)="AddQuantity(product, 1)"
-            [disabled]="IsIncrementationInvalid(product)"
-          >
-            <mat-icon>chevron_right</mat-icon>
-          </button>
-        </span>
-        <span class="product-property">
-          {{ currencySymbol }}{{ product.price }}
-        </span>
-        <span class="product-property">
-          {{ currencySymbol }}
-          <span name="productTotal">
-            {{ GetProductTotal(product) }}
+    @if (products.length > 0) {
+      @for (product of products; track $index) {
+        <div class="product">
+          <img
+            alt="productImg"
+            height="120"
+            width="170"
+            ngSrc="assets/garnek"
+            priority="true"
+            style="float: left"
+          />
+          <span class="product-property name">
+            {{ product.name }}
           </span>
-        </span>
-        <span class="product-property">
-          <button class="remove-button" mat-button>
-            <mat-icon> delete </mat-icon>
-            <span class="icon-text"> Remove </span>
-          </button>
-        </span>
-      </div>
+          @if (product.quantity > 0) {
+            <span class="product-property quantity-wrapper">
+              <button
+                aria-label="decrease quantity"
+                mat-icon-button
+                (click)="AddQuantity(product, -1)"
+                [disabled]="IsDecrementationInvalid(product)"
+              >
+                <mat-icon> chevron_left </mat-icon>
+              </button>
+              <mat-form-field
+                style="width: 60px"
+                appearance="outline"
+                floatLabel="always"
+              >
+                <input
+                  aria-label="quantity of product"
+                  type="number"
+                  matInput
+                  [(ngModel)]="product.quantity"
+                  (change)="ValidateQuantity(product)"
+                />
+              </mat-form-field>
+              <button
+                aria-label="increase quantity"
+                mat-icon-button
+                (click)="AddQuantity(product, 1)"
+                [disabled]="IsIncrementationInvalid(product)"
+              >
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </span>
+          } @else {
+            <span class="product-property unavailable">Not available</span>
+          }
+          <span class="product-property">
+            {{ currencySymbol }}{{ product.price }}
+          </span>
+          <span class="product-property">
+            {{ currencySymbol }}
+            <span name="productTotal">
+              {{ GetProductTotal(product) }}
+            </span>
+          </span>
+          <span class="product-property">
+            <button
+              class="remove-button"
+              (click)="AddQuantity(product, -product.quantity)"
+              mat-button
+            >
+              <mat-icon> delete </mat-icon>
+              <span class="icon-text"> Remove </span>
+            </button>
+          </span>
+        </div>
+      }
+    }
+    @if (products.length === 0) {
+      <div class="empty-cart">Cart is empty</div>
     }
   </div>
   <div class="details">
@@ -91,10 +104,14 @@
           <span>{{ currencySymbol }}{{ totalCost.total }}</span>
         </div>
       </div>
-      <button mat-raised-button color="primary" class="checkout">
+      <button
+        mat-raised-button
+        color="primary"
+        class="checkout"
+        routerLink="/checkout"
+      >
         Checkout
       </button>
     </div>
   </div>
-  <div></div>
 </body>

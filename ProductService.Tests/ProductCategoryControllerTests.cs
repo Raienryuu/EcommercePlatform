@@ -1,38 +1,31 @@
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using ProductService.Models;
-using ProductService.Tests.Fakes;
 using System.Net;
-using Testcontainers.MsSql;
+using ProductService.Models;
 
 namespace ProductService.Tests;
 
 [Collection("Tests")]
 public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture(fixture)
 {
-  private const string ApiUrl = "http://localhost/api/";
-  private const int CategoryToDeleteId = 3;
-
+  private const string API_URL = "http://localhost/api/";
+  private const int CATEGORY_TO_DELETE_ID = 3;
 
   [Fact]
   public async Task GetProductCategory_ValidID_ProductCategory()
   {
-    const int CategoryId = 2;
+    const int CATEGORYID = 2;
 
-    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CATEGORYID}");
 
     var category = await result.Content.ReadFromJsonAsync<ProductCategory>();
-    Assert.IsType<ProductCategory>(category);
+    _ = Assert.IsType<ProductCategory>(category);
   }
 
   [Fact]
   public async Task GetProductCategory_NonExistingID_NotFound()
   {
-    const int CategoryId = 55555;
+    const int CATEGORYID = 55555;
 
-    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/{CATEGORYID}");
 
     Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
@@ -40,9 +33,9 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task GetReleatedCategories_CategoryWithChildren_ReleatedCategories()
   {
-    const int CategoryId = 1;
+    const int CATEGORYID = 6;
 
-    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CATEGORYID}");
 
     var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
     Assert.True(children!.Count > 0);
@@ -51,9 +44,9 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task GetReleatedCategories_CategoryWithNoChildren_EmptyList()
   {
-    const int CategoryId = 2;
+    const int CATEGORYID = 2;
 
-    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CategoryId}");
+    var result = await _client.GetAsync($"api/v1/ProductsCategories/children/{CATEGORYID}");
 
     var children = await result.Content.ReadFromJsonAsync<List<ProductCategory>>();
     Assert.Empty(children!);
@@ -62,15 +55,12 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task PostProductCategory_ValidNewCategory_Created201()
   {
-    var newCategory = new ProductCategory()
-    {
-      CategoryName = "Glass"
-    };
+    var newCategory = new ProductCategory() { CategoryName = "Glass" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
-      Content = JsonContent.Create(newCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      Content = JsonContent.Create(newCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -81,15 +71,12 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task PostProductCategory_ExistingCategory_Conflict409()
   {
-    var existingCategory = new ProductCategory()
-    {
-      CategoryName = "Sample category",
-    };
+    var existingCategory = new ProductCategory() { CategoryName = "Sample category" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
-      Content = JsonContent.Create(existingCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      Content = JsonContent.Create(existingCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -103,13 +90,13 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     var newCategory = new ProductCategory()
     {
       CategoryName = "Newest Instant Noodles",
-      ParentCategory = new() { Id = 555, CategoryName = "Food" }
+      ParentCategory = new() { Id = 555, CategoryName = "Food" },
     };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories").Uri,
-      Content = JsonContent.Create(newCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      Content = JsonContent.Create(newCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -120,16 +107,12 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task PatchProductCategory_ValidCategoryUpdate_NoContent204()
   {
-    var updatedCategory = new ProductCategory()
-    {
-      Id = 2,
-      CategoryName = "TVs",
-    };
+    var updatedCategory = new ProductCategory() { Id = 2, CategoryName = "TVs" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-      Content = JsonContent.Create(updatedCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -141,16 +124,12 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task PatchProductCategory_NonExistingCategoryUpdate_NotFound404()
   {
-    var updatedCategory = new ProductCategory()
-    {
-      Id = 66666,
-      CategoryName = "PC Parts",
-    };
+    var updatedCategory = new ProductCategory() { Id = 66666, CategoryName = "PC Parts" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-      Content = JsonContent.Create(updatedCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -165,17 +144,13 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     {
       Id = 2,
       CategoryName = "Sample category",
-      ParentCategory = new ProductCategory()
-      {
-        Id = 6666,
-        CategoryName = "Electronics",
-      }
+      ParentCategory = new ProductCategory() { Id = 6666, CategoryName = "Electronics" },
     };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{updatedCategory.Id}").Uri,
-      Content = JsonContent.Create(updatedCategory)
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      Content = JsonContent.Create(updatedCategory),
     };
 
     var result = await _client.SendAsync(msg);
@@ -189,7 +164,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Delete,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryToDeleteId}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{CATEGORY_TO_DELETE_ID}").Uri,
     };
 
     var result = await _client.SendAsync(msg);
@@ -200,18 +175,15 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   [Fact]
   public async Task DeleteProductCategory_NonExistingCategory_NotFound404()
   {
-    const int CategoryId = 55555;
+    const int CATEGORYID = 55555;
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Delete,
-      RequestUri = new UriBuilder($"{ApiUrl}v1/ProductsCategories/{CategoryId}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{CATEGORYID}").Uri,
     };
 
     var result = await _client.SendAsync(msg);
 
     Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
   }
-
-
-
 }

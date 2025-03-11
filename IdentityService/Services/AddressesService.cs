@@ -1,9 +1,9 @@
-﻿using IdentityService.Data;
+using System.Net;
+using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 
 namespace IdentityService.Services;
 
@@ -13,48 +13,43 @@ public class AddressesService : IAddressesService
 
   public AddressesService(ApplicationDbContext db)
   {
-	_db = db;
+    _db = db;
   }
 
   public async Task<UserAddress> AddAddressAsync(UserAddress address)
   {
-	address.Id = default;
-	await _db.Addresses.AddAsync(address);
-	await _db.SaveChangesAsync();
-	return address;
+    address.Id = default;
+    await _db.Addresses.AddAsync(address);
+    await _db.SaveChangesAsync();
+    return address;
   }
 
   public async Task<UserAddress?> EditAddressAsync(UserAddress newAddress)
   {
-	var oldAddress = await _db.Addresses.FindAsync(newAddress.Id);
-	if (oldAddress == null)
-	  return default;
+    var oldAddress = await _db.Addresses.FindAsync(newAddress.Id);
+    if (oldAddress == null)
+      return default;
 
-	var idInDb = oldAddress.Id;
-	oldAddress = newAddress;
-	oldAddress.Id = idInDb;
+    var idInDb = oldAddress.Id;
+    oldAddress = newAddress;
+    oldAddress.Id = idInDb;
 
-	await _db.SaveChangesAsync();
-	return oldAddress;
+    await _db.SaveChangesAsync();
+    return oldAddress;
   }
-
-
 
   public async Task<UserAddress?> GetAddressAsync(int addressId)
   {
-	return await _db.Addresses.FindAsync(addressId);
+    return await _db.Addresses.FindAsync(addressId);
   }
 
   public async Task<List<UserAddress>> GetAddressesForUserAsync(Guid userId)
   {
-	return await _db.Addresses
-	  .Where(x => x.UserId == userId)
-	  .ToListAsync();
+    return await _db.Addresses.Where(x => x.UserId == userId).ToListAsync();
   }
 
   public async Task RemoveAddressAsync(int addressId)
   {
-	await _db.Addresses.Where(x => x.Id == addressId).ExecuteDeleteAsync();
-	await _db.SaveChangesAsync();
+    await _db.Addresses.Where(x => x.Id == addressId).ExecuteDeleteAsync();
   }
 }

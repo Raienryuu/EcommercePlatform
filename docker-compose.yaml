@@ -10,6 +10,19 @@ services:
        - ASPNETCORE_URLS=http://+:8080;https://+:7070;
        - RedisConfig__ConnectionString=valkey
 
+  imageservice:
+    build:
+      dockerfile: ImageService/Dockerfile
+      context: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MongoDb__HostAddress=mongodb://mongodb
+      - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+    ports:
+      - "5271:8080"
+    depends_on:
+      - mongodb
+
   orderservice:
     build:
       dockerfile: OrderService/Dockerfile
@@ -71,7 +84,7 @@ services:
 
     depends_on:
       rabbitmq:
-        condition: service_healthy
+        condition: service_started
       mongodb:
         condition: service_started
       sqlserver:
@@ -92,14 +105,15 @@ services:
       retries: 1
   sqlserver:
     build:
-      dockerfile: sqlserver-docker
+      dockerfile: sqlserver.Dockerfile
       context: .
       secrets:
         - sqlpassword
     environment:
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/sqlpassword
       ACCEPT_EULA: "Y"
-    
-    ports: 
+
+    ports:
       - "1434:1433"
     secrets:
       - sqlpassword
@@ -114,7 +128,7 @@ services:
     image: valkey/valkey:7.2.5
     ports:
       - "6379:6379"
-    
+
 secrets:
   sqlpassword:
     file: sqlpassword.txt

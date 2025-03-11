@@ -1,30 +1,20 @@
-﻿using CartService.Requests;
+using CartService.Requests;
 using CartService.Services;
 using FastEndpoints;
 
-namespace CartService.Endpoints
+namespace CartService.Endpoints;
+
+public class DeleteCartEndpoint(ICartRepository cartProvider) : Endpoint<DeleteCartRequest>
 {
-  public class DeleteCartEndpoint : Endpoint<string>
+  public override void Configure()
   {
-	private readonly ICartRepository _cartProvider;
+    Delete("api/cart/{@cartGuid}", static x => new { x.Id });
+    AllowAnonymous();
+  }
 
-	public DeleteCartEndpoint(ICartRepository cartProvider)
-	{
-	  _cartProvider = cartProvider;
-	}
-	public override void Configure()
-	{
-	  Delete("api/cart/{CartId}");
-	  AllowAnonymous();
-	}
-
-	
-
-	public override async Task HandleAsync(string req, CancellationToken ct)
-	{
-	  Guid id = Guid.Parse(req);
-	  await _cartProvider.DeleteCart(id);
-	  await SendAsync(null, cancellation: CancellationToken.None);
-	}
+  public override async Task HandleAsync(DeleteCartRequest request, CancellationToken ct)
+  {
+    await cartProvider.DeleteCart(request.Id);
+    await SendNoContentAsync(ct);
   }
 }

@@ -12,15 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.Configure<ConnectionOptions>(
-    builder.Configuration.GetRequiredSection(ConnectionOptions.Key));
-var objectSerializer
-    = new ObjectSerializer(ObjectSerializer.AllAllowedTypes);
+  builder.Configuration.GetRequiredSection(ConnectionOptions.Key)
+);
+var objectSerializer = new ObjectSerializer(ObjectSerializer.AllAllowedTypes);
 BsonSerializer.RegisterSerializer(objectSerializer);
 builder.Services.AddSingleton<IImageService, MongoImageService>();
 builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
 
-if (builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development)
+if (
+  builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development
+  || builder.Configuration["ASPNETCORE_ENVIRONMENT"] == "docker"
+)
 {
   _ = builder.Services.AddCors(static c =>
   {
@@ -41,41 +44,61 @@ if (app.Environment.IsDevelopment())
 
 BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
 {
-  _ = map.MapCreator(static p => new ProductImagesMetadata(p.ProductId, p.StoredImages, new MetadataAvailable()));
+  _ = map.MapCreator(static p => new ProductImagesMetadata(
+    p.ProductId,
+    p.StoredImages,
+    new MetadataAvailable()
+  ));
 
   map.AutoMap();
   map.UnmapProperty(static p => p.MetadataState);
 });
 
-app.UseHttpsRedirection();
+/*app.UseHttpsRedirection();*/
 
-app.MapGet("api/v1/image", static async ([FromQuery] int productId,
-    [FromServices] IImageService images, [FromQuery] int imageNumber = 0) =>
-{
-  var image = await images.GetProductImageAsync(productId, imageNumber);
-  return image is null
-  ? Results.NotFound("No image found")
-  : Results.File(image.Data, image.ContentType, image.Name);
-}).WithName("GetProductImages");
+app.MapGet(
+    "api/v1/image",
+    static async (
+      [FromQuery] Guid productId,
+      [FromServices] IImageService images,
+      [FromQuery] int imageNumber = 0
+    ) =>
+    {
+      var image = await images.GetProductImageAsync(productId, imageNumber);
+      return image is null
+        ? Results.NotFound("No image found")
+        : Results.File(image.Data, image.ContentType, image.Name);
+    }
+  )
+  .WithName("GetProductImages");
 
-app.MapGet("api/v1/imageMetadata", static async ([FromQuery] int productId,
-    IProductImagesMetadataService metadataService) =>
-{
-  var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
-  return Results.Ok(metadata);
-}).WithName("GetImageMetadata");
+app.MapGet(
+    "api/v1/imageMetadata",
+    static async ([FromQuery] Guid productId, IProductImagesMetadataService metadataService) =>
+    {
+      var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
+      return Results.Ok(metadata);
+    }
+  )
+  .WithName("GetImageMetadata");
 
-app.MapPost("api/v1/image", static async ([FromForm] IFormFile file,
-  [FromQuery] int productId,
-  [FromServices] IImageService images) =>
-{
-  if (file is null)
-  {
-    return Results.BadRequest("No file provided");
-  }
-  await images.AddProductImageAsync(productId, file);
-  return Results.Ok("File saved");
-}).DisableAntiforgery()
-    .WithName("AddProductImage");
+app.MapPost(
+    "api/v1/image",
+    static async (
+      [FromForm] IFormFile file,
+      [FromQuery] Guid productId,
+      [FromServices] IImageService images
+    ) =>
+    {
+      if (file is null)
+      {
+        return Results.BadRequest("No file provided");
+      }
+      await images.AddProductImageAsync(productId, file);
+      return Results.Ok("File saved");
+    }
+  )
+  .DisableAntiforgery()
+  .WithName("AddProductImage");
 
 app.Run();

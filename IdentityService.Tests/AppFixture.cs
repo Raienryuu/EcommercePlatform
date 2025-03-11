@@ -1,4 +1,4 @@
-﻿using IdentityService.Data;
+using IdentityService.Data;
 using IdentityService.Tests.Fakes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,47 +7,45 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.MsSql;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.AspNetCore.Identity;
 
-namespace IdentityService.Tests
+namespace IdentityService.Tests;
+
+public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
-  public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
+  private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build();
+
+  public async Task InitializeAsync()
   {
-    private readonly MsSqlContainer _dbContainer = new MsSqlBuilder().Build();
+    await _dbContainer.StartAsync();
+  }
 
-    public async Task InitializeAsync()
+  protected override void ConfigureWebHost(IWebHostBuilder builder)
+  {
+    base.ConfigureWebHost(builder);
+    _=builder.ConfigureTestServices(services =>
     {
-      await _dbContainer.StartAsync();
-    }
+      _ = services.RemoveAll<ApplicationDbContext>();
+      _ = services.RemoveAll<DbContextOptions>();
+      _ = services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
+      var connection = _dbContainer.GetConnectionString();
+      _ = services.AddDbContext<ApplicationDbContext, ApplicationDbContextFake>();
+      _ = services.AddSingleton(new DbContextOptionsBuilder<ApplicationDbContext>()
+        .UseSqlServer(_dbContainer.GetConnectionString())
+        .EnableSensitiveDataLogging()
+        .Options);
 
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
-    {
-      base.ConfigureWebHost(builder);
-      builder.ConfigureTestServices(services =>
-      {
-        services.RemoveAll<ApplicationDbContext>();
-        services.RemoveAll<DbContextOptions>();
-        services.RemoveAll<DbContextOptions<ApplicationDbContext>>();
-        var connection = _dbContainer.GetConnectionString();
-        services.AddDbContext<ApplicationDbContext, ApplicationDbContextFake>();
-        services.AddSingleton<DbContextOptions<ApplicationDbContext>>(new DbContextOptionsBuilder<ApplicationDbContext>()
-          .UseSqlServer(_dbContainer.GetConnectionString())
-          .EnableSensitiveDataLogging()
-          .Options);
+      //services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+      //  options.SignIn.RequireConfirmedAccount = false)
+      //  .AddEntityFrameworkStores<ApplicationDbContextFake>();
 
-        //services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
-        //  options.SignIn.RequireConfirmedAccount = false)
-        //  .AddEntityFrameworkStores<ApplicationDbContextFake>();
+      var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+      _ = context.Database.EnsureCreated();
+      (context as ApplicationDbContextFake)!.FillData();
+    });
+  }
 
-        var context = services.BuildServiceProvider().GetService<ApplicationDbContext>();
-        context.Database.EnsureCreated();
-        (context as ApplicationDbContextFake).FillData();
-      });
-    }
-
-    async Task IAsyncLifetime.DisposeAsync()
-    {
-      await _dbContainer.DisposeAsync();
-    }
+  async Task IAsyncLifetime.DisposeAsync()
+  {
+    await _dbContainer.DisposeAsync();
   }
 }
