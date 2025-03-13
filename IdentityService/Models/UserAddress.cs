@@ -36,14 +36,4 @@ public class UserAddress : IUserData
     };
     return userAddress;
   }
-
-  private static Guid GetGuidFromString(string value)
-  {
-    var isSuccess = Guid.TryParse(value, out var guid);
-    if (!isSuccess)
-    {
-      throw new ArgumentException("String value should contain valid Guid");
-    }
-    return guid;
-  }
 }

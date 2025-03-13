@@ -73,7 +73,7 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
   public async Task RemoveAddress_ExistentGuid_AmountOfUserAddressesDecremented()
   {
     var aliceGuid = Guid.Parse("D0D480DA-1E50-4A78-A727-600D986D8075");
-    var newAddress = SampleUserData.sampleAddress;
+    var newAddress = SampleUserData.SampleAddress;
     const string CITY = "Removado";
     newAddress.UserId = aliceGuid;
     newAddress.City = CITY;
@@ -93,7 +93,7 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
   public async Task EditAddress_AddressWithNewValue_UpdatedAddress()
   {
     var aliceGuid = Guid.Parse("D0D480DA-1E50-4A78-A727-600D986D8075");
-    var oldAddress = SampleUserData.sampleAddress;
+    var oldAddress = SampleUserData.SampleAddress;
     const string CITY = "Edition";
     oldAddress.UserId = aliceGuid;
     oldAddress.City = CITY;

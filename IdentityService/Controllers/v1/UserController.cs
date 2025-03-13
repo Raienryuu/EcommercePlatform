@@ -12,21 +12,19 @@ using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace IdentityService.Controller;
+namespace IdentityService.Controllers.V1;
 
 [Route("api/v1/user")]
 [ApiController]
 public class UserController(
   ApplicationDbContext db,
   UserManager<IdentityUser<Guid>> userManager,
-  SignInManager<IdentityUser<Guid>> signInManager,
   RoleManager<IdentityRole<Guid>> roleManager,
   IConfiguration configuration
 ) : ControllerBase
 {
   private readonly ApplicationDbContext _db = db;
   private readonly UserManager<IdentityUser<Guid>> _userManager = userManager;
-  private readonly SignInManager<IdentityUser<Guid>> _signinManager = signInManager;
   private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
   private readonly IConfiguration _configuration = configuration;
 
@@ -38,7 +36,7 @@ public class UserController(
   public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
   {
     PasswordHasher<IdentityUser<Guid>> passwordHasher = new();
-    bool isValid = new NewUserValidator().Validate(registrationData);
+    var isValid = new NewUserValidator().Validate(registrationData);
 
     if (!isValid)
     {
@@ -62,11 +60,16 @@ public class UserController(
     {
       return BadRequest(createdSuccessfully.Errors);
     }
+    var userRole = await _roleManager.RoleExistsAsync("User");
+    if (userRole == false)
+    {
+      throw new InvalidOperationException("Trying to register user without having roles in database.");
+    }
     var addedToRole = await _userManager.AddToRoleAsync(newUser, "User");
 
     if (createdSuccessfully.Succeeded && addedToRole.Succeeded)
     {
-      UserAddress userAddress = UserAddress.CreateFrom(registrationData, newUser);
+      var userAddress = UserAddress.CreateFrom(registrationData, newUser);
       await _db.Addresses.AddAsync(userAddress);
       await _db.SaveChangesAsync();
       return Ok();
@@ -101,22 +104,29 @@ public class UserController(
     {
       return BadRequest("{\"message\":\"Not able to get matching values from database.\"}");
     }
+    var jwtSection = _configuration.GetRequiredSection("Jwt");
 
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.GetValue<string>("Key")!));
     var tokenCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var roles = await _userManager.GetRolesAsync(user);
+
+    if (roles.Count == 0)
+    {
+      throw new InvalidOperationException("Trying to login user with no roles");
+    }
 
     var claims = new[]
     {
-      new Claim(ClaimTypes.Name, user.Id.ToString()),
-      new Claim(ClaimTypes.Email, user.Email),
-      new Claim(ClaimTypes.Role, string.Join(',', await _userManager.GetRolesAsync(user))),
+      new Claim("UserId", user.Id.ToString()),
+      new Claim(ClaimTypes.Email, user.Email!),
+      new Claim(ClaimTypes.Role, string.Join(',', roles)),
     };
 
     var tokenData = new JwtSecurityToken(
-      _configuration["Jwt:Issuer"],
-      _configuration["Jwt:Issuer"],
+      jwtSection.GetValue<string>("Issuer")!,
+      jwtSection.GetValue<string>("Issuer")!,
       claims,
-      expires: DateTime.Now.AddDays(double.Parse(_configuration[key: "Jwt:ExpireTimeInDays"])),
+      expires: DateTime.Now.AddDays(jwtSection.GetValue<int>("ExpireTimeInDays")),
       signingCredentials: tokenCredentials
     );
 
@@ -124,7 +134,7 @@ public class UserController(
 
     jwToken = WebUtility.HtmlEncode("Bearer " + jwToken);
 
-    string response = $"{{ \"Authorization\" : \"{jwToken}\" }}";
+    var response = $"{{ \"Authorization\" : \"{jwToken}\" }}";
     return Ok(response);
   }
 
