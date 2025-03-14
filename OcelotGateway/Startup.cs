@@ -13,29 +13,28 @@ public class Startup(IConfiguration configuration)
     var env = Configuration["ASPNETCORE_ENVIRONMENT"];
 
     var authKey = "Bearer";
-    _ = services.AddAuthentication(static options =>
-    {
-      options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-      options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-      options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer(authKey, options =>
-    {
-      options.TokenValidationParameters = new TokenValidationParameters
+    _ = services
+      .AddAuthentication(static options =>
       {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = Configuration["Jwt:Issuer"],
-        ValidAudience = Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8
-            .GetBytes(Configuration["Jwt:Key"]!))
-      };
-    });
-  }
-
-  public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-  {
-
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+      })
+      .AddJwtBearer(
+        authKey,
+        options =>
+        {
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = Configuration["Jwt:Issuer"],
+            ValidAudience = Configuration["Jwt:Issuer"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]!)),
+          };
+        }
+      );
   }
 }

@@ -108,19 +108,14 @@ public class UserController(
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.GetValue<string>("Key")!));
     var tokenCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    var roles = await _userManager.GetRolesAsync(user);
+    /*var roles = await _userManager.GetRolesAsync(user);*/
+    /**/
+    /*if (roles.Count == 0)*/
+    /*{*/
+    /*  throw new InvalidOperationException("Trying to login user with no roles");*/
+    /*}*/
 
-    if (roles.Count == 0)
-    {
-      throw new InvalidOperationException("Trying to login user with no roles");
-    }
-
-    var claims = new[]
-    {
-      new Claim("UserId", user.Id.ToString()),
-      new Claim(ClaimTypes.Email, user.Email!),
-      new Claim(ClaimTypes.Role, string.Join(',', roles)),
-    };
+    var claims = new[] { new Claim("UserId", user.Id.ToString()), new Claim("Role", "User") };
 
     var tokenData = new JwtSecurityToken(
       jwtSection.GetValue<string>("Issuer")!,
