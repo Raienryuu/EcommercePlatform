@@ -6,13 +6,40 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace OrderService.Migrations
 {
     /// <inheritdoc />
-    public partial class StagedCartsModel : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "OrderProduct");
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Created = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StripePaymentId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "StagedCarts",
+                columns: table => new
+                {
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ValidUntil = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StagedCarts", x => x.OwnerId);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Orders_Products",
@@ -36,21 +63,10 @@ namespace OrderService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StagedCarts",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_StagedCarts", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "StagedCarts_Products",
                 columns: table => new
                 {
-                    StagedCartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    StagedCartOwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -58,12 +74,12 @@ namespace OrderService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StagedCarts_Products", x => new { x.StagedCartId, x.Id });
+                    table.PrimaryKey("PK_StagedCarts_Products", x => new { x.StagedCartOwnerId, x.Id });
                     table.ForeignKey(
-                        name: "FK_StagedCarts_Products_StagedCarts_StagedCartId",
-                        column: x => x.StagedCartId,
+                        name: "FK_StagedCarts_Products_StagedCarts_StagedCartOwnerId",
+                        column: x => x.StagedCartOwnerId,
                         principalTable: "StagedCarts",
-                        principalColumn: "Id",
+                        principalColumn: "OwnerId",
                         onDelete: ReferentialAction.Cascade);
                 });
         }
@@ -78,28 +94,10 @@ namespace OrderService.Migrations
                 name: "StagedCarts_Products");
 
             migrationBuilder.DropTable(
-                name: "StagedCarts");
+                name: "Orders");
 
-            migrationBuilder.CreateTable(
-                name: "OrderProduct",
-                columns: table => new
-                {
-                    OrderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ProductId = table.Column<int>(type: "int", nullable: false),
-                    Quantity = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_OrderProduct", x => new { x.OrderId, x.Id });
-                    table.ForeignKey(
-                        name: "FK_OrderProduct_Orders_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Orders",
-                        principalColumn: "OrderId",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.DropTable(
+                name: "StagedCarts");
         }
     }
 }

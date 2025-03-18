@@ -9,29 +9,26 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 {
   public NewOrderSaga()
   {
-    InstanceState(x => x.CurrentState, Pending, Confirmed, ReadyToShip);
-
-    Event(
-      () => OrderSubmitted,
-      x =>
-      {
-        _ = x.CorrelateById(context => context.Message.OrderId);
-        x.InsertOnInitial = true;
-        _ = x.SetSagaFactory(context => new OrderState { CorrelationId = context.Message.OrderId });
-      }
-    );
-
-    Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
-
-    Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
+    InstanceState(x => x.CurrentState);
 
     Initially(
-      When(OrderSubmitted)
-        .Then(x => x.Saga.Products = x.Message.Products)
-        .Publish(context => new ReserveOrderProductsCommand
+      When(OrderCreatedByUser)
+        .Then(x =>
         {
-          OrderId = context.Saga.CorrelationId,
-          Products = context.Saga.Products,
+          x.Saga.Products = x.Message.Products;
+          x.Saga.CorrelationId = x.Message.OrderId;
+        })
+        // .Publish(context => new CreateStripePaymentId)
+        .TransitionTo(InCheckout)
+    );
+
+    During(
+      InCheckout,
+      When(OrderSubmitted)
+        .Publish(o => new ReserveOrderProductsCommand()
+        {
+          Products = o.Saga.Products,
+          OrderId = o.Saga.CorrelationId,
         })
         .TransitionTo(Pending)
     );
@@ -44,12 +41,19 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
         .Activity(x => x.OfType<OrderProductsNotAvaiableActivity>())
         .TransitionTo(Cancelled)
     );
+
+    Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
+    Event(() => OrderCreatedByUser, x => x.CorrelateById(context => context.Message.OrderId));
+    Event(() => OrderSubmitted, x => x.CorrelateById(context => context.Message.OrderId));
+    Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
   }
 
+  public Event<IOrderCreatedByUser>? OrderCreatedByUser { get; set; }
   public Event<IOrderSubmitted>? OrderSubmitted { get; set; }
   public Event<IOrderReserved>? OrderReserved { get; set; }
   public Event<IOrderProductsNotAvailable>? OrderProductsNotAvailable { get; set; }
 
+  public State? InCheckout { get; set; }
   public State? Pending { get; set; }
   public State? Confirmed { get; set; }
   public State? ReadyToShip { get; set; }

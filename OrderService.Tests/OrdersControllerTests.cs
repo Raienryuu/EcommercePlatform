@@ -13,7 +13,7 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
   {
     var userId = Guid.NewGuid();
     var httpRequestMessage = new HttpRequestMessage { Method = HttpMethod.Get, RequestUri = _apiUrl };
-    httpRequestMessage.Headers.Add("userId", userId.ToString());
+    httpRequestMessage.Headers.Add("UserId", userId.ToString());
 
     var res = await _client.SendAsync(httpRequestMessage);
     var list = await res.Content.ReadFromJsonAsync<List<Order>>();
@@ -34,7 +34,7 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
       Method = HttpMethod.Get,
       RequestUri = new UriBuilder(_apiUrl + $"/{orderId}").Uri,
     };
-    request.Headers.Add("userId", "75699034-2ed6-4f39-a984-89bab648294c");
+    request.Headers.Add("UserId", "75699034-2ed6-4f39-a984-89bab648294c");
 
     var res = await _client.SendAsync(request);
 
@@ -58,7 +58,7 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
       RequestUri = _apiUrl,
       Content = JsonContent.Create(order),
     };
-    request.Headers.Add("userId", Guid.NewGuid().ToString());
+    request.Headers.Add("UserId", Guid.NewGuid().ToString());
 
     var res = await _client.SendAsync(request);
 
@@ -80,7 +80,7 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
       RequestUri = _apiUrl,
       Content = JsonContent.Create(order),
     };
-    request.Headers.Add("userId", Guid.NewGuid().ToString());
+    request.Headers.Add("UserId", Guid.NewGuid().ToString());
 
     var res = await _client.SendAsync(request);
     var msg = await res.Content.ReadAsStringAsync();

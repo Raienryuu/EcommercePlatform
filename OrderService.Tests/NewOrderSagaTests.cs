@@ -13,7 +13,7 @@ namespace OrderService.Tests;
 public class NewOrderSagaTests
 {
   [Fact]
-  public async Task NewOrderSaga_SagaInitiationOnOrderSubmittedEvent_NewSagaInstanceCreated()
+  public async Task NewOrderSaga_SagaInitiationOnOrderCreatedByUserEvent_NewSagaInstanceCreated()
   {
     await using var provider = new ServiceCollection()
       .AddMassTransitTestHarness(o =>
@@ -27,7 +27,7 @@ public class NewOrderSagaTests
     var sagasHarness = harness.GetSagaStateMachineHarness<NewOrderSaga, OrderState>();
     var orderId = Guid.NewGuid();
 
-    await harness.Bus.Publish<IOrderSubmitted>(
+    await harness.Bus.Publish<IOrderCreatedByUser>(
       new
       {
         OrderId = orderId,
@@ -41,6 +41,8 @@ public class NewOrderSagaTests
 
     var doesInstanceExists = await sagasHarness.Sagas.Any(s => s.CorrelationId == orderId);
     Assert.True(doesInstanceExists);
+    var sagaInstance = await sagasHarness.Sagas.SelectAsync(s => s.CorrelationId == orderId).First();
+    Assert.NotEmpty(sagaInstance.Saga.Products);
   }
 
   [Fact]
@@ -56,7 +58,7 @@ public class NewOrderSagaTests
     var harness = provider.GetRequiredService<ITestHarness>();
     await harness.Start();
     var orderId = Guid.NewGuid();
-    await harness.Bus.Publish<IOrderSubmitted>(
+    await harness.Bus.Publish<IOrderCreatedByUser>(
       new
       {
         OrderId = orderId,
@@ -67,6 +69,7 @@ public class NewOrderSagaTests
         },
       }
     );
+    await harness.Bus.Publish<IOrderSubmitted>(new { OrderId = orderId });
     var sagasHarness = harness.GetSagaStateMachineHarness<NewOrderSaga, OrderState>();
     _ = await sagasHarness.Exists(orderId);
 
@@ -102,7 +105,7 @@ public class NewOrderSagaTests
     _ = db.SaveChanges();
     var harness = provider.GetRequiredService<ITestHarness>();
     await harness.Start();
-    await harness.Bus.Publish<IOrderSubmitted>(
+    await harness.Bus.Publish<IOrderCreatedByUser>(
       new
       {
         OrderId = orderId,
@@ -113,6 +116,7 @@ public class NewOrderSagaTests
         },
       }
     );
+    await harness.Bus.Publish<IOrderSubmitted>(new { OrderId = orderId });
     var sagasHarness = harness.GetSagaStateMachineHarness<NewOrderSaga, OrderState>();
     var pendingSaga = await sagasHarness.Exists(orderId, static x => x.Pending);
 

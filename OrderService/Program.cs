@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Models;
+using OrderService.Endpoints;
+using OrderService.Endpoints.Requests;
 using OrderService.Validators;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -16,14 +17,25 @@ public class Program
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     var connectionString = BuildConnectionString(builder);
+
     builder.Services.AddDbContext<OrderDbContext>(o =>
     {
       o.UseSqlServer(connectionString);
     });
 
+    _ = builder.Services.AddCors(o =>
+      o.AddPolicy(
+        "DevPolicy",
+        policyBuilder =>
+        {
+          policyBuilder.WithOrigins("http://localhost:4200").AllowCredentials().AllowAnyHeader();
+        }
+      )
+    );
+
     MessageQueueUtils.Configure(builder.Configuration, builder.Services);
 
-    builder.Services.AddScoped<IValidator<Order>, OrderValidator>();
+    builder.Services.AddScoped<IValidator<CreateOrderRequest>, OrderValidator>();
     builder.Services.AddFluentValidationAutoValidation();
 
     var app = builder.Build();
@@ -34,33 +46,34 @@ public class Program
       app.UseSwaggerUI();
 
       using var scope = app.Services.CreateAsyncScope();
-      using (var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>())
+      using var dbContext = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
+      CreateDevelopmentDatabase(dbContext);
+    }
+    /*app.UseHttpsRedirection();*/
+
+    app.UseCors("DevPolicy");
+    app.UseAuthorization();
+
+    /*app.MapControllers();*/
+    app.MapOrderEndpoints();
+
+    app.Run();
+  }
+
+  static void CreateDevelopmentDatabase(OrderDbContext? dbContext)
+  {
+    while (true)
+    {
+      try
       {
-        CreateDevelopmentDatabase(dbContext);
+        dbContext?.Database.EnsureCreated();
       }
-      static void CreateDevelopmentDatabase(OrderDbContext? dbContext)
+      catch
       {
-        while (true)
-        {
-          try
-          {
-            dbContext?.Database.EnsureCreated();
-          }
-          catch
-          {
-            Thread.Sleep(5000);
-            continue;
-          }
-          break;
-        }
+        Thread.Sleep(5000);
+        continue;
       }
-      app.UseHttpsRedirection();
-
-      app.UseAuthorization();
-
-      app.MapControllers();
-
-      app.Run();
+      break;
     }
   }
 

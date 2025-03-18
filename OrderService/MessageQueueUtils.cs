@@ -12,6 +12,8 @@ public static class MessageQueueUtils
     _ = ushort.TryParse(configuration.GetValue<string>("MQConfig:Port"), out var queuePort);
     var username = configuration.GetValue<string>("MQConfig:User");
     var userPassword = configuration.GetValue<string>("MQConfig:Pass");
+    var config = configuration;
+    var mongoSection = configuration.GetRequiredSection("MongoDb");
 
     _ = services.AddMassTransit(o =>
     {
@@ -20,7 +22,7 @@ public static class MessageQueueUtils
       _ = o.AddSagaStateMachine<NewOrderSaga, OrderState>()
         .MongoDbRepository(r =>
         {
-          r.Connection = configuration["MongoDb:HostAddress"];
+          r.Connection = mongoSection.GetValue<string>("HostAddress");
           r.DatabaseName = "ordersdb";
           r.CollectionName = "orders";
         })

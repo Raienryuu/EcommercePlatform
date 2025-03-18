@@ -12,8 +12,8 @@ using OrderService;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    [Migration("20250306104551_StagedCartsModel")]
-    partial class StagedCartsModel
+    [Migration("20250314122052_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,8 +47,11 @@ namespace OrderService.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("StripePaymentId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrderId");
 
@@ -57,11 +60,14 @@ namespace OrderService.Migrations
 
             modelBuilder.Entity("OrderService.Models.StagedCart", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("OwnerId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("ValidUntil")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OwnerId");
 
                     b.ToTable("StagedCarts");
                 });
@@ -100,7 +106,7 @@ namespace OrderService.Migrations
                 {
                     b.OwnsMany("OrderService.Models.OrderProduct", "Products", b1 =>
                         {
-                            b1.Property<Guid>("StagedCartId")
+                            b1.Property<Guid>("StagedCartOwnerId")
                                 .HasColumnType("uniqueidentifier");
 
                             b1.Property<int>("Id")
@@ -115,12 +121,12 @@ namespace OrderService.Migrations
                             b1.Property<int>("Quantity")
                                 .HasColumnType("int");
 
-                            b1.HasKey("StagedCartId", "Id");
+                            b1.HasKey("StagedCartOwnerId", "Id");
 
                             b1.ToTable("StagedCarts_Products");
 
                             b1.WithOwner()
-                                .HasForeignKey("StagedCartId");
+                                .HasForeignKey("StagedCartOwnerId");
                         });
 
                     b.Navigation("Products");
