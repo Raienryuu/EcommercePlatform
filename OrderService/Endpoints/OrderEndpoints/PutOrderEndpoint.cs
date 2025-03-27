@@ -9,7 +9,7 @@ public static class PutOrderEndpoint
   public static WebApplication MapPutOrderEndpoint(this WebApplication app)
   {
     app.MapPut(
-        EndpointRoutes.PUT_ORDER,
+        EndpointRoutes.Orders.PUT_ORDER,
         async (
           OrderDbContext context,
           CancellationToken ct,

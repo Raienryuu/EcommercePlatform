@@ -1,3 +1,5 @@
+using CartService.Models;
+
 namespace CartService.Requests;
 
 public class CartDTO

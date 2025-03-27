@@ -12,7 +12,7 @@ public static class MessageQueueUtils
     try
     {
       var queueAddress = configuration.GetValue<string>("MQConfig:HostAddress");
-      _ = ushort.TryParse(configuration.GetValue<string>("MQConfig:Port"), out ushort queuePort);
+      _ = ushort.TryParse(configuration.GetValue<string>("MQConfig:Port"), out var queuePort);
       var username = configuration.GetValue<string>("MQConfig:User");
       var userPassword = configuration.GetValue<string>("MQConfig:Pass");
 
@@ -20,6 +20,7 @@ public static class MessageQueueUtils
       {
         //var assembly = Assembly.GetEntryAssembly(); find consumers and others from Reflection
         o.AddConsumer<ReserveOrderProductsConsumer>();
+        o.AddConsumer<OrderCalculateTotalCostConsumer>();
 
         o.UsingRabbitMq(
           (context, cfg) =>

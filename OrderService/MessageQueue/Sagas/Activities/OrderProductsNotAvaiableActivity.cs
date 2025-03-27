@@ -1,11 +1,14 @@
 using MassTransit;
 using MessageQueue.Contracts;
+using OrderService.Logging;
 using OrderService.MessageQueue.Sagas.SagaStates;
 
 namespace OrderService.MessageQueue.Sagas.Activities
 {
-  public class OrderProductsNotAvaiableActivity(OrderDbContext db)
-    : IStateMachineActivity<OrderState, IOrderProductsNotAvailable>
+  public class OrderProductsNotAvaiableActivity(
+    OrderDbContext db,
+    ILogger<OrderProductsNotAvaiableActivity> logger
+  ) : IStateMachineActivity<OrderState, IOrderProductsNotAvailable>
   {
     private readonly OrderDbContext _db = db;
 
@@ -46,18 +49,12 @@ namespace OrderService.MessageQueue.Sagas.Activities
 
       if (order is null)
       {
-        throw new NullReferenceException("Trying to cancel order that does not exist");
+        logger.OrderNotFound();
+        return;
       }
 
-      try
-      {
-        order.Status = Models.OrderStatus.Type.Cancelled;
-        await _db.SaveChangesAsync(CancellationToken.None);
-      }
-      catch (Exception ex)
-      {
-        throw new Exception("Unable to save changes to storage.", ex);
-      }
+      order.Status = Models.OrderStatus.Type.Cancelled;
+      await _db.SaveChangesAsync(CancellationToken.None);
     }
   }
 }

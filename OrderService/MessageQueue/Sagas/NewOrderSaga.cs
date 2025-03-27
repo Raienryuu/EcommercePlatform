@@ -17,10 +17,19 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
         {
           x.Saga.Products = x.Message.Products;
           x.Saga.CorrelationId = x.Message.OrderId;
+          x.Saga.CurrencyISO = x.Message.CurrencyISO;
         })
-        // .Publish(context => new CreateStripePaymentId)
+        .Publish(ctx => new OrderCalculateTotalCostCommand()
+        {
+          OrderId = ctx.Saga.CorrelationId,
+          CurrencyISO = ctx.Saga.CurrencyISO,
+          EurToCurrencyMultiplier = 1m,
+          Products = ctx.Saga.Products,
+        })
         .TransitionTo(InCheckout)
     );
+
+    During(InCheckout, When(OrderPriceCalculated).Activity(x => x.OfType<OrderUpdateTotalCostActivity>()));
 
     During(
       InCheckout,
@@ -43,15 +52,24 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
     );
 
     Event(() => OrderReserved, x => x.CorrelateById(context => context.Message.OrderId));
-    Event(() => OrderCreatedByUser, x => x.CorrelateById(context => context.Message.OrderId));
+    Event(
+      () => OrderCreatedByUser,
+      x =>
+      {
+        x.CorrelateById(context => context.Message.OrderId);
+        x.InsertOnInitial = true;
+      }
+    );
     Event(() => OrderSubmitted, x => x.CorrelateById(context => context.Message.OrderId));
     Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
+    Event(() => OrderPriceCalculated, x => x.CorrelateById(context => context.Message.OrderId));
   }
 
   public Event<IOrderCreatedByUser>? OrderCreatedByUser { get; set; }
   public Event<IOrderSubmitted>? OrderSubmitted { get; set; }
   public Event<IOrderReserved>? OrderReserved { get; set; }
   public Event<IOrderProductsNotAvailable>? OrderProductsNotAvailable { get; set; }
+  public Event<IOrderPriceCalculated>? OrderPriceCalculated { get; set; }
 
   public State? InCheckout { get; set; }
   public State? Pending { get; set; }

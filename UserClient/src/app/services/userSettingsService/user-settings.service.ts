@@ -6,8 +6,13 @@ import { Observable, of } from 'rxjs';
 })
 export class UserSettingsService {
   private currencySymbol = '€';
+  private currencyISO = 'eur';
 
   GetCurrencySymbol(): Observable<string> {
     return of(this.currencySymbol);
+  }
+
+  GetCurrencyISO(): string {
+    return this.currencyISO;
   }
 }

@@ -51,7 +51,15 @@ public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<Databa
       new()
       {
         OrderId = orderId,
-        Products = [new OrderProductDTO { ProductId = Guid.NewGuid(), Quantity = 1 }],
+        Products =
+        [
+          new OrderProductDTO
+          {
+            ProductId = Guid.NewGuid(),
+            Quantity = 1,
+            Price = 2524,
+          },
+        ],
       },
       context => context.CorrelationId = orderId
     );
@@ -88,6 +96,7 @@ public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<Databa
           {
             ProductId = Guid.Parse("f12e47a0-82f9-4231-abce-63280e7d3d99"),
             Quantity = 2,
+            Price = 8000,
           },
         ],
       },

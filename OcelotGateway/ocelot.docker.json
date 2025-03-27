@@ -47,11 +47,31 @@
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
-					"Host": "orderservice",
-					"Port": 8080
+					"Host": "host.docker.internal",
+					"Port": 5138
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/orders/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"Role": "User"
+			},
+			"AddHeadersToRequest": {
+				"UserId": "Claims[UserId] > value"
+			}
+		},
+		{
+			"DownstreamPathTemplate": "/api/v1/payments/{everything}", // orderService - payments
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "host.docker.internal",
+					"Port": 5138
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/payments/{everything}",
 			"AuthenticationOptions": {
 				"AuthenticationProviderKeys": [ "Bearer" ]
 			},
@@ -67,8 +87,8 @@
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
-					"Host": "productservice",
-					"Port": 8080
+					"Host": "host.docker.internal",
+					"Port": 7107
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/products/{everything}"

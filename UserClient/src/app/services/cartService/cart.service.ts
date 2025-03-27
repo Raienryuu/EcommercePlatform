@@ -113,6 +113,10 @@ export class CartService {
     localStorage.setItem(this.cartKey, this.remoteCartId!);
   }
 
+  public GetLocalCart() {
+    return this.localCart;
+  }
+
   private UpdateLocalCart() {
     localStorage.setItem(this.cart, JSON.stringify(this.localCart));
   }
@@ -122,11 +126,9 @@ export class CartService {
     this.UpdateLocalCartKey();
   }
 
-  GetCartProductsIds(): number[] {
-    const ids: number[] = [];
-    this.localCart.products.forEach((product) =>
-      ids.push(parseInt(product.id)),
-    );
+  GetCartProductsIds(): string[] {
+    const ids: string[] = [];
+    this.localCart.products.forEach((product) => ids.push(product.id));
     return ids;
   }
 }

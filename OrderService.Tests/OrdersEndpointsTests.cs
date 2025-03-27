@@ -1,12 +1,12 @@
 using System.Net;
 using OrderService.Models;
-using OrderService.Tests.Fakes;
 
 namespace OrderService.Tests;
 
-public class OrdersControllerTests(AppFactory app) : AppStartup(app)
+public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
 {
   private readonly Uri _apiUrl = new UriBuilder("http://localhost/api/v1/orders").Uri;
+  private readonly HttpClient _client = app.CreateClient();
 
   [Fact]
   public async Task GetUserOrders_UserId_ListOfOrders()
@@ -26,8 +26,6 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
   [Fact]
   public async Task GetOrder_ExistingOrderId_Order()
   {
-    var dbContext = _app.Services.CreateScope().ServiceProvider.GetRequiredService<OrderDbContext>();
-    FakeOrderDataInserter.FillData(dbContext);
     var orderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7");
     var request = new HttpRequestMessage
     {
@@ -49,8 +47,14 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
     {
       Products =
       [
-        new OrderProduct { ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"), Quantity = 1 },
+        new OrderProduct
+        {
+          ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"),
+          Quantity = 1,
+          Price = 4000,
+        },
       ],
+      CurrencyISO = "eur",
     };
     var request = new HttpRequestMessage
     {
@@ -73,6 +77,7 @@ public class OrdersControllerTests(AppFactory app) : AppStartup(app)
       OrderId = Guid.NewGuid(),
       UserId = Guid.NewGuid(),
       Products = [],
+      CurrencyISO = "eur",
     };
     var request = new HttpRequestMessage
     {

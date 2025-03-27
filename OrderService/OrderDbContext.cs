@@ -18,5 +18,4 @@ public class OrderDbContext(DbContextOptions options) : DbContext(options)
   }
 
   public required DbSet<Order> Orders { get; set; }
-  public required DbSet<StagedCart> StagedCarts { get; set; }
 }

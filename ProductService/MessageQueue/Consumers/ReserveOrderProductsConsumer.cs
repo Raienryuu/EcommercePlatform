@@ -67,6 +67,7 @@ public class ReserveOrderProductsConsumer(ProductDbContext db, ILogger<ReserveOr
     }
     catch (DbUpdateException)
     {
+      _log.LogWarning("Unable to save changes for order: {orderId}", context.Message.OrderId);
       throw;
     }
 

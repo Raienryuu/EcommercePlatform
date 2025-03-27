@@ -1,20 +1,14 @@
-import { Component, HostListener, Inject, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
-import { FormsModule } from '@angular/forms';
 import {
+  StripeElementsDirective,
   StripeFactoryService,
+  StripeInstance,
   StripePaymentElementComponent,
 } from 'ngx-stripe';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
-import { MatButtonModule } from '@angular/material/button';
-import {
-  MatDialog,
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-} from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
   AddressEditorComponent,
   AddressEditorResponse,
@@ -22,6 +16,14 @@ import {
 import { MatRadioChange } from '@angular/material/radio';
 import { SampleCustomerAddresses, SampleProducts } from 'src/app/develSamples';
 import { StripeConfig } from 'src/app/stripe-settings';
+import { ActivatedRoute } from '@angular/router';
+import { OrderService } from 'src/app/services/orderService/order.service';
+import { ProductService } from 'src/app/services/productService/product.service';
+import { Order } from 'src/app/models/order.model';
+import { StripeError } from '@stripe/stripe-js';
+import { map, retry } from 'rxjs';
+import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
+import { DhlAddress } from 'src/app/models/dhl-address.model';
 
 @Component({
   selector: 'app-checkout',
@@ -30,32 +32,148 @@ import { StripeConfig } from 'src/app/stripe-settings';
   standalone: false,
 })
 export class CheckoutComponent {
-  products: Product[] = null!;
-  promoCodes: string[] = null!;
+  products: Product[] = [];
+  promoCodes: string[] = [];
   currencySymbol = '€';
-  total = { base: 155.88, tax: 15.88, delivery: 15, total: 170.88 };
+  total = '0';
 
   customerAddresses: CustomerAddress[] = SampleCustomerAddresses;
   activeSelection: number = this.customerAddresses.length - 1;
 
+  orderLoaded = false;
+  orderNotReadyYet = false;
+  orderNotFound = false;
+
+  @Input()
+  id: string | null = null;
+
   constructor(
-    private factoryService: StripeFactoryService,
+    private stripeFactoryService: StripeFactoryService,
     public dialogDhl: MatDialog,
     public dialogAddressEditor: MatDialog,
+    private route: ActivatedRoute,
+    private orderService: OrderService,
+    private productService: ProductService,
   ) {
-    this.products = SampleProducts;
+    if (environment.sampleData) {
+      this.products = SampleProducts;
+      this.RecalculateTotalCost();
+      this.orderLoaded = true;
+    }
+
+    this.id = this.route.snapshot.paramMap.get('orderId');
+    if (this.id == null) {
+      this.products = [];
+      throw new Error('Order id is null');
+    }
+
+    this.orderService.GetOrder(this.id).subscribe({
+      next: (order) => {
+        const productIds = order.products.map<string>((p) => p.productId);
+        this.productService.GetProductsBatch(productIds).subscribe({
+          next: (freshProducts) => this.UpdateProducts(order, freshProducts),
+        });
+      },
+    });
+
+    this.GetClientSecret();
   }
 
-  stripe = this.factoryService.create(environment.stripeApiKey);
+  private GetClientSecret() {
+    if (this.id == null) {
+      throw new Error('Order Id cannot be null');
+    }
+
+    this.orderService
+      .CreatePaymentIntent(this.id)
+      .pipe(
+        map((res) => {
+          if (res.status == 202) {
+            console.warn('got 202');
+            throw new Error('Client secret is not ready yet.');
+          }
+          return res;
+        }),
+      )
+      .pipe(retry({ count: 2, delay: 800 }))
+      .subscribe({
+        next: (paymentIntentResponse) => {
+          this.YOUR_CLIENT_SECRET = paymentIntentResponse.body!;
+          this.elementsOptions.clientSecret = paymentIntentResponse.body!;
+          this.orderLoaded = true;
+        },
+      });
+  }
+
+  private UpdateProducts(order: Order, products: Product[]) {
+    this.products = products.map((p) => {
+      const productInOrder = order.products.find((x) => x.productId === p.id);
+
+      if (!productInOrder) {
+        throw new ReferenceError(
+          'Unable to find product Ids from order in products batch',
+        );
+      }
+
+      p.quantity = productInOrder.quantity;
+
+      return p;
+    });
+    this.RecalculateTotalCost();
+  }
+
+  RecalculateTotalCost() {
+    let sum = 0;
+    this.products.forEach((p) => {
+      sum += p.quantity * p.price;
+    });
+    this.total = sum.toFixed(2);
+  }
+
+  stripe: StripeInstance = this.stripeFactoryService.create(
+    environment.stripeApiKey,
+  );
   stripeConfig = new StripeConfig();
-  YOUR_CLIENT_SECRET = this.stripeConfig.YOUR_CLIENT_SECRET;
-  paymentIntent: unknown;
+  YOUR_CLIENT_SECRET: string = null!;
 
   @ViewChild(StripePaymentElementComponent)
   paymentElement!: StripePaymentElementComponent;
 
+  @ViewChild(StripeElementsDirective)
+  formPaymentElement!: StripeElementsDirective;
+
   elementsOptions = this.stripeConfig.stripeElementsOptions;
   paymentElementOptions = this.stripeConfig.paymentElementOptions;
+
+  OnClickOrderButtonHandler() {
+    console.clear();
+    this.MakeStripePayment();
+  }
+
+  private MakeStripePayment() {
+    if (this.YOUR_CLIENT_SECRET == null) {
+      console.error('client secret is null');
+      return;
+    }
+    this.formPaymentElement.submit().subscribe({
+      next: () => {
+        this.stripe
+          .confirmPayment({
+            elements: this.paymentElement.elements,
+            confirmParams: {
+              return_url: 'http://localhost:4200/myorders/' + this.id,
+            },
+            clientSecret: this.YOUR_CLIENT_SECRET,
+          })
+          .subscribe((result) => console.log(result));
+      },
+      error: (error: StripeError | undefined) => {
+        console.error('Invalid payment information provided');
+        throw new Error(error?.message);
+      },
+    });
+  }
+
   SelectAddress(id: number) {
     this.activeSelection = id;
   }
@@ -140,50 +258,6 @@ export class CheckoutComponent {
       if (result) this.dhlAddress = result;
     });
   }
-}
-
-//#region locker selector
-
-@Component({
-  selector: 'app-locker-selector',
-  templateUrl: 'map.html',
-  styleUrls: ['./checkout.component.scss'],
-  standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
-})
-export class LockerSelectorDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<LockerSelectorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DhlAddress,
-  ) {}
-
-  onNoClick(): void {
-    return;
-  }
-
-  @HostListener('window:message', ['$event'])
-  relayMessage(event: MessageEvent): DhlAddress {
-    try {
-      const parseRes = JSON.parse(event.data);
-      if (parseRes.sap !== undefined) {
-        this.dialogRef.close(parseRes);
-      }
-    } catch {
-      return null!;
-    }
-    return null!;
-  }
-}
-
-interface DhlAddress {
-  id: number;
-  sap: number;
-  name: string;
-  zip: string;
-  city: string;
-  street: string;
-  streetNo: string;
-  houseNo: string;
 }
 
 //#endregion

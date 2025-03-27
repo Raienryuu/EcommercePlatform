@@ -12,7 +12,7 @@ public static class CreateOrderEndpoint
   public static WebApplication MapCreateOrderEndpoint(this WebApplication app)
   {
     app.MapPost(
-        EndpointRoutes.CREATE_ORDER,
+        EndpointRoutes.Orders.CREATE_ORDER,
         async (
           OrderDbContext context,
           IPublishEndpoint publisher,
@@ -42,12 +42,21 @@ public static class CreateOrderEndpoint
             Notes = orderRequest.Notes,
             Products = orderRequest.Products,
             StripePaymentId = null,
+            CurrencyISO = orderRequest.CurrencyISO,
           };
 
           _ = await context.Orders.AddAsync(newOrder, ct);
           _ = await context.SaveChangesAsync(ct);
 
-          await publisher.Publish<IOrderCreatedByUser>(new { newOrder.OrderId, newOrder.Products }, ct);
+          await publisher.Publish<IOrderCreatedByUser>(
+            new
+            {
+              newOrder.OrderId,
+              newOrder.Products,
+              newOrder.CurrencyISO,
+            },
+            ct
+          );
 
           return Results.CreatedAtRoute(
             nameof(GetOrderEndpoint),

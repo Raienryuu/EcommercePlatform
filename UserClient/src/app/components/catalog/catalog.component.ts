@@ -7,7 +7,7 @@ import { ProductCategoryService } from 'src/app/services/productCategoryService/
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { MatSelectChange } from '@angular/material/select';
-import { debounceTime, interval, of } from 'rxjs';
+import { debounceTime } from 'rxjs';
 import { environment } from 'src/enviroment';
 import { CartService } from 'src/app/services/cartService/cart.service';
 import { LotsOfSampleProducts } from 'src/app/develSamples';

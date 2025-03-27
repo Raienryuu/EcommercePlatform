@@ -33,8 +33,18 @@ public class NewOrderSagaTests
         OrderId = orderId,
         Products = new OrderProductDTO[]
         {
-          new() { ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"), Quantity = 1 },
-          new() { ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"), Quantity = 2 },
+          new()
+          {
+            ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"),
+            Quantity = 1,
+            Price = 1000,
+          },
+          new()
+          {
+            ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"),
+            Quantity = 2,
+            Price = 100,
+          },
         },
       }
     );
@@ -64,8 +74,18 @@ public class NewOrderSagaTests
         OrderId = orderId,
         Products = new OrderProductDTO[]
         {
-          new() { ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"), Quantity = 1 },
-          new() { ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"), Quantity = 2 },
+          new()
+          {
+            ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"),
+            Quantity = 1,
+            Price = 850,
+          },
+          new()
+          {
+            ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"),
+            Quantity = 2,
+            Price = 50,
+          },
         },
       }
     );
@@ -101,7 +121,7 @@ public class NewOrderSagaTests
       .BuildServiceProvider(true);
     var orderId = Guid.NewGuid();
     var db = provider.GetRequiredService<OrderDbContext>();
-    _ = db.Orders.Add(new Order { OrderId = orderId });
+    _ = db.Orders.Add(new Order { OrderId = orderId, CurrencyISO = "eur" });
     _ = db.SaveChanges();
     var harness = provider.GetRequiredService<ITestHarness>();
     await harness.Start();
@@ -111,8 +131,18 @@ public class NewOrderSagaTests
         OrderId = orderId,
         Products = new OrderProductDTO[]
         {
-          new() { ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"), Quantity = 1 },
-          new() { ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"), Quantity = 2 },
+          new()
+          {
+            ProductId = Guid.Parse("7fd990db-c5e4-42f5-ab11-1d39ada007ab"),
+            Quantity = 1,
+            Price = 1234,
+          },
+          new()
+          {
+            ProductId = Guid.Parse("86f94847-a8e4-4abc-8152-85d78d64bfd1"),
+            Quantity = 2,
+            Price = 4321,
+          },
         },
       }
     );
@@ -127,6 +157,77 @@ public class NewOrderSagaTests
       static x => x.Cancelled,
       TimeSpan.FromSeconds(1)
     );
+    var freshOrder = await db.Orders.FindAsync(orderId);
+    Assert.Equal(OrderStatus.Type.Cancelled, freshOrder!.Status);
     Assert.True(instanceConfirmed! == orderId);
+  }
+
+  [Fact]
+  public async Task NewOrderSaga_SentCalculateTotalCostCommand_OrderTotalIsNotNull()
+  {
+    await using var provider = new ServiceCollection()
+      .AddSingleton<OrderDbContext, FakeOrderDbContext>()
+      .AddSingleton<DbContextOptions>(static x =>
+        new DbContextOptionsBuilder<FakeOrderDbContext>()
+          .UseInMemoryDatabase($"orderSagas-{Guid.NewGuid()}")
+          .Options
+      )
+      .AddMassTransitTestHarness(static o =>
+      {
+        _ = o.AddSagaStateMachine<NewOrderSaga, OrderState>().InMemoryRepository();
+        o.UsingInMemory(static (context, cfg) => cfg.ConfigureEndpoints(context));
+      })
+      .BuildServiceProvider(false);
+    var order = new Order
+    {
+      OrderId = Guid.NewGuid(),
+      CurrencyISO = "eur",
+      Products =
+      [
+        new()
+        {
+          ProductId = Guid.NewGuid(),
+          Price = 4441,
+          Quantity = 2,
+        },
+      ],
+    };
+    var db = provider.GetRequiredService<OrderDbContext>();
+    _ = db.Orders.Add(order);
+    _ = await db.SaveChangesAsync();
+    var harness = provider.GetRequiredService<ITestHarness>();
+    await harness.Start();
+    var orderProductsAsDto = order
+      .Products.Select(p => new OrderProductDTO
+      {
+        ProductId = p.ProductId,
+        Price = p.Price,
+        Quantity = p.Quantity,
+      })
+      .ToArray();
+    const int EXPECTED_TOTAL_PRICE = 4441 * 2;
+    await harness.Bus.Publish<IOrderCreatedByUser>(new { order.OrderId, Products = orderProductsAsDto });
+
+    await harness.Bus.Publish(
+      new OrderCalculateTotalCostCommand
+      {
+        OrderId = order.OrderId,
+        CurrencyISO = order.CurrencyISO,
+        EurToCurrencyMultiplier = 1,
+        Products = orderProductsAsDto,
+      }
+    );
+    await harness.Bus.Publish<IOrderPriceCalculated>(
+      new
+      {
+        order.OrderId,
+        order.CurrencyISO,
+        TotalPriceInSmallestCurrencyUnit = EXPECTED_TOTAL_PRICE,
+      }
+    );
+
+    var responseConsumed = await harness.Consumed.Any(m => m.MessageType == typeof(IOrderPriceCalculated));
+    Assert.True(responseConsumed);
+    Assert.Equal(EXPECTED_TOTAL_PRICE, order!.TotalPriceInSmallestCurrencyUnit);
   }
 }

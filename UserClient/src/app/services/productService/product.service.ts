@@ -46,7 +46,7 @@ export class ProductService {
     return this.httpClient.post<Product[]>(url, edgeProduct);
   }
 
-  GetProductsBatch(productIds: number[]): Observable<Product[]> {
+  GetProductsBatch(productIds: string[]): Observable<Product[]> {
     const url = environment.apiUrl + 'v1/products/batch';
     return this.httpClient.post<Product[]>(url, productIds);
   }

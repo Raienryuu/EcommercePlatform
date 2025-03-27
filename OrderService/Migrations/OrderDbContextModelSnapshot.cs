@@ -31,6 +31,10 @@ namespace OrderService.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrencyISO")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsConfirmed")
                         .HasColumnType("bit");
 
@@ -47,26 +51,15 @@ namespace OrderService.Migrations
                     b.Property<string>("StripePaymentId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TotalPriceInSmallestCurrencyUnit")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("OrderId");
 
                     b.ToTable("Orders");
-                });
-
-            modelBuilder.Entity("OrderService.Models.StagedCart", b =>
-                {
-                    b.Property<Guid>("OwnerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("ValidUntil")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("OwnerId");
-
-                    b.ToTable("StagedCarts");
                 });
 
             modelBuilder.Entity("OrderService.Models.Order", b =>
@@ -82,6 +75,9 @@ namespace OrderService.Migrations
 
                             SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
 
+                            b1.Property<int>("Price")
+                                .HasColumnType("int");
+
                             b1.Property<Guid>("ProductId")
                                 .HasColumnType("uniqueidentifier");
 
@@ -90,40 +86,10 @@ namespace OrderService.Migrations
 
                             b1.HasKey("OrderId", "Id");
 
-                            b1.ToTable("Orders_Products");
+                            b1.ToTable("OrderProduct");
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
-                        });
-
-                    b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("OrderService.Models.StagedCart", b =>
-                {
-                    b.OwnsMany("OrderService.Models.OrderProduct", "Products", b1 =>
-                        {
-                            b1.Property<Guid>("StagedCartOwnerId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("ProductId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Quantity")
-                                .HasColumnType("int");
-
-                            b1.HasKey("StagedCartOwnerId", "Id");
-
-                            b1.ToTable("StagedCarts_Products");
-
-                            b1.WithOwner()
-                                .HasForeignKey("StagedCartOwnerId");
                         });
 
                     b.Navigation("Products");

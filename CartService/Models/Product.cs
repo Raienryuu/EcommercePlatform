@@ -1,4 +1,4 @@
-namespace CartService.Requests;
+namespace CartService.Models;
 
 public class Product
 {

@@ -7,7 +7,7 @@ public static class GetOrderEndpoint
   public static WebApplication MapGetOrderEndpoint(this WebApplication app)
   {
     app.MapGet(
-        EndpointRoutes.GET_ORDER,
+        EndpointRoutes.Orders.GET_ORDER,
         async (
           OrderDbContext context,
           CancellationToken ct,

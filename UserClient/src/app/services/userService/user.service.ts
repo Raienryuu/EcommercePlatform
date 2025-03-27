@@ -18,7 +18,7 @@ export class UserService {
     user.Password = password;
 
     return this.httpClient.post<never>(
-      environment.apiUrl + 'api/v1/user/login',
+      environment.apiUrl + 'v1/user/login',
       user,
       this.options,
     );
@@ -26,7 +26,7 @@ export class UserService {
 
   Register(user: NewUser): Observable<never> {
     return this.httpClient.post<never>(
-      environment.apiUrl + 'api/v1/user/register',
+      environment.apiUrl + 'v1/user/register',
       user,
       this.options,
     );

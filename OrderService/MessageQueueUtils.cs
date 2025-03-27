@@ -12,22 +12,11 @@ public static class MessageQueueUtils
     _ = ushort.TryParse(configuration.GetValue<string>("MQConfig:Port"), out var queuePort);
     var username = configuration.GetValue<string>("MQConfig:User");
     var userPassword = configuration.GetValue<string>("MQConfig:Pass");
-    var config = configuration;
     var mongoSection = configuration.GetRequiredSection("MongoDb");
 
+    //var assembly = Assembly.GetEntryAssembly(); // find consumers and others from Reflection
     _ = services.AddMassTransit(o =>
     {
-      //var assembly = Assembly.GetEntryAssembly(); // find consumers and others from Reflection
-
-      _ = o.AddSagaStateMachine<NewOrderSaga, OrderState>()
-        .MongoDbRepository(r =>
-        {
-          r.Connection = mongoSection.GetValue<string>("HostAddress");
-          r.DatabaseName = "ordersdb";
-          r.CollectionName = "orders";
-        })
-        .Endpoint(e => e.Name = nameof(NewOrderSaga));
-
       o.UsingRabbitMq(
         (context, cfg) =>
         {
@@ -45,6 +34,15 @@ public static class MessageQueueUtils
           cfg.ConfigureEndpoints(context);
         }
       );
+
+      _ = o.AddSagaStateMachine<NewOrderSaga, OrderState>()
+        .MongoDbRepository(r =>
+        {
+          r.Connection = mongoSection.GetValue<string>("HostAddress");
+          r.DatabaseName = "ordersdb";
+          r.CollectionName = "orders";
+        })
+        .Endpoint(e => e.Name = nameof(NewOrderSaga));
     });
   }
 }

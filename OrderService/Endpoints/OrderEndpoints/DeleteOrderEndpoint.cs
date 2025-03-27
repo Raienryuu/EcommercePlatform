@@ -7,7 +7,7 @@ public static class DeleteOrderEndpoint
   public static WebApplication MapDeleteOrderEndpoint(this WebApplication app)
   {
     app.MapDelete(
-        EndpointRoutes.DELETE_ORDER,
+        EndpointRoutes.Orders.DELETE_ORDER,
         async (
           OrderDbContext context,
           CancellationToken ct,

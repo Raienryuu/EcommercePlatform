@@ -1,4 +1,6 @@
-namespace CartService.Requests;
+using CartService.Models;
+
+namespace CartService.Responses;
 
 public class ResponseCartDTO
 {

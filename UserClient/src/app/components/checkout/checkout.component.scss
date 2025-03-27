@@ -1,3 +1,4 @@
+@use '@angular/material' as mat;
 @import "src/color-palette.scss";
 
 body {
@@ -254,22 +255,6 @@ button.cancel-order {
   margin: 1vmin;
 }
 
-.map {
-  border-radius: 10px;
-  overflow: visible;
-}
-
-.map {
-  width: 60vw;
-  height: 90vh;
-}
-
-@media (max-aspect-ratio: 1) {
-  .map {
-    width: 85vw;
-    height: 60vh;
-  }
-}
 
 .locker-selection {
   display: flex;
@@ -280,4 +265,21 @@ button.cancel-order {
 button.dhl-locker {
   background-color: inherit;
   border: 1px solid $primary-200;
+}
+
+:root {
+  @include mat.progress-spinner-overrides((size: 1000px,
+    ));
+}
+
+.spinner {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding-top: 10vh;
+  height: 100%;
+
+  span {
+    padding-top: 10vh;
+  }
 }

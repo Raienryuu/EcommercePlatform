@@ -43,7 +43,7 @@ public class Program
 
     builder.Services.AddDbContext<ProductDbContext>(options => options.UseSqlServer(connectionString));
 
-    builder.Services.AddLogging();
+    builder.Services.AddLogging(c => c.AddSimpleConsole());
 
     MessageQueueUtils.Configure(builder);
 
@@ -60,31 +60,30 @@ public class Program
       app.UseCors("DevPolicy");
 
       using var scope = app.Services.CreateAsyncScope();
-      using (var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>())
-      {
-        CreateDevelopmentDatabase(dbContext);
-      }
-      static void CreateDevelopmentDatabase(ProductDbContext? dbContext)
-      {
-        while (true)
-        {
-          try
-          {
-            dbContext?.Database.EnsureCreated();
-          }
-          catch
-          {
-            Thread.Sleep(5000);
-            continue;
-          }
-          break;
-        }
-      }
+      using var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
+      CreateDevelopmentDatabase(dbContext);
     }
 
     app.MapControllers();
 
     app.Run();
+  }
+
+  static void CreateDevelopmentDatabase(ProductDbContext? dbContext)
+  {
+    while (true)
+    {
+      try
+      {
+        dbContext?.Database.EnsureCreated();
+      }
+      catch
+      {
+        Thread.Sleep(5000);
+        continue;
+      }
+      break;
+    }
   }
 
   private static string BuildConnectionString(WebApplicationBuilder builder)

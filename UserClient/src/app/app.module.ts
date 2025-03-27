@@ -8,7 +8,7 @@ import { ProductsComponent } from './components/catalog/catalog.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { FormsModule } from '@angular/forms';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -36,6 +36,7 @@ import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { MatDialogModule } from '@angular/material/dialog';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
+import { authInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,6 @@ import { ProductDetailsComponent } from './components/product-details/product-de
     NgxMatInputTelComponent,
     CountrySelectComponent,
   ],
-  providers: [provideHttpClient()],
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
 })
-export class AppModule { }
+export class AppModule {}

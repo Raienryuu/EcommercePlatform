@@ -4,12 +4,12 @@ import {
 } from '@stripe/stripe-js';
 
 export class StripeConfig {
-  YOUR_CLIENT_SECRET =
-    'pi_3POFD5C7yfdpfbDs1K4y1MF5_secret_mbpshCsI0kRJtroB8J1zNQXNm';
+  private orderId = 'pi_3POFD5C7yfdpfbDs1K4y1MF5';
+  private clientSecret = '_secret_mbpshCsI0kRJtroB8J1zNQXNm';
+
+  YOUR_CLIENT_SECRET = this.orderId + this.clientSecret;
 
   stripeElementsOptions: StripeElementsOptions = {
-    locale: 'en',
-    clientSecret: this.YOUR_CLIENT_SECRET,
     appearance: {
       theme: 'stripe',
       variables: {
@@ -30,7 +30,7 @@ export class StripeConfig {
 
   paymentElementOptions: StripePaymentElementOptions = {
     layout: {
-      type: 'tabs',
+      type: 'auto',
       defaultCollapsed: false,
     },
   };

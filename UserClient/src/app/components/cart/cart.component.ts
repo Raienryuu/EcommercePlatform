@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
+import { CreateOrderRequest, OrderProduct } from 'src/app/models/order.model';
 import { Product } from 'src/app/models/product';
 import { CartService } from 'src/app/services/cartService/cart.service';
+import { OrderService } from 'src/app/services/orderService/order.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { environment } from 'src/enviroment';
@@ -19,15 +22,19 @@ export class CartComponent implements OnInit {
     private userSettingsService: UserSettingsService,
     private cartService: CartService,
     private productService: ProductService,
+    private router: Router,
+    private orderService: OrderService,
   ) {}
 
   cartUpdateDelayedEvent = new Subject();
 
   ngOnInit() {
-    this.GetCartContent();
     this.RecalculateTotalCost();
+    this.GetCartContent();
   }
+
   GetCartContent() {
+    this.products = [];
     const productsList = this.cartService.GetCartProductsIds();
     this.productService.GetProductsBatch(productsList).subscribe((products) => {
       products.forEach((p) => {
@@ -37,6 +44,7 @@ export class CartComponent implements OnInit {
         p.quantity = this.GetProductAmount(p.quantity, localProduct!.amount);
         this.products.push(p);
       });
+      this.RecalculateTotalCost();
     });
   }
 
@@ -44,17 +52,13 @@ export class CartComponent implements OnInit {
     if (storage > needed) {
       return needed;
     } else {
-      return 0; // do something on view to show that product is unavilable
+      return 0;
     }
   }
 
   currencySymbol = '€';
   promoCode = '';
-  totalCost: { price: string; tax: string; total: string } = {
-    price: '',
-    tax: '',
-    total: '',
-  };
+  totalCost = '0';
 
   LoadUserSettings() {
     this.userSettingsService
@@ -67,22 +71,9 @@ export class CartComponent implements OnInit {
   }
 
   RecalculateTotalCost() {
-    // TODO: ask API for calculation instead
-    let priceSum = 0;
-    let taxSum = 0;
-    let totalSum = 0;
-    this.products.forEach((p) => {
-      priceSum += p.price * p.quantity;
-    });
-    taxSum = priceSum * 0.23;
-    priceSum -= taxSum;
-    totalSum = priceSum + taxSum;
-
-    this.totalCost = {
-      price: priceSum.toFixed(2),
-      tax: taxSum.toFixed(2),
-      total: totalSum.toFixed(2),
-    };
+    let sum = 0;
+    this.products.forEach((p) => (sum += p.price * p.quantity));
+    this.totalCost = sum.toFixed(2);
   }
 
   AddQuantity(product: Product, quantity: number) {
@@ -115,11 +106,39 @@ export class CartComponent implements OnInit {
   }
 
   IsDecrementationInvalid(product: Product): boolean {
-    if (product.quantity === 1) return true;
+    if (product.quantity <= 1) return true;
     return false;
   }
   IsIncrementationInvalid(product: Product): boolean {
-    if (product.quantity === this.MAX_QUANTITY) return true;
+    if (product.quantity >= this.MAX_QUANTITY) return true;
     return false;
+  }
+
+  ToCheckout() {
+    this.orderService.CreateNewOrder(this.CreateOrder()).subscribe({
+      next: (order) => {
+        this.router.navigate([`/checkout/${order.orderId}`]);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
+  }
+
+  private CreateOrder(): CreateOrderRequest {
+    const mappedProducts: OrderProduct[] = this.products.map<OrderProduct>(
+      (p) => ({
+        productId: p.id,
+        quantity: p.quantity,
+        price: p.price,
+      }),
+    );
+
+    const newOrder: CreateOrderRequest = {
+      notes: null,
+      products: mappedProducts,
+      currencyISO: this.userSettingsService.GetCurrencyISO(),
+    };
+    return newOrder;
   }
 }

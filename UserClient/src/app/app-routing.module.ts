@@ -8,17 +8,17 @@ import { CheckoutComponent } from './components/checkout/checkout.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 
 const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'products' },
+  { path: '', pathMatch: 'full', redirectTo: 'cart' },
   { path: 'products', component: ProductsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'cart', component: CartComponent },
-  { path: 'checkout', component: CheckoutComponent },
-  { path: 'details/:id', component: ProductDetailsComponent }
+  { path: 'checkout/:orderId', component: CheckoutComponent },
+  { path: 'details/:id', component: ProductDetailsComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: false })],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

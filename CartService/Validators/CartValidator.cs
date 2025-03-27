@@ -1,3 +1,4 @@
+using CartService.Models;
 using CartService.Requests;
 using FastEndpoints;
 using FluentValidation;
@@ -9,7 +10,7 @@ public class UpdateCartValidator : Validator<UpdateCartRequest>
   public UpdateCartValidator()
   {
     _ = RuleFor(static c => c.Products).NotEmpty();
-    _ = RuleForEach(static c => c.Products).SetValidator(new ProductValidator());
+    RuleForEach(static c => c.Products).SetValidator(new ProductValidator());
   }
 }
 
@@ -18,7 +19,7 @@ public class CreateCartValidator : Validator<CreateNewCartRequest>
   public CreateCartValidator()
   {
     _ = RuleFor(static c => c.Products).NotEmpty();
-    _ = RuleForEach(static c => c.Products).SetValidator(new ProductValidator());
+    RuleForEach(static c => c.Products).SetValidator(new ProductValidator());
   }
 }
 

@@ -16,4 +16,6 @@ public class Order()
   public DateTime LastModified { get; set; } = DateTime.UtcNow;
   public ICollection<OrderProduct> Products { get; set; } = [];
   public string? StripePaymentId { get; set; }
+  public int? TotalPriceInSmallestCurrencyUnit { get; set; }
+  public required string CurrencyISO { get; set; }
 }

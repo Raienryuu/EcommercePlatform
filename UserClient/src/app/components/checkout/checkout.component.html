@@ -1,213 +1,224 @@
 <body>
-  <span class="list">
-    <div id="products">
-      <div class="header">Products</div>
-      <div class="content">
-        <div class="product" *ngFor="let product of products">
-          <img
-            alt="productImg"
-            height="120"
-            width="170"
-            ngSrc="assets/garnek"
-            priority="true"
-            style="float: left"
-          />
-          <span class="product-property name">
-            {{ product.name }}
-          </span>
-          <span class="product-property name">
-            {{ currencySymbol }}{{ product.price }}
-          </span>
-          <span class="product-property name">
-            {{ product.quantity }}
-          </span>
-          <span class="product-property name">
-            {{ currencySymbol }}{{ product.price * product.quantity }}
-          </span>
+  @if (orderLoaded) {
+    <span class="list">
+      <div id="products">
+        <div class="header">Products</div>
+        <div class="content">
+          <div class="product" *ngFor="let product of products">
+            <img
+              alt="productImg"
+              height="120"
+              width="170"
+              ngSrc="assets/garnek"
+              priority="true"
+              style="float: left"
+            />
+            <span class="product-property name">
+              {{ product.name }}
+            </span>
+            <span class="product-property name">
+              {{ currencySymbol }}{{ product.price }}
+            </span>
+            <span class="product-property name">
+              {{ product.quantity }}
+            </span>
+            <span class="product-property name">
+              {{ currencySymbol
+              }}{{ (product.price * product.quantity).toFixed(2) }}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-    <div id="addresses">
-      <div class="header">
-        <span> Customer details </span>
-        <!-- <button mat-icon-button >
+      <div id="addresses">
+        <div class="header">
+          <span> Customer details </span>
+          <!-- <button mat-icon-button >
           <mat-icon class="add" fontIcon="add" />
         </button> -->
-      </div>
-      <div class="customer-details content">
-        <mat-card
-          *ngFor="let address of customerAddresses; index as i"
-          (click)="SelectAddress(i)"
-          [ngClass]="{ selected: i === activeSelection }"
-        >
-          <mat-card-content>
-            <button
-              aria-label="edit address"
-              mat-icon-button
-              class="edit"
-              name="edit"
-              (click)="OpenAddressEditor(false, i)"
-            >
-              <mat-icon
-                fontIcon="edit"
-                [ngClass]="{ selected: i === activeSelection }"
-              />
-            </button>
-            <tr>
-              {{
-                address.FullName
-              }}
-            </tr>
-            <tr>
-              {{
-                address.Address
-              }}
-            </tr>
-            <tr>
-              {{
-                address.City + " " + address.ZIPCode
-              }}
-            </tr>
-            <tr>
-              {{
-                address.PhoneNumber
-              }}
-            </tr>
-            <tr>
-              {{
-                address.Email
-              }}
-            </tr>
-            <tr>
-              {{
-                address.Country
-              }}
-            </tr>
-          </mat-card-content>
-        </mat-card>
-        <mat-card>
-          <mat-card-content class="center">
-            <button
-              aria-label="add new address"
-              mat-icon-button
-              (click)="OpenAddressEditor(true, -1)"
-            >
-              <mat-icon class="add" fontIcon="add" />
-            </button>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-    <div id="payment" *ngIf="true">
-      <div class="header">Payment method</div>
-      <div class="content">
-        <ngx-stripe-elements
-          [stripe]="stripe"
-          [elementsOptions]="elementsOptions"
-        >
-          <ngx-stripe-payment [options]="paymentElementOptions" />
-        </ngx-stripe-elements>
-      </div>
-    </div>
-    <div id="delivery">
-      <div class="header">Delivery</div>
-      <div class="content">
-        <mat-radio-group
-          aria-label="Select an option"
-          #deliverySelect
-          [value]="deliveryOptionValue"
-          (change)="ChangeDeliveryValue($event)"
-        >
-          <span class="delivery-type-description">Pay now</span>
-          <div class="delivery-method">
-            <mat-radio-button value="1"> Standard </mat-radio-button>
-            <span> {{ currencySymbol }}10 </span>
-          </div>
-          <div class="delivery-method">
-            <mat-radio-button value="2">
-              <span> Express </span>
-            </mat-radio-button>
-            <span> {{ currencySymbol }}10 </span>
-          </div>
-          <div class="delivery-method">
-            <mat-radio-button value="dhl" #dhlDelivery>
-              <span class="locker-selection">
-                <img
-                  src="../../../assets/logo_DHL.jpg"
-                  width="84"
-                  alt="dhl_logo"
-                />
-                DHL Parcel Box
-              </span>
-            </mat-radio-button>
-            <button
-              mat-flat-button
-              class="dhl-locker"
-              (click)="openDhlDialog()"
-              name="dhl-locker"
-            >
-              Select locker
-            </button>
-            <span> {{ currencySymbol }}0 </span>
-          </div>
-          <span class="delivery-type-description">Pay on delivery</span>
-          <div class="delivery-method">
-            <mat-radio-button value="4"> Standard </mat-radio-button>
-            <span> {{ currencySymbol }}8 </span>
-          </div>
-          <div class="delivery-method">
-            <mat-radio-button value="5">
-              <span> Express </span>
-            </mat-radio-button>
-            <span> {{ currencySymbol }}12 </span>
-          </div>
-        </mat-radio-group>
-      </div>
-    </div>
-  </span>
-
-  <div class="summary">
-    <span class="sticky">
-      <div class="header">Summary</div>
-      <div class="content">
-        <div class="promo-codes">
-          <span *ngIf="!promoCodes" class="empty-codes">
-            No active promo codes
-          </span>
         </div>
-        <div class="total">
-          <table>
-            <tr>
-              <td>Items</td>
-              <td class="second-column">
-                {{ currencySymbol }}{{ total.base }}
-              </td>
-            </tr>
-            <!-- <tr>
-            <td>Tax</td>
-            <td class="second-column">{{ currencySymbol }}{{ total.tax }}</td>
-          </tr> -->
-            <tr>
-              <td>Delivery</td>
-              <td class="second-column">
-                {{ currencySymbol }}{{ total.delivery }}
-              </td>
-            </tr>
-            <tr>
-              <td class="total">Total</td>
-              <td class="second-total second-column">
-                {{ currencySymbol }}{{ total.total }}
-              </td>
-            </tr>
-          </table>
-          <mat-divider />
-          <mat-checkbox>I accept!</mat-checkbox>
-          <div class="cta-buttons">
-            <button mat-stroked-button class="cancel-order">Back</button>
-            <button mat-flat-button color="primary">Order</button>
-          </div>
+        <div class="customer-details content">
+          <mat-card
+            *ngFor="let address of customerAddresses; index as i"
+            (click)="SelectAddress(i)"
+            [ngClass]="{ selected: i === activeSelection }"
+          >
+            <mat-card-content>
+              <button
+                aria-label="edit address"
+                mat-icon-button
+                class="edit"
+                name="edit"
+                (click)="OpenAddressEditor(false, i)"
+              >
+                <mat-icon
+                  fontIcon="edit"
+                  [ngClass]="{ selected: i === activeSelection }"
+                />
+              </button>
+              <tr>
+                {{
+                  address.FullName
+                }}
+              </tr>
+              <tr>
+                {{
+                  address.Address
+                }}
+              </tr>
+              <tr>
+                {{
+                  address.City + " " + address.ZIPCode
+                }}
+              </tr>
+              <tr>
+                {{
+                  address.PhoneNumber
+                }}
+              </tr>
+              <tr>
+                {{
+                  address.Email
+                }}
+              </tr>
+              <tr>
+                {{
+                  address.Country
+                }}
+              </tr>
+            </mat-card-content>
+          </mat-card>
+          <mat-card>
+            <mat-card-content class="center">
+              <button
+                aria-label="add new address"
+                mat-icon-button
+                (click)="OpenAddressEditor(true, -1)"
+              >
+                <mat-icon class="add" fontIcon="add" />
+              </button>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      <div id="payment" *ngIf="YOUR_CLIENT_SECRET != null">
+        <div class="header">Payment method</div>
+        <div class="content">
+          <ngx-stripe-elements
+            [stripe]="stripe"
+            [elementsOptions]="elementsOptions"
+          >
+            <ngx-stripe-payment [options]="paymentElementOptions" />
+          </ngx-stripe-elements>
+        </div>
+      </div>
+      <div id="delivery">
+        <div class="header">Delivery</div>
+        <div class="content">
+          <mat-radio-group
+            aria-label="Select an option"
+            #deliverySelect
+            [value]="deliveryOptionValue"
+            (change)="ChangeDeliveryValue($event)"
+          >
+            <span class="delivery-type-description">Pay now</span>
+            <div class="delivery-method">
+              <mat-radio-button value="1"> Standard </mat-radio-button>
+              <span> {{ currencySymbol }}10 </span>
+            </div>
+            <div class="delivery-method">
+              <mat-radio-button value="2">
+                <span> Express </span>
+              </mat-radio-button>
+              <span> {{ currencySymbol }}10 </span>
+            </div>
+            <div class="delivery-method">
+              <mat-radio-button value="dhl" #dhlDelivery>
+                <span class="locker-selection">
+                  <img
+                    src="../../../assets/logo_DHL.jpg"
+                    width="84"
+                    alt="dhl_logo"
+                  />
+                  DHL Parcel Box
+                </span>
+              </mat-radio-button>
+              <button
+                mat-flat-button
+                class="dhl-locker"
+                (click)="openDhlDialog()"
+                name="dhl-locker"
+              >
+                Select locker
+              </button>
+              <span> {{ currencySymbol }}0 </span>
+            </div>
+            <span class="delivery-type-description">Pay on delivery</span>
+            <div class="delivery-method">
+              <mat-radio-button value="4"> Standard </mat-radio-button>
+              <span> {{ currencySymbol }}8 </span>
+            </div>
+            <div class="delivery-method">
+              <mat-radio-button value="5">
+                <span> Express </span>
+              </mat-radio-button>
+              <span> {{ currencySymbol }}12 </span>
+            </div>
+          </mat-radio-group>
         </div>
       </div>
     </span>
-  </div>
+
+    <div class="summary">
+      <span class="sticky">
+        <div class="header">Summary</div>
+        <div class="content">
+          <div class="promo-codes">
+            <span *ngIf="!promoCodes" class="empty-codes">
+              No active promo codes
+            </span>
+          </div>
+          <div class="total">
+            <table>
+              <tr>
+                <td>Items</td>
+                <td class="second-column">{{ currencySymbol }}{{ total }}</td>
+              </tr>
+              <!-- <tr>
+            <td>Tax</td>
+            <td class="second-column">{{ currencySymbol }}{{ total.tax }}</td>
+          </tr> -->
+              <tr>
+                <td>Delivery</td>
+                <td class="second-column">{{ currencySymbol }}{{ total }}</td>
+              </tr>
+              <tr>
+                <td class="total">Total</td>
+                <td class="second-total second-column">
+                  {{ currencySymbol }}{{ total }}
+                </td>
+              </tr>
+            </table>
+            <mat-divider />
+            <mat-checkbox>I accept!</mat-checkbox>
+            <div class="cta-buttons">
+              <button mat-stroked-button class="cancel-order">Back</button>
+              <button
+                mat-flat-button
+                (click)="OnClickOrderButtonHandler()"
+                color="primary"
+                [disabled]="id == null"
+              >
+                Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </span>
+    </div>
+  } @else {
+    <div class="spinner">
+      <mat-spinner diameter="200"></mat-spinner>
+      <span>Loading your order...</span>
+    </div>
+  }
 </body>

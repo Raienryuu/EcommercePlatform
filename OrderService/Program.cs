@@ -1,7 +1,10 @@
+using System.Configuration;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Endpoints;
 using OrderService.Endpoints.Requests;
+using OrderService.Options;
+using OrderService.Services;
 using OrderService.Validators;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
@@ -17,11 +20,14 @@ public class Program
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
     var connectionString = BuildConnectionString(builder);
+    builder.Services.Configure<StripeConfig>(builder.Configuration.GetRequiredSection(StripeConfig.KEY));
 
     builder.Services.AddDbContext<OrderDbContext>(o =>
     {
       o.UseSqlServer(connectionString);
     });
+
+    builder.Services.AddScoped<IStripePaymentService, StripePaymentService>();
 
     _ = builder.Services.AddCors(o =>
       o.AddPolicy(
@@ -37,6 +43,7 @@ public class Program
 
     builder.Services.AddScoped<IValidator<CreateOrderRequest>, OrderValidator>();
     builder.Services.AddFluentValidationAutoValidation();
+    builder.Services.AddLogging(c => c.AddSimpleConsole());
 
     var app = builder.Build();
 
@@ -52,10 +59,10 @@ public class Program
     /*app.UseHttpsRedirection();*/
 
     app.UseCors("DevPolicy");
-    app.UseAuthorization();
+    /*app.UseAuthorization();*/
 
-    /*app.MapControllers();*/
     app.MapOrderEndpoints();
+    app.MapPaymentEndpoints();
 
     app.Run();
   }

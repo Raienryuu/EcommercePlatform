@@ -24,7 +24,7 @@ export const SampleProducts: Product[] = [
     name: 'Short D',
     description: 'Description for Product D',
     price: 24.99,
-    quantity: 0,
+    quantity: 1,
   },
 ];
 
