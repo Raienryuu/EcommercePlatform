@@ -1,0 +1,16 @@
+.map {
+  display: flex;
+  border-radius: 10px;
+}
+
+.map {
+  width: 60vw;
+  height: 90vh;
+}
+
+@media (max-aspect-ratio: 1) {
+  .map {
+    width: 75vw;
+    height: 75vh;
+  }
+}
