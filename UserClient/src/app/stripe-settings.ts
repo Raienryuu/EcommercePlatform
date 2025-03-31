@@ -16,7 +16,6 @@ export class StripeConfig {
         colorBackground: '#F0F2FF',
         colorText: '#000000de',
         fontLineHeight: '50px',
-
         // fontSizeBase: '20px'
       },
       labels: 'floating',

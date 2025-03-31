@@ -100,15 +100,14 @@
           </mat-card>
         </div>
       </div>
-      <div id="payment" *ngIf="YOUR_CLIENT_SECRET != null">
+      <div id="payment">
         <div class="header">Payment method</div>
         <div class="content">
-          <ngx-stripe-elements
-            [stripe]="stripe"
-            [elementsOptions]="elementsOptions"
-          >
-            <ngx-stripe-payment [options]="paymentElementOptions" />
-          </ngx-stripe-elements>
+          <app-stripe-payment
+            [clientSecret]="YOUR_CLIENT_SECRET"
+            [id]="id"
+            [makePaymentEmitter]="makePaymentEmitter"
+          />
         </div>
       </div>
       <div id="delivery">

@@ -37,6 +37,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { AddressEditorComponent } from './components/address-editor/address-editor.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { StripePaymentComponent } from './components/stripe-payment/stripe-payment.component';
 
 @NgModule({
   declarations: [
@@ -77,6 +78,7 @@ import { authInterceptor } from './interceptors/auth.interceptor';
     MatDialogModule,
     NgxMatInputTelComponent,
     CountrySelectComponent,
+    StripePaymentComponent,
   ],
   providers: [provideHttpClient(withInterceptors([authInterceptor]))],
 })

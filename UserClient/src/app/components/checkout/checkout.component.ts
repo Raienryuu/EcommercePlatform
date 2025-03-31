@@ -1,11 +1,5 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input } from '@angular/core';
 import { Product } from 'src/app/models/product';
-import {
-  StripeElementsDirective,
-  StripeFactoryService,
-  StripeInstance,
-  StripePaymentElementComponent,
-} from 'ngx-stripe';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -15,12 +9,10 @@ import {
 } from '../address-editor/address-editor.component';
 import { MatRadioChange } from '@angular/material/radio';
 import { SampleCustomerAddresses, SampleProducts } from 'src/app/develSamples';
-import { StripeConfig } from 'src/app/stripe-settings';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from 'src/app/services/orderService/order.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { Order } from 'src/app/models/order.model';
-import { StripeError } from '@stripe/stripe-js';
 import { map, retry } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
@@ -45,10 +37,9 @@ export class CheckoutComponent {
   orderNotFound = false;
 
   @Input()
-  id: string | null = null;
+  id: string | undefined;
 
   constructor(
-    private stripeFactoryService: StripeFactoryService,
     public dialogDhl: MatDialog,
     public dialogAddressEditor: MatDialog,
     private route: ActivatedRoute,
@@ -61,8 +52,8 @@ export class CheckoutComponent {
       this.orderLoaded = true;
     }
 
-    this.id = this.route.snapshot.paramMap.get('orderId');
-    if (this.id == null) {
+    this.id = this.route.snapshot.paramMap.get('orderId')!;
+    if (this.id == undefined) {
       this.products = [];
       throw new Error('Order id is null');
     }
@@ -75,9 +66,10 @@ export class CheckoutComponent {
         });
       },
     });
-
     this.GetClientSecret();
   }
+
+  makePaymentEmitter: EventEmitter<null> = new EventEmitter<null>();
 
   private GetClientSecret() {
     if (this.id == null) {
@@ -89,7 +81,6 @@ export class CheckoutComponent {
       .pipe(
         map((res) => {
           if (res.status == 202) {
-            console.warn('got 202');
             throw new Error('Client secret is not ready yet.');
           }
           return res;
@@ -99,7 +90,6 @@ export class CheckoutComponent {
       .subscribe({
         next: (paymentIntentResponse) => {
           this.YOUR_CLIENT_SECRET = paymentIntentResponse.body!;
-          this.elementsOptions.clientSecret = paymentIntentResponse.body!;
           this.orderLoaded = true;
         },
       });
@@ -130,48 +120,11 @@ export class CheckoutComponent {
     this.total = sum.toFixed(2);
   }
 
-  stripe: StripeInstance = this.stripeFactoryService.create(
-    environment.stripeApiKey,
-  );
-  stripeConfig = new StripeConfig();
-  YOUR_CLIENT_SECRET: string = null!;
-
-  @ViewChild(StripePaymentElementComponent)
-  paymentElement!: StripePaymentElementComponent;
-
-  @ViewChild(StripeElementsDirective)
-  formPaymentElement!: StripeElementsDirective;
-
-  elementsOptions = this.stripeConfig.stripeElementsOptions;
-  paymentElementOptions = this.stripeConfig.paymentElementOptions;
+  YOUR_CLIENT_SECRET: string | undefined;
 
   OnClickOrderButtonHandler() {
     console.clear();
-    this.MakeStripePayment();
-  }
-
-  private MakeStripePayment() {
-    if (this.YOUR_CLIENT_SECRET == null) {
-      console.error('client secret is null');
-      return;
-    }
-    this.formPaymentElement.submit().subscribe({
-      next: () => {
-        this.stripe
-          .confirmPayment({
-            elements: this.paymentElement.elements,
-            confirmParams: {
-              return_url: 'http://localhost:4200/myorders/' + this.id,
-            },
-            clientSecret: this.YOUR_CLIENT_SECRET,
-          })
-          .subscribe((result) => console.log(result));
-      },
-      error: (error: StripeError | undefined) => {
-        console.error('Invalid payment information provided');
-        throw new Error(error?.message);
-      },
-    });
+    this.makePaymentEmitter.emit();
   }
 
   SelectAddress(id: number) {
@@ -203,6 +156,7 @@ export class CheckoutComponent {
       dialog.close();
       return;
     }
+
     // delete case
     if ($event.WasDeleted) {
       this.customerAddresses = this.customerAddresses.filter(
@@ -211,6 +165,7 @@ export class CheckoutComponent {
       return;
     }
     let doesExists = false;
+
     // update case
     this.customerAddresses.forEach((a, index) => {
       if (a.Id === $event!.Address!.Id) {
@@ -218,6 +173,7 @@ export class CheckoutComponent {
         doesExists = true;
       }
     });
+
     // add case
     if (!doesExists) this.customerAddresses.push($event!.Address!);
     dialog.close();
