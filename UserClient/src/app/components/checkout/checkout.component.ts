@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input } from '@angular/core';
+import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
@@ -16,6 +16,7 @@ import { Order } from 'src/app/models/order.model';
 import { map, retry } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
+import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
 
 @Component({
   selector: 'app-checkout',
@@ -69,8 +70,6 @@ export class CheckoutComponent {
     this.GetClientSecret();
   }
 
-  makePaymentEmitter: EventEmitter<null> = new EventEmitter<null>();
-
   private GetClientSecret() {
     if (this.id == null) {
       throw new Error('Order Id cannot be null');
@@ -121,10 +120,12 @@ export class CheckoutComponent {
   }
 
   YOUR_CLIENT_SECRET: string | undefined;
+  @ViewChild(StripePaymentComponent)
+  stripeComponent!: StripePaymentComponent;
 
   OnClickOrderButtonHandler() {
     console.clear();
-    this.makePaymentEmitter.emit();
+    this.stripeComponent.MakeStripePayment();
   }
 
   SelectAddress(id: number) {
@@ -157,7 +158,7 @@ export class CheckoutComponent {
       return;
     }
 
-    // delete case
+    // delete address case
     if ($event.WasDeleted) {
       this.customerAddresses = this.customerAddresses.filter(
         (x) => x.Id !== $event.Address!.Id,
@@ -166,7 +167,7 @@ export class CheckoutComponent {
     }
     let doesExists = false;
 
-    // update case
+    // update address case
     this.customerAddresses.forEach((a, index) => {
       if (a.Id === $event!.Address!.Id) {
         this.customerAddresses[index] = $event!.Address!;
@@ -174,7 +175,7 @@ export class CheckoutComponent {
       }
     });
 
-    // add case
+    // add address case
     if (!doesExists) this.customerAddresses.push($event!.Address!);
     dialog.close();
   }

@@ -103,11 +103,7 @@
       <div id="payment">
         <div class="header">Payment method</div>
         <div class="content">
-          <app-stripe-payment
-            [clientSecret]="YOUR_CLIENT_SECRET"
-            [id]="id"
-            [makePaymentEmitter]="makePaymentEmitter"
-          />
+          <app-stripe-payment [clientSecret]="YOUR_CLIENT_SECRET" [id]="id" />
         </div>
       </div>
       <div id="delivery">

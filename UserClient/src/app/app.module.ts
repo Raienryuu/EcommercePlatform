@@ -38,6 +38,7 @@ import { AddressEditorComponent } from './components/address-editor/address-edit
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { StripePaymentComponent } from './components/stripe-payment/stripe-payment.component';
+import { OrderDetailsComponent } from './components/order-details/order-details.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { StripePaymentComponent } from './components/stripe-payment/stripe-payme
     CheckoutComponent,
     AddressEditorComponent,
     ProductDetailsComponent,
+    OrderDetailsComponent,
   ],
   bootstrap: [AppComponent],
   imports: [

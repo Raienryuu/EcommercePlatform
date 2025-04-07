@@ -43,9 +43,6 @@ import { environment } from 'src/enviroment';
 })
 export class StripePaymentComponent implements OnChanges {
   @Input({ required: true })
-  makePaymentEmitter: EventEmitter<null> = new EventEmitter<null>();
-
-  @Input({ required: true })
   id: string | undefined;
 
   @Input({ required: true })
@@ -59,9 +56,7 @@ export class StripePaymentComponent implements OnChanges {
 
   private _clientSecret: string | undefined;
 
-  constructor(private stripeFactoryService: StripeFactoryService) {
-    this.makePaymentEmitter.subscribe(() => this.MakeStripePayment());
-  }
+  constructor(private stripeFactoryService: StripeFactoryService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     const secretChanges = changes['clientSecret'];
@@ -90,7 +85,7 @@ export class StripePaymentComponent implements OnChanges {
     this.elementsOptions.clientSecret = newClientSecret;
   }
 
-  public MakeStripePayment() {
+  MakeStripePayment() {
     if (this.id == undefined) {
       throw new Error('Order Id is required');
     }

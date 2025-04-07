@@ -1,0 +1,69 @@
+<body>
+  <span class="width-clamp">
+    <div class="progress">
+      <div class="header">Status</div>
+      <div class="content">
+        <mat-stepper #stepper>
+          <mat-step label="Pending"></mat-step>
+          <mat-step label="Confirmed"></mat-step>
+          <mat-step label="Delivery"></mat-step>
+          <mat-step label="Completed"></mat-step>
+        </mat-stepper>
+      </div>
+    </div>
+    <div class="products-wrapper">
+      <div class="products">
+        <div class="product" *ngFor="let product of products">
+          <img
+            alt="productImg"
+            height="120"
+            width="170"
+            ngSrc="assets/garnek"
+            priority="true"
+            style="float: left"
+          />
+          <span class="product-property product-name">
+            {{ product.name }}
+          </span>
+          <span class="product-property">
+            {{ currencySymbol }}{{ product.price }}
+          </span>
+          <span class="product-property"> Qty: {{ product.quantity }} </span>
+          <span class="product-property">
+            {{ currencySymbol
+            }}{{ (product.price * product.quantity).toFixed(2) }}
+          </span>
+        </div>
+      </div>
+      <span class="side-padding">
+        <div class="payment-status">
+          <div>Payment status</div>
+          <div #paymentStatus class="pending">Pending</div>
+        </div>
+        <div class="price">
+          <div>Subtotal</div>
+          <div class="money">€3821</div>
+          <div>Delivery</div>
+          <div class="money">Free</div>
+          <div><b>Total</b></div>
+          <div class="money"><b>€3821</b></div>
+        </div>
+      </span>
+    </div>
+    <div class="delivery">
+      Delivery <span class="dhl">DHL Parcel Locker</span>
+      <div class="delivery-wrapper">
+        <div class="address">
+          <div>Near Kaufland</div>
+          <div>Ginny Hwy. 83</div>
+          <div>San Jose</div>
+          <div>CA, 021354</div>
+        </div>
+        <div>
+          <div>Retrieval phone number</div>
+          <div>+1 123 321314</div>
+        </div>
+      </div>
+    </div>
+  </span>
+</body>

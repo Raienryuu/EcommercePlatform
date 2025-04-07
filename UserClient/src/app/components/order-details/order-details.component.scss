@@ -1,0 +1,144 @@
+@import "src/color-palette.scss";
+
+
+
+
+.header {
+  height: calc(clamp(12px, calc(1vh + 1vw), 18px) * 1.4);
+  padding: 0;
+  min-height: 0px;
+  width: 100%;
+  max-width: unset;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.content {
+  max-width: unset;
+  padding: 0;
+  width: 100%;
+  font-size: clamp(12px, calc(1vh + 1vw), 18px);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  --mat-stepper-header-selected-state-label-text-size: 20px;
+  --mat-stepper-header-label-text-size: 18px;
+  --top-margin: 6svh;
+
+  @media (orientation: portrait) {
+    --top-margin: 4svw;
+  }
+}
+
+mat-stepper {
+  max-width: 1200px;
+  background-color: $primary-100;
+  border-radius: 0 0 10px 10px;
+}
+
+.product {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+  align-items: center;
+  justify-items: start;
+  min-height: 105px;
+  border: 1px solid $gray-100;
+  margin: 1vh 1vw;
+  border-radius: 10px;
+  text-wrap: nowrap;
+}
+
+.product img {
+  height: 60px;
+  width: 85px;
+  border-radius: 10px;
+  margin-left: 1svw;
+  aspect-ratio: 1.42;
+}
+
+.product .product-property {
+  margin: 0 1.5vw;
+}
+
+.product .product-name {
+  text-wrap: wrap;
+}
+
+.products {
+  margin-top: 3svh;
+  max-width: 1000px;
+  display: grid;
+}
+
+.products-wrapper {
+  display: flex;
+  justify-content: center;
+  margin: 0 1vw;
+}
+
+.price {
+  margin-top: var(--top-margin);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1vh 2vw;
+}
+
+.payment-status {
+  margin-top: var(--top-margin);
+  text-align: center;
+  padding: 0 30px;
+}
+
+.money {
+  text-align: right;
+}
+
+
+
+.width-clamp {
+  max-width: 1800px;
+  display: block;
+}
+
+.delivery {
+  margin-top: 1svh;
+  margin-left: 10%;
+}
+
+.delivery-wrapper {
+  display: flex;
+  padding-top: 1svh;
+  line-height: 150%;
+}
+
+.address {
+  padding-right: 1svw;
+}
+
+.dhl {
+  color: #FF0409;
+  background-color: #FFD562;
+  border-radius: 5px;
+  padding: 2px;
+}
+
+.pending {
+  border-radius: 10px;
+  background-color: $yellow-300;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  margin-top: 1svh;
+}
+
+.side-paddign {
+  padding-left: 20px;
+  padding-right: 20px;
+}
