@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { Product } from 'src/app/models/product';
 import { environment } from 'src/enviroment';
 import { CustomerAddress } from 'src/app/models/customer-address.model';

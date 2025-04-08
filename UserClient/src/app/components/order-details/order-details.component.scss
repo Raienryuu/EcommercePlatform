@@ -129,16 +129,54 @@ mat-stepper {
   padding: 2px;
 }
 
-.pending {
+.default-status {
   border-radius: 10px;
-  background-color: $yellow-300;
-  color: white;
   text-align: center;
   padding: 10px 0;
   margin-top: 1svh;
 }
 
+.pending {
+  background-color: $yellow-300;
+  color: white;
+}
+
+.succeeded {
+  background-color: $green-300;
+  color: white;
+}
+
+.failed {
+  background-color: $red-300;
+  color: white;
+}
+
+
 .side-paddign {
   padding-left: 20px;
   padding-right: 20px;
+}
+
+.wait-spinner {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding-top: 10vh;
+  height: 100%;
+
+  span {
+    padding-top: 10vh;
+  }
+}
+
+.no-order-found {
+  padding-top: 10vh;
+}
+
+button.retry {
+  margin: 15px;
+}
+
+.payment {
+  margin: 1svh;
 }

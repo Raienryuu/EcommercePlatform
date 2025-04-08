@@ -1,12 +1,12 @@
 import { NgIf } from '@angular/common';
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { StripeError } from '@stripe/stripe-js';
 import {
   NgxStripeModule,
@@ -21,16 +21,28 @@ import { environment } from 'src/enviroment';
 @Component({
   selector: 'app-stripe-payment',
   standalone: true,
-  imports: [NgxStripeModule, NgIf],
+  imports: [NgxStripeModule, NgIf, MatButtonModule],
   template: `
-    <div *ngIf="clientSecret !== undefined">
-      <ngx-stripe-elements
-        [stripe]="stripe"
-        [elementsOptions]="elementsOptions"
-      >
-        <ngx-stripe-payment [options]="paymentElementOptions" />
-      </ngx-stripe-elements>
-    </div>
+    @defer {
+      <div *ngIf="clientSecret !== undefined">
+        <ngx-stripe-elements
+          [stripe]="stripe"
+          [elementsOptions]="elementsOptions"
+        >
+          <ngx-stripe-payment [options]="paymentElementOptions" />
+        </ngx-stripe-elements>
+        @if (isRetrying) {
+          <button
+            mat-flat-button
+            color="primary"
+            class="retry"
+            (click)="MakeStripePayment()"
+          >
+            Pay
+          </button>
+        }
+      </div>
+    }
   `,
   styles: `
     .paymentStripe {
@@ -39,11 +51,16 @@ import { environment } from 'src/enviroment';
       font-size: inherit;
       line-height: 1.2em;
     }
+    button.retry {
+      margin: 1svw;
+    }
   `,
 })
 export class StripePaymentComponent implements OnChanges {
+  @Input()
+  isRetrying = false;
   @Input({ required: true })
-  id: string | undefined;
+  orderId: string | undefined;
 
   @Input({ required: true })
   set clientSecret(clientSecret: string | undefined) {
@@ -86,7 +103,7 @@ export class StripePaymentComponent implements OnChanges {
   }
 
   MakeStripePayment() {
-    if (this.id == undefined) {
+    if (this.orderId == undefined) {
       throw new Error('Order Id is required');
     }
 
@@ -100,7 +117,7 @@ export class StripePaymentComponent implements OnChanges {
           .confirmPayment({
             elements: this.paymentElement.elements,
             confirmParams: {
-              return_url: 'http://localhost:4200/myorders/' + this.id,
+              return_url: 'http://localhost:4200/myorder/' + this.orderId,
             },
             clientSecret: this.clientSecret!,
           })

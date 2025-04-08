@@ -12,7 +12,7 @@ const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'myorder/c7a50235-c8fa-465b-9ae8-b0b095e7d0fc',
+    redirectTo: 'login',
   },
   { path: 'products', component: ProductsComponent },
   { path: 'login', component: LoginComponent },

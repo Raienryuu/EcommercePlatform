@@ -7,7 +7,7 @@ export interface Order {
   created: Date;
   lastModified: Date;
   products: OrderProduct[];
-  stripePaymentId: string | null;
+  stripePaymentId: string;
   totalPriceInSmallestCurrencyUnit: number;
   currencyISO: string;
 }

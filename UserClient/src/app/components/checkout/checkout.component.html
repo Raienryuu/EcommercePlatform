@@ -103,7 +103,10 @@
       <div id="payment">
         <div class="header">Payment method</div>
         <div class="content">
-          <app-stripe-payment [clientSecret]="YOUR_CLIENT_SECRET" [id]="id" />
+          <app-stripe-payment
+            [clientSecret]="YOUR_CLIENT_SECRET"
+            [orderId]="id"
+          />
         </div>
       </div>
       <div id="delivery">
@@ -211,7 +214,7 @@
       </span>
     </div>
   } @else {
-    <div class="spinner">
+    <div class="wait-spinner">
       <mat-spinner diameter="200"></mat-spinner>
       <span>Loading your order...</span>
     </div>

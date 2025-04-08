@@ -27,4 +27,10 @@ export class OrderService {
       { observe: 'response' },
     );
   }
+
+  GetPaymentStatus(orderId: string) {
+    return this.httpClient.get<string>(
+      environment.apiUrl + `v1/payments/${orderId}`,
+    );
+  }
 }
