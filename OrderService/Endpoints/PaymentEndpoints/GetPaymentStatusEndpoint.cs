@@ -1,6 +1,5 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
@@ -32,8 +31,7 @@ public static class GetPaymentStatusEndpoint
           }
 
           var paymentIntent = await paymentService.GetPaymentIntentForOrder(order);
-          var paymentStatusAsString = StripeHelpers.FromNumber(paymentIntent.Status);
-          return Results.Ok(paymentStatusAsString);
+          return Results.Ok(paymentIntent.Status);
         }
       )
       .WithName(nameof(GetPaymentStatusEndpoint))
