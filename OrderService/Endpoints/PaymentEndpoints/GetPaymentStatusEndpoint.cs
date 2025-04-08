@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
@@ -10,7 +11,7 @@ public static class GetPaymentStatusEndpoint
   {
     app.MapGet(
         EndpointRoutes.Payments.GET_PAYMENT_STATUS,
-        async (
+        static async (
           [FromHeader(Name = "UserId")] Guid userId,
           Guid orderId,
           OrderDbContext context,
@@ -30,9 +31,9 @@ public static class GetPaymentStatusEndpoint
             return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
           }
 
-          var paymentIntent = paymentService.GetPaymentIntentForOrder(order);
-
-          return Results.Ok(paymentIntent.Status);
+          var paymentIntent = await paymentService.GetPaymentIntentForOrder(order);
+          var paymentStatusAsString = StripeHelpers.FromNumber(paymentIntent.Status);
+          return Results.Ok(paymentStatusAsString);
         }
       )
       .WithName(nameof(GetPaymentStatusEndpoint))
