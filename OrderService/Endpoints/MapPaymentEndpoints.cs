@@ -7,6 +7,7 @@ public static class PaymentEndpointMapper
   public static WebApplication MapPaymentEndpoints(this WebApplication app)
   {
     app.MapCreateNewPaymentSessionEndpoint();
+    app.MapGetPaymentStatusEndpoint();
 
     return app;
   }

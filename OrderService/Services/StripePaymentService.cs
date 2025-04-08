@@ -34,8 +34,9 @@ public class StripePaymentService : IStripePaymentService
   {
     if (order.StripePaymentId is null)
     {
-      throw new ArgumentNullException(nameof(order));
+      throw new ArgumentNullException(nameof(order), "Order does not have stripe payment id");
     }
+
     return _paymentService.GetAsync(order.StripePaymentId);
   }
 }

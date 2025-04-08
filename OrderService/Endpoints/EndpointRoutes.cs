@@ -15,7 +15,7 @@ public static class EndpointRoutes
   public static class Payments
   {
     private const string PAYMENTS = "api/v1/payments";
-    public const string CREATE_NEW_PAYMENT_SESSION = PAYMENTS + "/{orderId}";
-    public const string GET_PAYMENT_SESSION_FOR_ORDER = PAYMENTS + "/{orderId:Guid}";
+    public const string CREATE_NEW_PAYMENT_SESSION = PAYMENTS + "/{orderId:Guid}";
+    public const string GET_PAYMENT_STATUS = PAYMENTS + "/{orderId:Guid}";
   }
 }
