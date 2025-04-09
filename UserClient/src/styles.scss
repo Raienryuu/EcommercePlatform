@@ -224,3 +224,13 @@ app-product-details {
     border-radius: 10px 0 0 10px;
   }
 }
+
+app-order-details {
+  .mat-horizontal-stepper-header {
+    // pointer-events: none;
+  }
+
+  .mat-horizontal-content-container {
+    // display: none;
+  }
+}

@@ -15,11 +15,13 @@ import { Subscription } from 'rxjs';
   styleUrl: './order-details.component.scss',
 })
 export class OrderDetailsComponent {
+  Math = Math;
   products: Product[] = SampleProducts;
   currencySymbol: string | undefined;
   isLoaded = false;
   orderNotFound = false;
   order: Order | undefined;
+  orderStatus = 0;
   paymentStatus: string | undefined;
 
   @Input()
@@ -34,6 +36,10 @@ export class OrderDetailsComponent {
     private productService: ProductService,
   ) {
     this.orderId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    if (environment.sampleData === true) {
+      this.isLoaded = true;
+      //return;
+    }
     if (this.orderId == null) {
       this.orderNotFound = true;
       return;
@@ -57,6 +63,8 @@ export class OrderDetailsComponent {
     return this.orderService.GetOrder(orderId).subscribe({
       next: (order) => {
         this.order = order;
+        this.orderStatus = order.status;
+
         this.isLoaded = true;
       },
       error: () => {

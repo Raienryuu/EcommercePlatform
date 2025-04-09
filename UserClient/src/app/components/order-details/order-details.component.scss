@@ -1,8 +1,5 @@
 @import "src/color-palette.scss";
 
-
-
-
 .header {
   height: calc(clamp(12px, calc(1vh + 1vw), 18px) * 1.4);
   padding: 0;
@@ -38,7 +35,6 @@ body {
 }
 
 mat-stepper {
-  max-width: 1200px;
   background-color: $primary-100;
   border-radius: 0 0 10px 10px;
 }

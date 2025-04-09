@@ -2,7 +2,7 @@ export interface Order {
   orderId: string;
   userId: string;
   isConfirmed: boolean;
-  status: string;
+  status: number;
   notes: string | null;
   created: Date;
   lastModified: Date;

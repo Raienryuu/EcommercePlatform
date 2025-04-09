@@ -39,6 +39,7 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { StripePaymentComponent } from './components/stripe-payment/stripe-payment.component';
 import { OrderDetailsComponent } from './components/order-details/order-details.component';
+import { OrderStatusTransformPipe } from './pipes/order-status-transform.pipe';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { OrderDetailsComponent } from './components/order-details/order-details.
     NgxMatInputTelComponent,
     CountrySelectComponent,
     StripePaymentComponent,
+    OrderStatusTransformPipe,
   ],
   providers: [provideHttpClient(withInterceptors([authInterceptor]))],
 })

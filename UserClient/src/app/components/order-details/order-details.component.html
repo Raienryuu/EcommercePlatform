@@ -4,11 +4,34 @@
       <div class="progress">
         <div class="header">Status</div>
         <div class="content">
-          <mat-stepper #stepper>
-            <mat-step label="Pending"></mat-step>
-            <mat-step label="Confirmed"></mat-step>
-            <mat-step label="Delivery"></mat-step>
-            <mat-step label="Completed"></mat-step>
+          <mat-stepper
+            #stepper
+            [selectedIndex]="orderStatus | orderStatusTransform"
+          >
+            <mat-step completed="true" editable="false" label="Pending" />
+            <mat-step
+              [completed]="orderStatus > 0"
+              label="Confirmed"
+              editable="false"
+            />
+            <mat-step
+              [completed]="orderStatus > 2"
+              label="Delivery"
+              editable="false"
+            />
+            @if ((orderStatus | orderStatusTransform) === 99) {
+              <mat-step
+                [completed]="orderStatus > 4"
+                label="Cancelled"
+                editable="false"
+              />
+            } @else {
+              <mat-step
+                [completed]="orderStatus > 4"
+                label="Completed"
+                editable="false"
+              />
+            }
           </mat-stepper>
         </div>
       </div>
