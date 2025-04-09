@@ -8,6 +8,7 @@ public static class PaymentEndpointMapper
   {
     app.MapCreateNewPaymentSessionEndpoint();
     app.MapGetPaymentStatusEndpoint();
+    app.MapConfirmPaymentEndpoint();
 
     return app;
   }

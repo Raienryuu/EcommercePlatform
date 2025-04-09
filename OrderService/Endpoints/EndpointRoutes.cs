@@ -17,5 +17,6 @@ public static class EndpointRoutes
     private const string PAYMENTS = "api/v1/payments";
     public const string CREATE_NEW_PAYMENT_SESSION = PAYMENTS + "/{orderId:Guid}";
     public const string GET_PAYMENT_STATUS = PAYMENTS + "/{orderId:Guid}";
+    public const string CONFIRM_PAYMENT = PAYMENTS + "/confirm";
   }
 }
