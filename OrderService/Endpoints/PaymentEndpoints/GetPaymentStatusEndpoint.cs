@@ -30,6 +30,11 @@ public static class GetPaymentStatusEndpoint
             return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
           }
 
+          if (order.PaymentSucceded)
+          {
+            return Results.Ok("succeeded");
+          }
+
           var paymentIntent = await paymentService.GetPaymentIntentForOrder(order);
           return Results.Ok(paymentIntent.Status);
         }
