@@ -18,4 +18,18 @@ public static partial class LoggerExtensions
     Message = "Trying to set total cost of order again, orderId: {OrderId}, previousPrice: {PreviousPrice}"
   )]
   public static partial void OrderPriceIsReassigned(this ILogger logger, Guid orderId, int previousPrice);
+
+  [LoggerMessage(
+    EventId = 1004,
+    Level = LogLevel.Information,
+    Message = "A successful payment for {Amount} was made."
+  )]
+  public static partial void OrderSuccessfulPaymentInfo(this ILogger logger, long amount);
+
+  [LoggerMessage(
+    EventId = 2001,
+    Level = LogLevel.Trace,
+    Message = "Sent ReserveOrderProductsCommand for order Id: {OrderId}"
+  )]
+  public static partial void OrderReserveOrderCommandSent(this ILogger logger, Guid orderId);
 }

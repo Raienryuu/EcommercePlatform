@@ -65,7 +65,7 @@ namespace OrderService.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("OrderService.Models.Order", b =>
@@ -92,7 +92,7 @@ namespace OrderService.Migrations
 
                             b1.HasKey("OrderId", "Id");
 
-                            b1.ToTable("OrderProduct");
+                            b1.ToTable("OrderProduct", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
