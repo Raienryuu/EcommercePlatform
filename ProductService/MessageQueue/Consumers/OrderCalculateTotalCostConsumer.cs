@@ -22,23 +22,22 @@ public class OrderCalculateTotalCostConsumer(
       _log.LogError("Couldn't find needed products for order: {orderId}", context.Message.OrderId);
       return;
     }
-    var totalPrice = 0m;
+    var totalPrice = 0;
     productsFromDb.ForEach(p =>
     {
-      totalPrice += p.Price * context.Message.Products.First(x => x.ProductId == p.Id).Quantity;
+      totalPrice += (int)(p.Price * 100) * context.Message.Products.First(x => x.ProductId == p.Id).Quantity;
     });
 
-    var normalizedPrice = (int)(totalPrice * 100);
     _log.LogInformation(
       "Calculated price for order: {orderId}, price: {price}",
       context.Message.OrderId,
-      normalizedPrice
+      totalPrice
     );
     await context.Publish<IOrderPriceCalculated>(
       new
       {
         context.Message.OrderId,
-        TotalPriceInSmallestCurrencyUnit = normalizedPrice,
+        TotalPriceInSmallestCurrencyUnit = totalPrice,
         context.Message.CurrencyISO,
       }
     );
