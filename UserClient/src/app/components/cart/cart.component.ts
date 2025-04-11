@@ -1,7 +1,9 @@
+import { IMAGE_LOADER } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
+import { imageLoader } from 'src/app/images/imageLoader';
 import { CreateOrderRequest, OrderProduct } from 'src/app/models/order.model';
 import { Product } from 'src/app/models/product';
 import { CartService } from 'src/app/services/cartService/cart.service';
@@ -15,6 +17,12 @@ import { environment } from 'src/enviroment';
   standalone: false,
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss'],
+  providers: [
+    {
+      provide: IMAGE_LOADER,
+      useValue: imageLoader,
+    },
+  ],
 })
 export class CartComponent implements OnInit {
   products: Product[] = environment.sampleData ? SampleProducts : [];
@@ -140,5 +148,9 @@ export class CartComponent implements OnInit {
       currencyISO: this.userSettingsService.GetCurrencyISO(),
     };
     return newOrder;
+  }
+
+  GetPreviewImageSource(productId: string): string {
+    return 'p-' + productId + '-0';
   }
 }

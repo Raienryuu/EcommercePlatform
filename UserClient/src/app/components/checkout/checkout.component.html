@@ -9,7 +9,7 @@
               alt="productImg"
               height="120"
               width="170"
-              ngSrc="assets/garnek"
+              [ngSrc]="GetPreviewImageSource(product.id)"
               priority="true"
               style="float: left"
             />

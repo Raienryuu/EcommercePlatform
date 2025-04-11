@@ -7,12 +7,15 @@ import { Order } from 'src/app/models/order.model';
 import { environment } from 'src/enviroment';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { Subscription } from 'rxjs';
+import { IMAGE_LOADER } from '@angular/common';
+import { imageLoader } from 'src/app/images/imageLoader';
 
 @Component({
   selector: 'app-order-details',
   standalone: false,
   templateUrl: './order-details.component.html',
   styleUrl: './order-details.component.scss',
+  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
 })
 export class OrderDetailsComponent {
   Math = Math;
@@ -108,5 +111,9 @@ export class OrderDetailsComponent {
         this.clientSecret = response.body!;
         this.paymentFormVisible = true;
       });
+  }
+
+  GetPreviewImageSource(productId: string): string {
+    return 'p-' + productId + '-0';
   }
 }

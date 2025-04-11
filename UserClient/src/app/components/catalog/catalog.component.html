@@ -123,9 +123,9 @@
         <div *ngFor="let product of products" class="product">
           <div class="product-details">
             <img
-              alt="productImg"
+              alt="productImage"
               height="120"
-              ngSrc="assets/garnek"
+              [ngSrc]="GetPreviewImageSource(product.id)"
               priority="true"
               width="170"
             />

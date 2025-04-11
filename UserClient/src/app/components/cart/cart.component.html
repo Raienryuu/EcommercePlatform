@@ -12,10 +12,10 @@
       @for (product of products; track $index) {
         <div class="product">
           <img
-            alt="productImg"
+            alt="productImage"
             height="120"
             width="170"
-            ngSrc="assets/garnek"
+            [ngSrc]="GetPreviewImageSource(product.id)"
             priority="true"
             style="float: left"
           />

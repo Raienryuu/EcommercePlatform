@@ -11,12 +11,15 @@ import { debounceTime } from 'rxjs';
 import { environment } from 'src/enviroment';
 import { CartService } from 'src/app/services/cartService/cart.service';
 import { LotsOfSampleProducts } from 'src/app/develSamples';
+import { IMAGE_LOADER } from '@angular/common';
+import { imageLoader } from 'src/app/images/imageLoader';
 
 @Component({
   selector: 'app-catalog',
   standalone: false,
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
+  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];
@@ -35,6 +38,8 @@ export class ProductsComponent implements OnInit {
     { id: 6, categoryName: 'Chinese' },
     { id: 7, categoryName: 'Japanese' },
   ];
+
+  previewImageSource = '';
 
   constructor(
     private productService: ProductService,
@@ -240,5 +245,9 @@ export class ProductsComponent implements OnInit {
       this.cartService.remoteCartId = cartId;
       console.log('cart was updated');
     });
+  }
+
+  GetPreviewImageSource(productId: string): string {
+    return 'p-' + productId + '-0';
   }
 }

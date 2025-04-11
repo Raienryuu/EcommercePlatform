@@ -17,12 +17,15 @@ import { map, retry } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
 import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
+import { IMAGE_LOADER } from '@angular/common';
+import { imageLoader } from 'src/app/images/imageLoader';
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
   standalone: false,
+  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
 })
 export class CheckoutComponent {
   products: Product[] = [];
@@ -215,6 +218,8 @@ export class CheckoutComponent {
       if (result) this.dhlAddress = result;
     });
   }
-}
 
-//#endregion
+  GetPreviewImageSource(productId: string): string {
+    return 'p-' + productId + '-0';
+  }
+}
