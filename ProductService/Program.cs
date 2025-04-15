@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using ProductService.Endpoints;
 
 namespace ProductService;
 
@@ -64,6 +65,7 @@ public class Program
       CreateDevelopmentDatabase(dbContext);
     }
 
+    app.MapDeliveryEndpoints();
     app.MapControllers();
 
     app.Run();

@@ -29,6 +29,7 @@ public static class FakeOrderDataInserter
           },
         ],
         CurrencyISO = "eur",
+        Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
       }
     );
     _ = ctx.Orders.Add(
@@ -47,6 +48,7 @@ public static class FakeOrderDataInserter
         ],
         CurrencyISO = "eur",
         TotalPriceInSmallestCurrencyUnit = 101000,
+        Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
       }
     );
     _ = ctx.Orders.Add(
@@ -66,6 +68,7 @@ public static class FakeOrderDataInserter
         CurrencyISO = "eur",
         TotalPriceInSmallestCurrencyUnit = 101000,
         StripePaymentId = "h12978yh897gh987h",
+        Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
       }
     );
 

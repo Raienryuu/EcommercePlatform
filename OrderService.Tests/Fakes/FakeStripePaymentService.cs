@@ -20,4 +20,12 @@ public class FakeStripePaymentService() : IStripePaymentService
   {
     return Task.FromResult(new PaymentIntent() { ClientSecret = "oldSecret" });
   }
+
+  ///<remarks>
+  ///  Only for Stripe webhook handler to use
+  ///  </remarks>
+  public Task<IResult> HandleWebhookPaymentConfirm(HttpRequest request, CancellationToken ct = default)
+  {
+    throw new NotImplementedException();
+  }
 }

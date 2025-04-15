@@ -13,18 +13,18 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 
     Initially(
       When(OrderCreatedByUser)
-        .Then(x =>
+        .Then(async x =>
         {
-          x.Saga.Products = x.Message.Products;
-          x.Saga.CorrelationId = x.Message.OrderId;
-          x.Saga.CurrencyISO = x.Message.CurrencyISO;
-        })
-        .Publish(ctx => new OrderCalculateTotalCostCommand()
-        {
-          OrderId = ctx.Saga.CorrelationId,
-          CurrencyISO = ctx.Saga.CurrencyISO,
-          EurToCurrencyMultiplier = 1m,
-          Products = ctx.Saga.Products,
+          await x.Publish<OrderCalculateTotalCostCommand>(
+            new
+            {
+              OrderId = x.Saga.CorrelationId,
+              x.Message.CurrencyISO,
+              EurToCurrencyMultiplier = 1m,
+              x.Message.Products,
+              x.Message.DeliveryId,
+            }
+          );
         })
         .TransitionTo(InCheckout)
     );
@@ -34,10 +34,11 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
     During(
       InCheckout,
       When(OrderSubmitted)
-        .Publish(o => new ReserveOrderProductsCommand()
+        .Then(static async o =>
         {
-          Products = o.Saga.Products,
-          OrderId = o.Saga.CorrelationId,
+          await o.Publish<ReserveOrderProductsCommand>(
+            new { o.Message.Products, OrderId = o.Saga.CorrelationId }
+          );
         })
         .TransitionTo(Pending)
     );

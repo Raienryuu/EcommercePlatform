@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 namespace OrderService.Models;
 
 [Owned]
-[PrimaryKey(nameof(ProductId))]
 public class OrderProduct
 {
   public required Guid ProductId { get; init; }

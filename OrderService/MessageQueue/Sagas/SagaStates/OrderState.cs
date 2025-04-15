@@ -1,14 +1,11 @@
 using MassTransit;
-using MessageQueue.DTOs;
 
 namespace OrderService.MessageQueue.Sagas.SagaStates;
 
 public class OrderState : SagaStateMachineInstance, ISagaVersion
 {
   public Guid CorrelationId { get; set; }
-  public OrderProductDTO[] Products { get; set; } = [];
   public int Version { get; set; }
-  public required string CurrencyISO { get; set; }
 
   public string CurrentState { get; set; } = null!;
   /*public int CurrentState { get; set; }*/

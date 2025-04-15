@@ -8,4 +8,5 @@ public class OrderCalculateTotalCostCommand
   public required OrderProductDTO[] Products { get; set; }
   public required string CurrencyISO { get; init; }
   public required decimal EurToCurrencyMultiplier { get; init; }
+  public required Guid DeliveryId { get; init; }
 }

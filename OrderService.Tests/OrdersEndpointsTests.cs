@@ -55,6 +55,7 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
         },
       ],
       CurrencyISO = "eur",
+      Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
     };
     var request = new HttpRequestMessage
     {
@@ -78,6 +79,7 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
       UserId = Guid.NewGuid(),
       Products = [],
       CurrencyISO = "eur",
+      Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
     };
     var request = new HttpRequestMessage
     {

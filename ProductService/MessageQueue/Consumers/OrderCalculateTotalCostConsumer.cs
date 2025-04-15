@@ -11,37 +11,40 @@ public class OrderCalculateTotalCostConsumer(
 {
   private readonly ILogger _log = log;
 
-  public async Task Consume(ConsumeContext<OrderCalculateTotalCostCommand> context)
+  public async Task Consume(ConsumeContext<OrderCalculateTotalCostCommand> command)
   {
-    var products = context.Message.Products.Select(p => p.ProductId);
+    var products = command.Message.Products.Select(p => p.ProductId);
     var productsFromDb = await db
       .Products.Where(x => products.Contains(x.Id))
-      .ToListAsync(context.CancellationToken);
+      .ToListAsync(command.CancellationToken);
+    var delivery = await db.Deliveries.FindAsync(command.Message.DeliveryId);
+
     if (productsFromDb.Count != products.Count())
     {
-      _log.LogError("Couldn't find needed products for order: {orderId}", context.Message.OrderId);
+      _log.CouldntFindProducts(command.Message.OrderId);
       return;
     }
+    if (delivery is null)
+    {
+      _log.CouldntFindDeliveryItem(command.Message.DeliveryId);
+      return;
+    }
+
     var totalPrice = 0;
+    totalPrice += (int)delivery.Price;
     productsFromDb.ForEach(p =>
     {
-      totalPrice += (int)(p.Price * 100) * context.Message.Products.First(x => x.ProductId == p.Id).Quantity;
+      totalPrice += (int)(p.Price * 100) * command.Message.Products.First(x => x.ProductId == p.Id).Quantity;
     });
+    _log.OrderTotalCalculatedSuccessfully(command.Message.OrderId, totalPrice);
 
-    _log.LogInformation(
-      "Calculated price for order: {orderId}, price: {price}",
-      context.Message.OrderId,
-      totalPrice
-    );
-    await context.Publish<IOrderPriceCalculated>(
+    await command.Publish<IOrderPriceCalculated>(
       new
       {
-        context.Message.OrderId,
+        command.Message.OrderId,
         TotalPriceInSmallestCurrencyUnit = totalPrice,
-        context.Message.CurrencyISO,
+        command.Message.CurrencyISO,
       }
     );
-
-    // also add delivery price
   }
 }

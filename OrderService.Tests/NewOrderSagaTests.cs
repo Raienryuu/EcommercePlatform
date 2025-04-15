@@ -52,7 +52,8 @@ public class NewOrderSagaTests
     var doesInstanceExists = await sagasHarness.Sagas.Any(s => s.CorrelationId == orderId);
     Assert.True(doesInstanceExists);
     var sagaInstance = await sagasHarness.Sagas.SelectAsync(s => s.CorrelationId == orderId).First();
-    Assert.NotEmpty(sagaInstance.Saga.Products);
+    const string EXPECTED_STATE = "InCheckout";
+    Assert.Equal(EXPECTED_STATE, sagaInstance.Saga.CurrentState);
   }
 
   [Fact]
@@ -121,7 +122,14 @@ public class NewOrderSagaTests
       .BuildServiceProvider(true);
     var orderId = Guid.NewGuid();
     var db = provider.GetRequiredService<OrderDbContext>();
-    _ = db.Orders.Add(new Order { OrderId = orderId, CurrencyISO = "eur" });
+    _ = db.Orders.Add(
+      new Order
+      {
+        OrderId = orderId,
+        CurrencyISO = "eur",
+        Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
+      }
+    );
     _ = db.SaveChanges();
     var harness = provider.GetRequiredService<ITestHarness>();
     await harness.Start();
@@ -191,6 +199,12 @@ public class NewOrderSagaTests
           Quantity = 2,
         },
       ],
+      Delivery = new OrderDelivery()
+      {
+        DeliveryId = Guid.NewGuid(),
+        HandlerName = "dhl",
+        Price = 0,
+      },
     };
     var db = provider.GetRequiredService<OrderDbContext>();
     _ = db.Orders.Add(order);
@@ -215,6 +229,7 @@ public class NewOrderSagaTests
         CurrencyISO = order.CurrencyISO,
         EurToCurrencyMultiplier = 1,
         Products = orderProductsAsDto,
+        DeliveryId = order.Delivery.DeliveryId,
       }
     );
     await harness.Bus.Publish<IOrderPriceCalculated>(

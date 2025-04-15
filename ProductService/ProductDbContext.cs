@@ -8,6 +8,7 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
   public DbSet<Product> Products { get; set; }
   public DbSet<ProductCategory> ProductCategories { get; set; }
   public DbSet<OrderReserved> OrdersReserved { get; set; }
+  public DbSet<Delivery> Deliveries { get; set; }
 
   protected override void OnModelCreating(ModelBuilder modelBuilder)
   {
@@ -97,6 +98,35 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
           Price = 1000,
           Quantity = 100,
           CategoryId = 4,
+        }
+      );
+
+    _ = modelBuilder
+      .Entity<Delivery>()
+      .HasData(
+        new Delivery
+        {
+          DeliveryId = Guid.Parse("4e627d51-4510-4567-aee6-3830a25e040c"),
+          Name = "DHL Parcel Locker",
+          Price = 0m,
+        },
+        new Delivery
+        {
+          DeliveryId = Guid.Parse("dd6b0c88-538a-4ea2-877b-6143fab14ca5"),
+          Name = "Standard shipping",
+          Price = 9m,
+        },
+        new Delivery
+        {
+          DeliveryId = Guid.Parse("8c68b176-1401-4373-aed8-3bad2f7c0f29"),
+          Name = "Premium shipping",
+          Price = 18m,
+        },
+        new Delivery
+        {
+          DeliveryId = Guid.Parse("b532c6c3-0696-4536-98a5-f1dcdf4df954"),
+          Name = "Standard shipping (cash)",
+          Price = 20m,
         }
       );
   }

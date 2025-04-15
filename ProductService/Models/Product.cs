@@ -23,16 +23,10 @@ public class Product
   public required int Quantity { get; set; }
 
   [ConcurrencyCheck]
-  //[JsonProperty("concurrencyStamp")]
   public int ConcurrencyStamp { get; set; }
 
   public void RefreshConcurrencyStamp()
   {
     ConcurrencyStamp += 1;
-  }
-
-  public Product()
-  {
-    //RefreshConcurrencyStamp();
   }
 }

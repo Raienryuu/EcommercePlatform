@@ -43,6 +43,7 @@ public static class CreateOrderEndpoint
             Products = orderRequest.Products,
             StripePaymentId = null,
             CurrencyISO = orderRequest.CurrencyISO,
+            Delivery = orderRequest.Delivery,
           };
 
           _ = await context.Orders.AddAsync(newOrder, ct);

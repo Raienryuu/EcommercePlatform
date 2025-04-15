@@ -7,4 +7,5 @@ public class CreateOrderRequest
   public string? Notes { get; init; }
   public required List<OrderProduct> Products { get; init; }
   public required string CurrencyISO { get; init; }
+  public required OrderDelivery Delivery { get; init; }
 }

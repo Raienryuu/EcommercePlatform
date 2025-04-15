@@ -20,4 +20,5 @@ public class Order()
   public int? TotalPriceInSmallestCurrencyUnit { get; set; }
   public required string CurrencyISO { get; set; }
   public bool PaymentSucceded { get; set; } = false;
+  public required OrderDelivery Delivery { get; set; }
 }
