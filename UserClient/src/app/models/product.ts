@@ -1,4 +1,4 @@
-import { OrderProduct } from './order.model';
+import { OrderProduct } from './order-product.model';
 import { ProductCategory } from './product-category';
 
 export interface Product {

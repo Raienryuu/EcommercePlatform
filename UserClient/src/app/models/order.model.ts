@@ -1,3 +1,5 @@
+import { OrderProduct } from './order-product.model';
+
 export interface Order {
   orderId: string;
   userId: string;
@@ -10,17 +12,4 @@ export interface Order {
   stripePaymentId: string;
   totalPriceInSmallestCurrencyUnit: number;
   currencyISO: string;
-}
-
-export interface CreateOrderRequest {
-  notes: string | null;
-  products: OrderProduct[];
-  currencyISO: string;
-}
-
-export interface OrderProduct {
-  productId: string;
-  quantity: number;
-  /** Price in currency smallest units (eg. cents for $) */
-  price: number;
 }

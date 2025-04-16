@@ -65,7 +65,7 @@ export class StripePaymentComponent implements OnChanges {
   @Input({ required: true })
   set clientSecret(clientSecret: string | undefined) {
     this._clientSecret = clientSecret;
-    this.elementsOptions.clientSecret = clientSecret;
+    //this.elementsOptions.clientSecret = clientSecret;
   }
   get clientSecret(): string | undefined {
     return this._clientSecret;
@@ -99,7 +99,7 @@ export class StripePaymentComponent implements OnChanges {
 
   UpdateClientSecret(newClientSecret: string) {
     this.clientSecret = newClientSecret;
-    this.elementsOptions.clientSecret = newClientSecret;
+    //this.elementsOptions.clientSecret = newClientSecret;
   }
 
   MakeStripePayment() {

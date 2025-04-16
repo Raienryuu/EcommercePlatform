@@ -13,12 +13,14 @@ import { ActivatedRoute } from '@angular/router';
 import { OrderService } from 'src/app/services/orderService/order.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { Order } from 'src/app/models/order.model';
-import { map, retry } from 'rxjs';
+import { Subscription, map, retry, tap } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
 import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
 import { IMAGE_LOADER } from '@angular/common';
 import { imageLoader } from 'src/app/images/imageLoader';
+import { DeliveryService } from 'src/app/services/deliveryService/delivery.service';
+import { DeliveryMethod } from 'src/app/models/delivery-method.model';
 
 @Component({
   selector: 'app-checkout',
@@ -43,12 +45,16 @@ export class CheckoutComponent {
   @Input()
   id: string | undefined;
 
+  deliveryMethods: DeliveryMethod[] = [];
+  showPaymentForm = false;
+
   constructor(
     public dialogDhl: MatDialog,
     public dialogAddressEditor: MatDialog,
     private route: ActivatedRoute,
     private orderService: OrderService,
     private productService: ProductService,
+    private deliveryService: DeliveryService,
   ) {
     if (environment.sampleData) {
       this.products = SampleProducts;
@@ -61,6 +67,13 @@ export class CheckoutComponent {
       this.products = [];
       throw new Error('Order id is null');
     }
+    this.deliveryService
+      .GetAvailableDeliveries()
+      .pipe(tap((x) => console.log('got these deliveries: ', x)))
+      .subscribe(
+        (deliveries) =>
+          (this.deliveryMethods = deliveries.sort((a, b) => a.price - b.price)),
+      );
 
     this.orderService.GetOrder(this.id).subscribe({
       next: (order) => {
@@ -71,14 +84,15 @@ export class CheckoutComponent {
       },
     });
     this.GetClientSecret();
+    console.log(this.deliveryOptionValue);
   }
 
-  private GetClientSecret() {
+  private GetClientSecret(): Subscription {
     if (this.id == null) {
       throw new Error('Order Id cannot be null');
     }
 
-    this.orderService
+    return this.orderService
       .CreatePaymentIntent(this.id)
       .pipe(
         map((res) => {
@@ -108,6 +122,7 @@ export class CheckoutComponent {
       }
 
       p.quantity = productInOrder.quantity;
+      p.price = productInOrder.price;
 
       return p;
     });
@@ -128,7 +143,8 @@ export class CheckoutComponent {
 
   OnClickOrderButtonHandler() {
     console.clear();
-    this.stripeComponent.MakeStripePayment();
+    this.GetClientSecret().add(() => (this.showPaymentForm = true));
+    //this.stripeComponent.MakeStripePayment();
   }
 
   SelectAddress(id: number) {

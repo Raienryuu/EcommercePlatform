@@ -1,4 +1,9 @@
 <body>
+  @if (showPaymentForm) {
+    <div class="stripe-payment-form">
+      <app-stripe-payment [clientSecret]="YOUR_CLIENT_SECRET" [orderId]="id" />
+    </div>
+  }
   @if (orderLoaded) {
     <span class="list">
       <div id="products">
@@ -100,15 +105,6 @@
           </mat-card>
         </div>
       </div>
-      <div id="payment">
-        <div class="header">Payment method</div>
-        <div class="content">
-          <app-stripe-payment
-            [clientSecret]="YOUR_CLIENT_SECRET"
-            [orderId]="id"
-          />
-        </div>
-      </div>
       <div id="delivery">
         <div class="header">Delivery</div>
         <div class="content">
@@ -119,48 +115,51 @@
             (change)="ChangeDeliveryValue($event)"
           >
             <span class="delivery-type-description">Pay now</span>
-            <div class="delivery-method">
-              <mat-radio-button value="1"> Standard </mat-radio-button>
-              <span> {{ currencySymbol }}10 </span>
-            </div>
-            <div class="delivery-method">
-              <mat-radio-button value="2">
-                <span> Express </span>
-              </mat-radio-button>
-              <span> {{ currencySymbol }}10 </span>
-            </div>
-            <div class="delivery-method">
-              <mat-radio-button value="dhl" #dhlDelivery>
-                <span class="locker-selection">
-                  <img
-                    src="../../../assets/logo_DHL.jpg"
-                    width="84"
-                    alt="dhl_logo"
-                  />
-                  DHL Parcel Box
-                </span>
-              </mat-radio-button>
-              <button
-                mat-flat-button
-                class="dhl-locker"
-                (click)="openDhlDialog()"
-                name="dhl-locker"
-              >
-                Select locker
-              </button>
-              <span> {{ currencySymbol }}0 </span>
-            </div>
+            @for (method of deliveryMethods; track $index) {
+              @if (method.paymentType === "Online") {
+                @if (method.name === "DHL Parcel Locker") {
+                  <div class="delivery-method">
+                    <mat-radio-button value="dhl" #dhlDelivery>
+                      <span class="locker-selection">
+                        <img
+                          src="../../../assets/logo_DHL.jpg"
+                          width="84"
+                          alt="dhl_logo"
+                        />
+                        DHL Parcel Box
+                      </span>
+                    </mat-radio-button>
+                    <button
+                      mat-flat-button
+                      class="dhl-locker"
+                      (click)="openDhlDialog()"
+                      name="dhl-locker"
+                    >
+                      Select locker
+                    </button>
+                    <span> {{ currencySymbol }}0 </span>
+                  </div>
+                } @else {
+                  <div class="delivery-method">
+                    <mat-radio-button>
+                      {{ method.name }}
+                    </mat-radio-button>
+                    <span> {{ currencySymbol + method.price }} </span>
+                  </div>
+                }
+              }
+            }
             <span class="delivery-type-description">Pay on delivery</span>
-            <div class="delivery-method">
-              <mat-radio-button value="4"> Standard </mat-radio-button>
-              <span> {{ currencySymbol }}8 </span>
-            </div>
-            <div class="delivery-method">
-              <mat-radio-button value="5">
-                <span> Express </span>
-              </mat-radio-button>
-              <span> {{ currencySymbol }}12 </span>
-            </div>
+            @for (method of deliveryMethods; track $index) {
+              @if (method.paymentType === "Cash") {
+                <div class="delivery-method">
+                  <mat-radio-button>
+                    {{ method.name }}
+                  </mat-radio-button>
+                  <span> {{ currencySymbol + method.price }} </span>
+                </div>
+              }
+            }
           </mat-radio-group>
         </div>
       </div>
@@ -204,7 +203,7 @@
                 mat-flat-button
                 (click)="OnClickOrderButtonHandler()"
                 color="primary"
-                [disabled]="id == null"
+                [disabled]="id == null || deliveryOptionValue === undefined"
               >
                 Order
               </button>

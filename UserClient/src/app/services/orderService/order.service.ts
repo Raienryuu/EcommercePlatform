@@ -1,7 +1,8 @@
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CreateOrderRequest, Order } from 'src/app/models/order.model';
+import { CreateOrderRequest } from 'src/app/models/create-order-request';
+import { Order } from 'src/app/models/order.model';
 import { environment } from 'src/enviroment';
 
 @Injectable({
