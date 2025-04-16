@@ -28,7 +28,15 @@ namespace ProductService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("DeliveryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -43,25 +51,33 @@ namespace ProductService.Migrations
                         new
                         {
                             DeliveryId = new Guid("4e627d51-4510-4567-aee6-3830a25e040c"),
+                            DeliveryType = "DeliveryPoint",
                             Name = "DHL Parcel Locker",
+                            PaymentType = "Online",
                             Price = 0m
                         },
                         new
                         {
                             DeliveryId = new Guid("dd6b0c88-538a-4ea2-877b-6143fab14ca5"),
+                            DeliveryType = "DirectCustomerAddress",
                             Name = "Standard shipping",
+                            PaymentType = "Online",
                             Price = 9m
                         },
                         new
                         {
                             DeliveryId = new Guid("8c68b176-1401-4373-aed8-3bad2f7c0f29"),
+                            DeliveryType = "DirectCustomerAddress",
                             Name = "Premium shipping",
+                            PaymentType = "Online",
                             Price = 18m
                         },
                         new
                         {
                             DeliveryId = new Guid("b532c6c3-0696-4536-98a5-f1dcdf4df954"),
+                            DeliveryType = "DirectCustomerAddress",
                             Name = "Standard shipping (cash)",
+                            PaymentType = "Cash",
                             Price = 20m
                         });
                 });

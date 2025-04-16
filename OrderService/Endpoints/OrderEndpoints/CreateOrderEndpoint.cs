@@ -43,12 +43,12 @@ public static class CreateOrderEndpoint
             Products = orderRequest.Products,
             StripePaymentId = null,
             CurrencyISO = orderRequest.CurrencyISO,
-            Delivery = orderRequest.Delivery,
           };
 
           _ = await context.Orders.AddAsync(newOrder, ct);
           _ = await context.SaveChangesAsync(ct);
 
+          /// move to where delivery is set
           await publisher.Publish<IOrderCreatedByUser>(
             new
             {
@@ -58,6 +58,7 @@ public static class CreateOrderEndpoint
             },
             ct
           );
+          //
 
           return Results.CreatedAtRoute(
             nameof(GetOrderEndpoint),

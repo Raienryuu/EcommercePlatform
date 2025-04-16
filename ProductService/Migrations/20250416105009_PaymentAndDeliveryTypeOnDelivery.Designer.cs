@@ -12,33 +12,107 @@ using ProductService;
 namespace ProductService.Migrations
 {
     [DbContext(typeof(ProductDbContext))]
-    [Migration("20240423123955_ReservingOrdersProducts")]
-    partial class ReservingOrdersProducts
+    [Migration("20250416105009_PaymentAndDeliveryTypeOnDelivery")]
+    partial class PaymentAndDeliveryTypeOnDelivery
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "9.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ProductService.Models.Delivery", b =>
+                {
+                    b.Property<Guid>("DeliveryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DeliveryType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("DeliveryId");
+
+                    b.ToTable("Deliveries");
+
+                    b.HasData(
+                        new
+                        {
+                            DeliveryId = new Guid("4e627d51-4510-4567-aee6-3830a25e040c"),
+                            DeliveryType = "DeliveryPoint",
+                            Name = "DHL Parcel Locker",
+                            PaymentType = "Online",
+                            Price = 0m
+                        },
+                        new
+                        {
+                            DeliveryId = new Guid("dd6b0c88-538a-4ea2-877b-6143fab14ca5"),
+                            DeliveryType = "DirectCustomerAddress",
+                            Name = "Standard shipping",
+                            PaymentType = "Online",
+                            Price = 9m
+                        },
+                        new
+                        {
+                            DeliveryId = new Guid("8c68b176-1401-4373-aed8-3bad2f7c0f29"),
+                            DeliveryType = "DirectCustomerAddress",
+                            Name = "Premium shipping",
+                            PaymentType = "Online",
+                            Price = 18m
+                        },
+                        new
+                        {
+                            DeliveryId = new Guid("b532c6c3-0696-4536-98a5-f1dcdf4df954"),
+                            DeliveryType = "DirectCustomerAddress",
+                            Name = "Standard shipping (cash)",
+                            PaymentType = "Cash",
+                            Price = 20m
+                        });
+                });
+
+            modelBuilder.Entity("ProductService.Models.OrderReserved", b =>
+                {
+                    b.Property<Guid>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsReserved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("ReserveTimestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("OrderId");
+
+                    b.ToTable("OrdersReserved");
+                });
+
             modelBuilder.Entity("ProductService.Models.Product", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("ConcurrencyStamp")
+                    b.Property<int>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("varbinary(max)");
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -67,9 +141,9 @@ namespace ProductService.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = new Guid("87817c15-d25f-4621-9135-2e7851b484b3"),
                             CategoryId = 2,
-                            ConcurrencyStamp = new byte[] { 58, 127, 143, 48 },
+                            ConcurrencyStamp = 0,
                             Description = "White mug",
                             Name = "Mug",
                             Price = 10m,
@@ -77,9 +151,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 2,
+                            Id = new Guid("22ea176b-ea99-445f-97b3-c1afa5585562"),
                             CategoryId = 3,
-                            ConcurrencyStamp = new byte[] { 197, 70, 88, 107 },
+                            ConcurrencyStamp = 0,
                             Description = "White cup",
                             Name = "Cpu",
                             Price = 10m,
@@ -87,9 +161,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 3,
+                            Id = new Guid("f12e47a0-82f9-4231-abce-63280e7d3d99"),
                             CategoryId = 4,
-                            ConcurrencyStamp = new byte[] { 246, 32, 9, 103 },
+                            ConcurrencyStamp = 0,
                             Description = "Apple laptop",
                             Name = "MacBook Air M2",
                             Price = 1000m,
@@ -97,9 +171,9 @@ namespace ProductService.Migrations
                         },
                         new
                         {
-                            Id = 4,
+                            Id = new Guid("d8f65542-f0e7-4ca7-b9c1-002898cdc379"),
                             CategoryId = 4,
-                            ConcurrencyStamp = new byte[] { 57, 5, 95, 196 },
+                            ConcurrencyStamp = 0,
                             Description = "Apple laptop",
                             Name = "Lenovo ThindPad E14",
                             Price = 1000m,
@@ -135,12 +209,12 @@ namespace ProductService.Migrations
                         new
                         {
                             Id = 1,
-                            CategoryName = "Tableware"
+                            CategoryName = "Mugs"
                         },
                         new
                         {
                             Id = 2,
-                            CategoryName = "Mugs"
+                            CategoryName = "Tableware"
                         },
                         new
                         {

@@ -22,7 +22,7 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
               x.Message.CurrencyISO,
               EurToCurrencyMultiplier = 1m,
               x.Message.Products,
-              x.Message.DeliveryId,
+              // x.Message.DeliveryId,
             }
           );
         })

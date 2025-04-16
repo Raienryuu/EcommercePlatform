@@ -105,7 +105,7 @@
 			"UpstreamPathTemplate": "/api/v1/products/{everything}"
 		},
 		{
-			"DownstreamPathTemplate": "/api/v1/productscategories/{everything}", // productService
+			"DownstreamPathTemplate": "/api/v1/productscategories/{everything}", // productService - categories
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
@@ -114,6 +114,17 @@
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/productscategories/{everything}"
+		},
+    {
+			"DownstreamPathTemplate": "/api/v1/deliveries/{everything}", // productService - deliveries
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "productservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/deliveries/{everything}"
 		},
 		{
 			"DownstreamPathTemplate": "/api/cart/{everything}", // cartService
