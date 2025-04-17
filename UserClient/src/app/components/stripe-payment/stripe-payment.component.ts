@@ -24,24 +24,26 @@ import { environment } from 'src/enviroment';
   imports: [NgxStripeModule, NgIf, MatButtonModule],
   template: `
     @defer {
-      <div *ngIf="clientSecret !== undefined">
-        <ngx-stripe-elements
-          [stripe]="stripe"
-          [elementsOptions]="elementsOptions"
-        >
-          <ngx-stripe-payment [options]="paymentElementOptions" />
-        </ngx-stripe-elements>
-        @if (isRetrying) {
-          <button
-            mat-flat-button
-            color="primary"
-            class="retry"
-            (click)="MakeStripePayment()"
-          >
-            Pay
-          </button>
-        }
-      </div>
+      @if (clientSecret !== undefined) {
+        <div class="stripe-payment-form-background">
+          <div class="stripe-payment-form">
+            <ngx-stripe-elements
+              [stripe]="stripe"
+              [elementsOptions]="elementsOptions"
+            >
+              <ngx-stripe-payment [options]="paymentElementOptions" />
+            </ngx-stripe-elements>
+            <button
+              mat-flat-button
+              color="primary"
+              class="payment"
+              (click)="MakeStripePayment()"
+            >
+              Pay
+            </button>
+          </div>
+        </div>
+      }
     }
   `,
   styles: `
@@ -51,8 +53,23 @@ import { environment } from 'src/enviroment';
       font-size: inherit;
       line-height: 1.2em;
     }
-    button.retry {
-      margin: 1svw;
+    button.payment {
+      margin: 3svh 3svw;
+      min-width: 80px;
+      min-height: 40px;
+      float: right;
+      font-size: inherit;
+    }
+    .stripe-payment-form-background {
+      position: absolute;
+      background-color: white;
+      width: 100%;
+      height: 100%;
+      z-index: 99;
+    }
+
+    .stripe-payment-form {
+      margin: 10vh 10vw;
     }
   `,
 })
@@ -65,7 +82,7 @@ export class StripePaymentComponent implements OnChanges {
   @Input({ required: true })
   set clientSecret(clientSecret: string | undefined) {
     this._clientSecret = clientSecret;
-    //this.elementsOptions.clientSecret = clientSecret;
+    this.elementsOptions.clientSecret = clientSecret;
   }
   get clientSecret(): string | undefined {
     return this._clientSecret;
@@ -99,7 +116,7 @@ export class StripePaymentComponent implements OnChanges {
 
   UpdateClientSecret(newClientSecret: string) {
     this.clientSecret = newClientSecret;
-    //this.elementsOptions.clientSecret = newClientSecret;
+    this.elementsOptions.clientSecret = newClientSecret;
   }
 
   MakeStripePayment() {

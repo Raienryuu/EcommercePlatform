@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderService;
 
@@ -11,9 +12,11 @@ using OrderService;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    partial class OrderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250417082734_DeliveryModelIsSimilar")]
+    partial class DeliveryModelIsSimilar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,9 +75,6 @@ namespace OrderService.Migrations
                 {
                     b.OwnsOne("OrderService.Models.OrderDelivery", "Delivery", b1 =>
                         {
-                            b1.Property<Guid>("OrderId")
-                                .HasColumnType("uniqueidentifier");
-
                             b1.Property<Guid>("DeliveryId")
                                 .HasColumnType("uniqueidentifier");
 
@@ -98,12 +98,12 @@ namespace OrderService.Migrations
                             b1.Property<decimal>("Price")
                                 .HasColumnType("decimal(18,2)");
 
-                            b1.HasKey("OrderId");
+                            b1.HasKey("DeliveryId");
 
                             b1.ToTable("Orders");
 
                             b1.WithOwner()
-                                .HasForeignKey("OrderId");
+                                .HasForeignKey("DeliveryId");
                         });
 
                     b.OwnsMany("OrderService.Models.OrderProduct", "Products", b1 =>

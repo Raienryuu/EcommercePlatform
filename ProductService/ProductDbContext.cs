@@ -1,3 +1,4 @@
+using Contracts;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
 
@@ -40,36 +41,11 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
     _ = modelBuilder
       .Entity<ProductCategory>()
       .HasData(
-        new ProductCategory
-        {
-          Id = 1,
-          CategoryName = "Mugs",
-          ParentCategory = null,
-        },
-        new ProductCategory()
-        {
-          ParentCategory = null,
-          Id = 2,
-          CategoryName = "Tableware",
-        },
-        new ProductCategory()
-        {
-          ParentCategory = null,
-          Id = 3,
-          CategoryName = "Cups",
-        },
-        new ProductCategory
-        {
-          Id = 4,
-          CategoryName = "Electronics",
-          ParentCategory = null,
-        },
-        new ProductCategory
-        {
-          Id = 5,
-          CategoryName = "Laptops",
-          ParentCategory = null,
-        }
+        new ProductCategory { Id = 1, CategoryName = "Mugs", ParentCategory = null, },
+        new ProductCategory() { ParentCategory = null, Id = 2, CategoryName = "Tableware", },
+        new ProductCategory() { ParentCategory = null, Id = 3, CategoryName = "Cups", },
+        new ProductCategory { Id = 4, CategoryName = "Electronics", ParentCategory = null, },
+        new ProductCategory { Id = 5, CategoryName = "Laptops", ParentCategory = null, }
       );
     _ = modelBuilder
       .Entity<Product>()
@@ -120,6 +96,7 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
           DeliveryId = Guid.Parse("4e627d51-4510-4567-aee6-3830a25e040c"),
           Name = "DHL Parcel Locker",
           Price = 0m,
+          HandlerName = "dhl",
           DeliveryType = DeliveryType.DeliveryPoint,
           PaymentType = PaymentType.Online,
         },
@@ -128,6 +105,7 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
           DeliveryId = Guid.Parse("dd6b0c88-538a-4ea2-877b-6143fab14ca5"),
           Name = "Standard shipping",
           Price = 9m,
+          HandlerName = "dhl",
           DeliveryType = DeliveryType.DirectCustomerAddress,
           PaymentType = PaymentType.Online,
         },
@@ -136,6 +114,7 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
           DeliveryId = Guid.Parse("8c68b176-1401-4373-aed8-3bad2f7c0f29"),
           Name = "Premium shipping",
           Price = 18m,
+          HandlerName = "dhl",
           DeliveryType = DeliveryType.DirectCustomerAddress,
           PaymentType = PaymentType.Online,
         },
@@ -144,6 +123,7 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
           DeliveryId = Guid.Parse("b532c6c3-0696-4536-98a5-f1dcdf4df954"),
           Name = "Standard shipping (cash)",
           Price = 20m,
+          HandlerName = "dhl",
           DeliveryType = DeliveryType.DirectCustomerAddress,
           PaymentType = PaymentType.Cash,
         }

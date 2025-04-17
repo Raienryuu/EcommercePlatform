@@ -1,5 +1,5 @@
 export interface DeliveryMethod {
-  id: string;
+  deliveryId: string;
   name: string;
   deliveryType: 'DeliveryPoint' | 'DirectCustomerAddress';
   paymentType: 'Cash' | 'Online';

@@ -48,7 +48,6 @@ public static class CreateOrderEndpoint
           _ = await context.Orders.AddAsync(newOrder, ct);
           _ = await context.SaveChangesAsync(ct);
 
-          /// move to where delivery is set
           await publisher.Publish<IOrderCreatedByUser>(
             new
             {
@@ -58,7 +57,6 @@ public static class CreateOrderEndpoint
             },
             ct
           );
-          //
 
           return Results.CreatedAtRoute(
             nameof(GetOrderEndpoint),

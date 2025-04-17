@@ -83,8 +83,6 @@ export class CheckoutComponent {
         });
       },
     });
-    this.GetClientSecret();
-    console.log(this.deliveryOptionValue);
   }
 
   private GetClientSecret(): Subscription {
@@ -143,8 +141,26 @@ export class CheckoutComponent {
 
   OnClickOrderButtonHandler() {
     console.clear();
-    this.GetClientSecret().add(() => (this.showPaymentForm = true));
-    //this.stripeComponent.MakeStripePayment();
+    this.SetDeliveryMethod().add(
+      this.GetClientSecret().add(() => (this.showPaymentForm = true)),
+    );
+  }
+
+  private SetDeliveryMethod() {
+    if (this.id == null) {
+      throw new Error('Id is invalid');
+    }
+    console.log(this.deliveryOptionValue);
+
+    const delivery = this.deliveryMethods.find(
+      (x: DeliveryMethod) => x.deliveryId === this.deliveryOptionValue,
+    );
+    if (delivery == null) {
+      throw new Error('Delivery method is invalid');
+    }
+    return this.orderService
+      .SetOrderDeliveryMethod(this.id, delivery)
+      .subscribe();
   }
 
   SelectAddress(id: number) {
@@ -220,6 +236,8 @@ export class CheckoutComponent {
   deliveryOptionValue: string | undefined;
 
   ChangeDeliveryValue($event: MatRadioChange) {
+    console.log($event);
+
     this.deliveryOptionValue = $event.value;
   }
 

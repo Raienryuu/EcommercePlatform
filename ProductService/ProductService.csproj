@@ -32,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MessageQueue\MessageQueue.csproj" />
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
   </ItemGroup>
 
 </Project>

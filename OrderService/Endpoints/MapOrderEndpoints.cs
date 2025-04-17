@@ -11,6 +11,7 @@ public static class OrderEndpointMapper
     app.MapDeleteOrderEndpoint();
     app.MapPutOrderEndpoint();
     app.MapGetUserOrdersEndpoint();
+    app.MapSetDeliveryMethodEndpoint();
 
     return app;
   }

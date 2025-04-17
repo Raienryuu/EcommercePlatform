@@ -1,8 +1,6 @@
 <body>
   @if (showPaymentForm) {
-    <div class="stripe-payment-form">
-      <app-stripe-payment [clientSecret]="YOUR_CLIENT_SECRET" [orderId]="id" />
-    </div>
+    <app-stripe-payment [clientSecret]="YOUR_CLIENT_SECRET" [orderId]="id" />
   }
   @if (orderLoaded) {
     <span class="list">
@@ -111,15 +109,14 @@
           <mat-radio-group
             aria-label="Select an option"
             #deliverySelect
-            [value]="deliveryOptionValue"
-            (change)="ChangeDeliveryValue($event)"
+            [(ngModel)]="deliveryOptionValue"
           >
             <span class="delivery-type-description">Pay now</span>
-            @for (method of deliveryMethods; track $index) {
+            @for (method of deliveryMethods; track method) {
               @if (method.paymentType === "Online") {
                 @if (method.name === "DHL Parcel Locker") {
                   <div class="delivery-method">
-                    <mat-radio-button value="dhl" #dhlDelivery>
+                    <mat-radio-button [value]="method.deliveryId" #dhlDelivery>
                       <span class="locker-selection">
                         <img
                           src="../../../assets/logo_DHL.jpg"
@@ -141,7 +138,7 @@
                   </div>
                 } @else {
                   <div class="delivery-method">
-                    <mat-radio-button>
+                    <mat-radio-button [value]="method.deliveryId">
                       {{ method.name }}
                     </mat-radio-button>
                     <span> {{ currencySymbol + method.price }} </span>
@@ -153,7 +150,7 @@
             @for (method of deliveryMethods; track $index) {
               @if (method.paymentType === "Cash") {
                 <div class="delivery-method">
-                  <mat-radio-button>
+                  <mat-radio-button [value]="method.deliveryId">
                     {{ method.name }}
                   </mat-radio-button>
                   <span> {{ currencySymbol + method.price }} </span>
