@@ -1,3 +1,4 @@
+using Contracts;
 using MassTransit;
 using MassTransit.Testing;
 using MessageQueue.Contracts;
@@ -127,7 +128,14 @@ public class NewOrderSagaTests
       {
         OrderId = orderId,
         CurrencyISO = "eur",
-        Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
+        Delivery = new OrderDelivery()
+        {
+          HandlerName = "dhl",
+          Price = 0,
+          PaymentType = PaymentType.Online,
+          DeliveryType = DeliveryType.DirectCustomerAddress,
+          Name = "Standard shipping",
+        },
       }
     );
     _ = db.SaveChanges();
@@ -204,6 +212,9 @@ public class NewOrderSagaTests
         DeliveryId = Guid.NewGuid(),
         HandlerName = "dhl",
         Price = 0,
+        PaymentType = PaymentType.Online,
+        DeliveryType = DeliveryType.DirectCustomerAddress,
+        Name = "Standard shipping",
       },
     };
     var db = provider.GetRequiredService<OrderDbContext>();

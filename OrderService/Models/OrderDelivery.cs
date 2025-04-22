@@ -13,6 +13,7 @@ public class OrderDelivery
   public required DeliveryType DeliveryType { get; set; }
   public required PaymentType PaymentType { get; set; }
   public string? ExternalDeliveryId { get; set; }
+  public required CustomerInformation CustomerInformation { get; set; }
 
   [Range(0, (double)decimal.MaxValue, ErrorMessage = "Price must be a positive value.")]
   public required decimal Price { get; set; }

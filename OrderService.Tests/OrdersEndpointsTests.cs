@@ -1,4 +1,5 @@
 using System.Net;
+using Contracts;
 using OrderService.Models;
 
 namespace OrderService.Tests;
@@ -55,7 +56,14 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
         },
       ],
       CurrencyISO = "eur",
-      Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
+      Delivery = new OrderDelivery()
+      {
+        HandlerName = "dhl",
+        Price = 0,
+        PaymentType = PaymentType.Online,
+        DeliveryType = DeliveryType.DirectCustomerAddress,
+        Name = "Standard shipping",
+      },
     };
     var request = new HttpRequestMessage
     {
@@ -79,7 +87,14 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
       UserId = Guid.NewGuid(),
       Products = [],
       CurrencyISO = "eur",
-      Delivery = new OrderDelivery() { HandlerName = "dhl", Price = 0 },
+      Delivery = new OrderDelivery()
+      {
+        HandlerName = "dhl",
+        Price = 0,
+        PaymentType = PaymentType.Online,
+        DeliveryType = DeliveryType.DirectCustomerAddress,
+        Name = "Standard shipping",
+      },
     };
     var request = new HttpRequestMessage
     {
