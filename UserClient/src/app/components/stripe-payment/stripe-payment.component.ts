@@ -25,23 +25,21 @@ import { environment } from 'src/enviroment';
   template: `
     @defer {
       @if (clientSecret !== undefined) {
-        <div class="stripe-payment-form-background">
-          <div class="stripe-payment-form">
-            <ngx-stripe-elements
-              [stripe]="stripe"
-              [elementsOptions]="elementsOptions"
-            >
-              <ngx-stripe-payment [options]="paymentElementOptions" />
-            </ngx-stripe-elements>
-            <button
-              mat-flat-button
-              color="primary"
-              class="payment"
-              (click)="MakeStripePayment()"
-            >
-              Pay
-            </button>
-          </div>
+        <div class="stripe-payment-form">
+          <ngx-stripe-elements
+            [stripe]="stripe"
+            [elementsOptions]="elementsOptions"
+          >
+            <ngx-stripe-payment [options]="paymentElementOptions" />
+          </ngx-stripe-elements>
+          <button
+            mat-flat-button
+            color="primary"
+            class="payment"
+            (click)="MakeStripePayment()"
+          >
+            Pay
+          </button>
         </div>
       }
     }
@@ -61,15 +59,11 @@ import { environment } from 'src/enviroment';
       font-size: inherit;
     }
     .stripe-payment-form-background {
-      position: absolute;
       background-color: white;
-      width: 100%;
-      height: 100%;
-      z-index: 99;
     }
 
     .stripe-payment-form {
-      margin: 10vh 10vw;
+      margin: 10vh 0;
     }
   `,
 })

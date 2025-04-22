@@ -36,7 +36,7 @@ export class CheckoutComponent {
   total = '0';
 
   customerAddresses: CustomerAddress[] = SampleCustomerAddresses;
-  activeSelection: number = this.customerAddresses.length - 1;
+  activeAddressSelection: number = this.customerAddresses.length - 1;
 
   orderLoaded = false;
   orderNotReadyYet = false;
@@ -158,13 +158,15 @@ export class CheckoutComponent {
     if (delivery == null) {
       throw new Error('Delivery method is invalid');
     }
+    delivery.customerInformation =
+      this.customerAddresses[this.activeAddressSelection];
     return this.orderService
       .SetOrderDeliveryMethod(this.id, delivery)
       .subscribe();
   }
 
   SelectAddress(id: number) {
-    this.activeSelection = id;
+    this.activeAddressSelection = id;
   }
 
   OpenAddressEditor(addNewAddress: boolean, addressesIndex: number) {
