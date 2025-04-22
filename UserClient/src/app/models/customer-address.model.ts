@@ -1,5 +1,3 @@
-
-
 export interface CustomerAddress {
   Id: number;
   FullName: string;
