@@ -1,10 +1,10 @@
 export interface CustomerAddress {
-  Id: number;
-  FullName: string;
-  Email: string;
-  PhoneNumber: string;
-  Address: string;
-  City: string;
-  ZIPCode: string;
-  Country: string;
+  id: number;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  country: string;
 }

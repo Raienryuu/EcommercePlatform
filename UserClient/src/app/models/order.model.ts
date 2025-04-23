@@ -1,3 +1,4 @@
+import { OrderDelivery } from './order-delivery.model';
 import { OrderProduct } from './order-product.model';
 
 export interface Order {
@@ -12,4 +13,5 @@ export interface Order {
   stripePaymentId: string;
   totalPriceInSmallestCurrencyUnit: number;
   currencyISO: string;
+  delivery: OrderDelivery | null;
 }

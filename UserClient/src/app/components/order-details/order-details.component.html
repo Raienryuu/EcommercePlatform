@@ -70,14 +70,22 @@
             Delivery <span class="dhl">DHL Parcel Locker</span>
             <div class="delivery-wrapper">
               <div class="address">
-                <div>Near Kaufland</div>
-                <div>Ginny Hwy. 83</div>
-                <div>San Jose</div>
-                <div>CA, 021354</div>
+                @if (order?.delivery?.deliveryType === "DeliveryPoint") {
+                  <div>Near Kaufland</div>
+                }
+                <div>
+                  {{ order?.delivery?.customerInformation?.address }}
+                </div>
+                <div>{{ order?.delivery?.customerInformation?.city }}</div>
+                <div>
+                  {{ order?.delivery?.customerInformation?.zipCode }}
+                </div>
               </div>
               <div>
                 <div>Retrieval phone number</div>
-                <div>+1 123 321314</div>
+                <div>
+                  {{ order?.delivery?.customerInformation?.phoneNumber }}
+                </div>
               </div>
             </div>
           </div>

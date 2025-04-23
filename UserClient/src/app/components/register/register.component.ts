@@ -30,14 +30,14 @@ export class RegisterComponent {
       UserName: '',
       Password: '',
       Address: {
-        Id: 0,
-        FullName: '',
-        Email: '',
-        PhoneNumber: '',
-        Address: '',
-        City: '',
-        ZIPCode: '',
-        Country: '',
+        id: 0,
+        fullName: '',
+        email: '',
+        phoneNumber: '',
+        address: '',
+        city: '',
+        zipCode: '',
+        country: '',
       },
     };
     this.confirmPassword = '';

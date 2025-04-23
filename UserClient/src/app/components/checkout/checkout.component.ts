@@ -21,6 +21,7 @@ import { IMAGE_LOADER } from '@angular/common';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { DeliveryService } from 'src/app/services/deliveryService/delivery.service';
 import { DeliveryMethod } from 'src/app/models/delivery-method.model';
+import { OrderDelivery } from 'src/app/models/order-delivery.model';
 
 @Component({
   selector: 'app-checkout',
@@ -155,11 +156,15 @@ export class CheckoutComponent {
     const delivery = this.deliveryMethods.find(
       (x: DeliveryMethod) => x.deliveryId === this.deliveryOptionValue,
     );
+
     if (delivery == null) {
       throw new Error('Delivery method is invalid');
     }
-    delivery.customerInformation =
+
+    const deliveryDetails = this.ToOrderDelivery(delivery);
+    deliveryDetails.customerInformation =
       this.customerAddresses[this.activeAddressSelection];
+
     return this.orderService
       .SetOrderDeliveryMethod(this.id, delivery)
       .subscribe();
@@ -198,7 +203,7 @@ export class CheckoutComponent {
     // delete address case
     if ($event.WasDeleted) {
       this.customerAddresses = this.customerAddresses.filter(
-        (x) => x.Id !== $event.Address!.Id,
+        (x) => x.id !== $event.Address!.id,
       );
       return;
     }
@@ -206,7 +211,7 @@ export class CheckoutComponent {
 
     // update address case
     this.customerAddresses.forEach((a, index) => {
-      if (a.Id === $event!.Address!.Id) {
+      if (a.id === $event!.Address!.id) {
         this.customerAddresses[index] = $event!.Address!;
         doesExists = true;
       }
@@ -222,16 +227,16 @@ export class CheckoutComponent {
     newValue: CustomerAddress,
   ) {
     const form = dialog.componentInstance.addressForm;
-    form.controls['id'].setValue(newValue.Id);
-    form.controls['address'].setValue(newValue.Address);
-    form.controls['city'].setValue(newValue.City);
-    form.controls['country'].setValue(newValue.Country);
-    form.controls['email'].setValue(newValue.Email);
-    form.controls['phoneNumber'].setValue(newValue.PhoneNumber);
-    form.controls['fullname'].setValue(newValue.FullName);
-    form.controls['zipcode'].setValue(newValue.ZIPCode);
+    form.controls['id'].setValue(newValue.id);
+    form.controls['address'].setValue(newValue.address);
+    form.controls['city'].setValue(newValue.city);
+    form.controls['country'].setValue(newValue.country);
+    form.controls['email'].setValue(newValue.email);
+    form.controls['phoneNumber'].setValue(newValue.phoneNumber);
+    form.controls['fullname'].setValue(newValue.fullName);
+    form.controls['zipcode'].setValue(newValue.zipCode);
 
-    dialog.componentInstance.countrySelector()?.writeValue(newValue.Country);
+    dialog.componentInstance.countrySelector()?.writeValue(newValue.country);
   }
 
   dhlAddress!: DhlAddress;
@@ -257,5 +262,18 @@ export class CheckoutComponent {
 
   GetPreviewImageSource(productId: string): string {
     return 'p-' + productId + '-0';
+  }
+
+  private ToOrderDelivery(delivery: DeliveryMethod): OrderDelivery {
+    return {
+      deliveryId: delivery.deliveryId,
+      externalDeliveryId: null,
+      customerInformation: null,
+      deliveryType: delivery.deliveryType,
+      handlerName: delivery.handlerName,
+      name: delivery.name,
+      paymentType: delivery.paymentType,
+      price: delivery.price,
+    };
   }
 }

@@ -18,16 +18,15 @@ import { AddressService } from 'src/app/services/addressService/address.service'
 })
 export class AddressEditorComponent {
   @Input() address: CustomerAddress = {
-    Id: -1,
-    FullName: '',
-    Email: '',
-    PhoneNumber: '',
-    Address: '',
-    City: '',
-    Country: 'United States',
-    ZIPCode: '',
+    id: -1,
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    address: '',
+    city: '',
+    country: 'United States',
+    zipCode: '',
   };
-
 
   @Input() isNew = false;
 
@@ -54,9 +53,7 @@ export class AddressEditorComponent {
   /**
    *
    */
-  constructor(private addressService: AddressService
-  ) {
-  }
+  constructor(private addressService: AddressService) {}
 
   CloseEditor(): void {
     this.actionResponse.emit(undefined);
@@ -85,12 +82,12 @@ export class AddressEditorComponent {
   DeleteAddress(): void {
     if (!this.IsDataValid()) return;
 
-    this.addressService.DeleteAddress(this.address.Id).subscribe({
+    this.addressService.DeleteAddress(this.address.id).subscribe({
       next: () =>
         this.actionResponse.emit({ Address: this.address, WasDeleted: true }),
       error: () => console.error('unable to delete'),
       complete: () => {
-        return
+        return;
       },
     });
   }
@@ -100,14 +97,14 @@ export class AddressEditorComponent {
     this.countrySelector()?.countryControl.markAsTouched();
     if (this.addressForm.invalid) return false;
     this.address = {
-      Id: this.addressForm.controls['id'].value!,
-      Address: this.addressForm.controls['address'].value!,
-      City: this.addressForm.controls['city'].value!,
-      Country: this.addressForm.controls['country'].value!,
-      Email: this.addressForm.controls['email'].value!,
-      PhoneNumber: this.addressForm.controls['phoneNumber'].value!,
-      FullName: this.addressForm.controls['fullname'].value!,
-      ZIPCode: this.addressForm.controls['zipcode'].value!,
+      id: this.addressForm.controls['id'].value!,
+      address: this.addressForm.controls['address'].value!,
+      city: this.addressForm.controls['city'].value!,
+      country: this.addressForm.controls['country'].value!,
+      email: this.addressForm.controls['email'].value!,
+      phoneNumber: this.addressForm.controls['phoneNumber'].value!,
+      fullName: this.addressForm.controls['fullname'].value!,
+      zipCode: this.addressForm.controls['zipcode'].value!,
     };
     return true;
   }

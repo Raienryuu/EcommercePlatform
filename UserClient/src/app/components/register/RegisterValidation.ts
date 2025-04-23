@@ -73,14 +73,14 @@ export function ToNewUser(form: FormGroup): NewUser {
     UserName: form.value.login,
     Password: form.value.password,
     Address: {
-      Id: 0,
-      FullName: form.value.name,
-      Email: form.value.email,
-      PhoneNumber: form.value.phoneNumber,
-      Address: form.value.address,
-      City: form.value.city,
-      ZIPCode: form.value.zipCode,
-      Country: form.value.country,
+      id: 0,
+      fullName: form.value.name,
+      email: form.value.email,
+      phoneNumber: form.value.phoneNumber,
+      address: form.value.address,
+      city: form.value.city,
+      zipCode: form.value.zipCode,
+      country: form.value.country,
     },
   };
 
