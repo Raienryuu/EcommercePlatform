@@ -22,6 +22,8 @@ import { imageLoader } from 'src/app/images/imageLoader';
 import { DeliveryService } from 'src/app/services/deliveryService/delivery.service';
 import { DeliveryMethod } from 'src/app/models/delivery-method.model';
 import { OrderDelivery } from 'src/app/models/order-delivery.model';
+import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
+import { AddressService } from 'src/app/services/addressService/address.service';
 
 @Component({
   selector: 'app-checkout',
@@ -56,7 +58,17 @@ export class CheckoutComponent {
     private orderService: OrderService,
     private productService: ProductService,
     private deliveryService: DeliveryService,
+    private userSettingsService: UserSettingsService,
+    private addressService: AddressService,
   ) {
+    this.userSettingsService
+      .GetCurrencySymbol()
+      .subscribe((symbol) => (this.currencySymbol = symbol));
+
+    this.addressService
+      .GetAddresses()
+      .subscribe((addresses) => (this.customerAddresses = addresses));
+
     if (environment.sampleData) {
       this.products = SampleProducts;
       this.RecalculateTotalCost();
@@ -70,7 +82,6 @@ export class CheckoutComponent {
     }
     this.deliveryService
       .GetAvailableDeliveries()
-      .pipe(tap((x) => console.log('got these deliveries: ', x)))
       .subscribe(
         (deliveries) =>
           (this.deliveryMethods = deliveries.sort((a, b) => a.price - b.price)),
@@ -151,7 +162,6 @@ export class CheckoutComponent {
     if (this.id == null) {
       throw new Error('Id is invalid');
     }
-    console.log(this.deliveryOptionValue);
 
     const delivery = this.deliveryMethods.find(
       (x: DeliveryMethod) => x.deliveryId === this.deliveryOptionValue,
@@ -205,6 +215,7 @@ export class CheckoutComponent {
       this.customerAddresses = this.customerAddresses.filter(
         (x) => x.id !== $event.Address!.id,
       );
+      dialog.close();
       return;
     }
     let doesExists = false;
@@ -243,8 +254,6 @@ export class CheckoutComponent {
   deliveryOptionValue: string | undefined;
 
   ChangeDeliveryValue($event: MatRadioChange) {
-    console.log($event);
-
     this.deliveryOptionValue = $event.value;
   }
 

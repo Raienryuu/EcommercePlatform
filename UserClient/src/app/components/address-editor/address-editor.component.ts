@@ -60,7 +60,7 @@ export class AddressEditorComponent {
   }
 
   AddAddress(): void {
-    if (!this.IsDataValid()) return;
+    if (!this.IsDataValid()) throw new Error('Address is invalid');
 
     this.addressService
       .AddAddress(this.address)
@@ -95,7 +95,9 @@ export class AddressEditorComponent {
   IsDataValid(): boolean {
     this.addressForm.markAllAsTouched();
     this.countrySelector()?.countryControl.markAsTouched();
-    if (this.addressForm.invalid) return false;
+
+    if (this.addressForm.errors !== null) return false;
+
     this.address = {
       id: this.addressForm.controls['id'].value!,
       address: this.addressForm.controls['address'].value!,

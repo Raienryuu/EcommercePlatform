@@ -36,10 +36,30 @@
 				"AuthenticationProviderKeys": [ "Bearer" ]
 			},
 			"RouteClaimsRequirement": {
-				"http://schemas.microsoft.com/ws/2008/06/identity/claims/role": "User"
+				"Role": "User"
 			},
 			"AddHeadersToRequest": {
-				"UserId": "Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name] > value"
+                "UserId": "Claims[UserId] > value"
+			}
+		},
+    {
+			"DownstreamPathTemplate": "/api/v1/addresses/{everything}", // identityService -- addresses
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "identityservice",
+					"Port": 8080
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/addresses/{everything}",
+			"AuthenticationOptions": {
+				"AuthenticationProviderKeys": [ "Bearer" ]
+			},
+			"RouteClaimsRequirement": {
+				"Role": "User"
+			},
+			"AddHeadersToRequest": {
+        "UserId": "Claims[UserId] > value"
 			}
 		},
 		{
