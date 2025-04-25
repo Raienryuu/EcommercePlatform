@@ -131,4 +131,10 @@ export class CartService {
     this.localCart.products.forEach((product) => ids.push(product.id));
     return ids;
   }
+
+  GetCartProductsCount(): Observable<number> {
+    return this.httpClient.get<number>(
+      environment.apiUrl + `cart/${this.remoteCartId}/count`,
+    );
+  }
 }

@@ -7,7 +7,20 @@
     </div>
     <div class="right">
       Welcome, {{ Name }}
-      <button mat-raised-button color="primary" type="button" class="nav-btn">
+      <a href="cart">
+        <button mat-icon-button class="cart-border nav-spacing">
+          <mat-icon>shopping_cart</mat-icon>
+          @if (CartItemsCount > 0) {
+            <span class="items-count">{{ CartItemsCount }}</span>
+          }
+        </button>
+      </a>
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="nav-btn nav-spacing"
+      >
         RHome
       </button>
     </div>

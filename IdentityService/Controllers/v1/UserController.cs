@@ -141,7 +141,7 @@ public class UserController(
   [Authorize]
   public async Task<IActionResult> AuthUser([FromHeader(Name = "UserId")] Guid userId)
   {
-    var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstAsync();
+    var username = await _db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstAsync();
     if (username is null)
     {
       return NotFound();
