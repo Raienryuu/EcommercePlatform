@@ -6,15 +6,20 @@
       </button>
     </div>
     <div class="right">
-      Welcome, {{ Name }}
-      <a href="cart">
-        <button mat-icon-button class="cart-border nav-spacing">
-          <mat-icon>shopping_cart</mat-icon>
-          @if (CartItemsCount > 0) {
-            <span class="items-count">{{ CartItemsCount }}</span>
-          }
-        </button>
-      </a>
+      @if (
+        activatedRoute.children[0].snapshot.url[0].path
+          | shouldShowLoggedCapabilities
+      ) {
+        Welcome, {{ Name }}
+        <a href="cart">
+          <button mat-icon-button class="cart-border nav-spacing">
+            <mat-icon>shopping_cart</mat-icon>
+            @if (CartItemsCount > 0) {
+              <span class="items-count">{{ CartItemsCount }}</span>
+            }
+          </button>
+        </a>
+      }
       <button
         mat-raised-button
         color="primary"

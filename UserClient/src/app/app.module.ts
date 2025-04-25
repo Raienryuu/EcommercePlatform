@@ -40,6 +40,7 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 import { StripePaymentComponent } from './components/stripe-payment/stripe-payment.component';
 import { OrderDetailsComponent } from './components/order-details/order-details.component';
 import { OrderStatusTransformPipe } from './pipes/order-status-transform.pipe';
+import { ShouldShowLoggedCapabilitiesPipe } from './pipes/should-show-logged-capabilities.pipe';
 
 @NgModule({
   declarations: [
@@ -83,6 +84,7 @@ import { OrderStatusTransformPipe } from './pipes/order-status-transform.pipe';
     CountrySelectComponent,
     StripePaymentComponent,
     OrderStatusTransformPipe,
+    ShouldShowLoggedCapabilitiesPipe,
   ],
   providers: [provideHttpClient(withInterceptors([authInterceptor]))],
 })

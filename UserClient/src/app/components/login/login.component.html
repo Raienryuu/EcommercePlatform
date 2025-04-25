@@ -1,24 +1,52 @@
 <div class="loginPanel">
-    <form class="loginForm" style="margin: 4rem;">
-        <div>
-            <mat-form-field hideRequiredMarker="true" class="inputs">
-                <mat-label>Login</mat-label>
-                <input matInput type="text" name="login" [(ngModel)]="login" required>
-                <mat-error> Login is empty</mat-error>
-
-            </mat-form-field>
-            <mat-form-field hideRequiredMarker="true" class="inputs">
-                <mat-label>Password</mat-label>
-                <input matInput type="password" name="password" [(ngModel)]="password" required>
-                <mat-error> Password is empty</mat-error>
-            </mat-form-field>
-        </div>
-        <button mat-raised-button class="buttons" color="primary" (click)="Login()" name="signin">Sign In</button>
-        <button mat-button class="buttons" color="primary" (click)="Login()" name="recovery">Account recovery</button>
-
-    </form>
+  <form class="loginForm" style="margin: 4rem">
+    <div>
+      <mat-form-field hideRequiredMarker="true" class="inputs">
+        <mat-label>Login</mat-label>
+        <input
+          matInput
+          type="text"
+          name="login"
+          [(ngModel)]="login"
+          required
+          autocomplete="username"
+        />
+        <mat-error> Login is empty</mat-error>
+      </mat-form-field>
+      <mat-form-field hideRequiredMarker="true" class="inputs">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          required
+          autocomplete="current-password"
+        />
+        <mat-error> Password is empty</mat-error>
+      </mat-form-field>
+    </div>
+    <button
+      mat-raised-button
+      class="buttons"
+      color="primary"
+      (click)="Login()"
+      name="signin"
+    >
+      Sign In
+    </button>
+    <button
+      mat-button
+      class="buttons"
+      color="primary"
+      (click)="Login()"
+      name="recovery"
+    >
+      Account recovery
+    </button>
+  </form>
 </div>
 <div class="register">
-    Need an account?
-    <button mat-button color="primary">Sign Up</button>
+  Need an account?
+  <button mat-button color="primary">Sign Up</button>
 </div>
