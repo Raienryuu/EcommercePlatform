@@ -6,6 +6,7 @@ import { ErrorStateMatcher } from '@angular/material/core';
 import { RegisterFormWithValidators, ToNewUser } from './RegisterValidation';
 import { Country } from 'ngx-mat-input-tel/lib/model/country.model';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -25,7 +26,10 @@ export class RegisterComponent {
 
   phoneInput = viewChild<NgxMatInputTelComponent>('phone');
 
-  constructor(private userService: UserService) {
+  constructor(
+    private userService: UserService,
+    private router: Router,
+  ) {
     this.user = {
       UserName: '',
       Password: '',
@@ -72,9 +76,10 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.user = ToNewUser(this.registerForm);
 
-      this.userService
-        .Register(this.user)
-        .subscribe((result: unknown) => console.log(result));
+      this.userService.Register(this.user).subscribe((result: unknown) => {
+        console.log(result);
+        this.router.navigate(['login']);
+      });
     }
   }
 
