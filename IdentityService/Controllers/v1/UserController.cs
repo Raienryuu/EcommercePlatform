@@ -2,12 +2,15 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
+using Humanizer;
 using IdentityService.Data;
 using IdentityService.Models;
 using IdentityService.Models.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -134,12 +137,16 @@ public class UserController(
   }
 
   [HttpGet]
-  [Route("test")]
+  [Route("username")]
   [Authorize]
-  public IActionResult AuthUser([FromHeader(Name = "UserId")] Guid userId)
+  public async Task<IActionResult> AuthUser([FromHeader(Name = "UserId")] Guid userId)
   {
-    Console.WriteLine($"This method started: {userId}");
-
-    return Ok(userId);
+    var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstAsync();
+    if (username is null)
+    {
+      return NotFound();
+    }
+    username = username.ToLower().Pascalize();
+    return Ok(JsonSerializer.Serialize(username));
   }
 }
