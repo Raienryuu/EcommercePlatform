@@ -22,13 +22,11 @@ namespace IdentityService.Controllers.V1;
 public class UserController(
   ApplicationDbContext db,
   UserManager<IdentityUser<Guid>> userManager,
-  RoleManager<IdentityRole<Guid>> roleManager,
   IConfiguration configuration
 ) : ControllerBase
 {
   private readonly ApplicationDbContext _db = db;
   private readonly UserManager<IdentityUser<Guid>> _userManager = userManager;
-  private readonly RoleManager<IdentityRole<Guid>> _roleManager = roleManager;
   private readonly IConfiguration _configuration = configuration;
 
   [HttpPost]
@@ -48,6 +46,7 @@ public class UserController(
 
     IdentityUser<Guid> newUser = new()
     {
+      Id = Guid.Empty,
       UserName = registrationData.UserName,
       Email = registrationData.Address.Email,
       PhoneNumber = registrationData.Address.PhoneNumber,
@@ -63,11 +62,7 @@ public class UserController(
     {
       return BadRequest(createdSuccessfully.Errors);
     }
-    var userRole = await _roleManager.RoleExistsAsync("User");
-    if (userRole == false)
-    {
-      throw new InvalidOperationException("Trying to register user without having roles in database.");
-    }
+
     var addedToRole = await _userManager.AddToRoleAsync(newUser, "User");
 
     if (createdSuccessfully.Succeeded && addedToRole.Succeeded)

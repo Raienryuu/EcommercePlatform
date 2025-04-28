@@ -25,6 +25,11 @@
         />
         <mat-error> Password is empty</mat-error>
       </mat-form-field>
+      <mat-error class="login-error">
+        @if (invalidLogin) {
+          No matching credentials found
+        }
+      </mat-error>
     </div>
     <button
       mat-raised-button
