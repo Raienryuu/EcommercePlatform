@@ -25,6 +25,7 @@ export class ProductsComponent implements OnInit {
   products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];
 
   filters: PaginationParams;
+  oldFilters: PaginationParams;
   isLoading = true;
   maxPage = 10;
   filteringDelay = new EventEmitter();
@@ -59,6 +60,7 @@ export class ProductsComponent implements OnInit {
       MinQuantity: null!,
       Categories: null!,
     };
+    this.oldFilters = this.CloneParams(this.filters);
     this.filterApplyDelay
       .pipe(debounceTime(800))
       .subscribe(() => this.UpdateUrlQuery());
@@ -168,9 +170,16 @@ export class ProductsComponent implements OnInit {
   }
 
   private UpdateUrlQuery() {
+    if (this.AreParamsUnchanged()) {
+      return;
+    }
+
+    this.oldFilters = this.CloneParams(this.filters);
     this.router.navigate([], {
       queryParams: this.filters,
       relativeTo: this.route,
+      replaceUrl: false,
+      skipLocationChange: false,
       queryParamsHandling: 'merge',
       onSameUrlNavigation: 'ignore',
     });
@@ -243,11 +252,36 @@ export class ProductsComponent implements OnInit {
   AddToCart(productId: string) {
     this.cartService.AddToCart(productId, 1).subscribe((cartId) => {
       this.cartService.remoteCartId = cartId;
-      console.log('cart was updated');
     });
   }
 
   GetPreviewImageSource(productId: string): string {
     return 'p-' + productId + '-0';
+  }
+
+  AreParamsUnchanged(): boolean {
+    if (this.filters.Name !== this.oldFilters.Name) return false;
+    if (this.filters.Order !== this.oldFilters.Order) return false;
+    if (this.filters.PageNum !== this.oldFilters.PageNum) return false;
+    if (this.filters.MaxPrice !== this.oldFilters.MaxPrice) return false;
+    if (this.filters.MinPrice !== this.oldFilters.MinPrice) return false;
+    if (this.filters.PageSize !== this.oldFilters.PageSize) return false;
+    if (this.filters.Categories !== this.oldFilters.Categories) return false;
+    if (this.filters.MinQuantity !== this.oldFilters.MinQuantity) return false;
+
+    return true;
+  }
+
+  private CloneParams(paramsToClone: PaginationParams): PaginationParams {
+    return {
+      Name: paramsToClone.Name,
+      Order: paramsToClone.Order,
+      PageNum: paramsToClone.PageNum,
+      MaxPrice: paramsToClone.MaxPrice,
+      MinPrice: paramsToClone.MinPrice,
+      PageSize: paramsToClone.PageSize,
+      Categories: paramsToClone.Categories,
+      MinQuantity: paramsToClone.MinQuantity,
+    };
   }
 }
