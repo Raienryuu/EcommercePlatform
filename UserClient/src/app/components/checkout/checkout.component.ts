@@ -171,12 +171,13 @@ export class CheckoutComponent {
       throw new Error('Delivery method is invalid');
     }
 
-    const deliveryDetails = this.ToOrderDelivery(delivery);
-    deliveryDetails.customerInformation =
-      this.customerAddresses[this.activeAddressSelection];
+    const deliveryDetails = this.ToOrderDelivery(
+      delivery,
+      this.customerAddresses[this.activeAddressSelection],
+    );
 
     return this.orderService
-      .SetOrderDeliveryMethod(this.id, delivery)
+      .SetOrderDeliveryMethod(this.id, deliveryDetails)
       .subscribe();
   }
 
@@ -273,11 +274,14 @@ export class CheckoutComponent {
     return 'p-' + productId + '-0';
   }
 
-  private ToOrderDelivery(delivery: DeliveryMethod): OrderDelivery {
+  private ToOrderDelivery(
+    delivery: DeliveryMethod,
+    customerInformation: CustomerAddress,
+  ): OrderDelivery {
     return {
       deliveryId: delivery.deliveryId,
       externalDeliveryId: null,
-      customerInformation: null,
+      customerInformation: customerInformation,
       deliveryType: delivery.deliveryType,
       handlerName: delivery.handlerName,
       name: delivery.name,

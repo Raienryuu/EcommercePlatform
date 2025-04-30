@@ -2,7 +2,7 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CreateOrderRequest } from 'src/app/models/create-order-request';
-import { DeliveryMethod } from 'src/app/models/delivery-method.model';
+import { OrderDelivery } from 'src/app/models/order-delivery.model';
 import { Order } from 'src/app/models/order.model';
 import { environment } from 'src/enviroment';
 
@@ -22,7 +22,7 @@ export class OrderService {
     );
   }
 
-  SetOrderDeliveryMethod(orderId: string, deliveryMethod: DeliveryMethod) {
+  SetOrderDeliveryMethod(orderId: string, deliveryMethod: OrderDelivery) {
     return this.httpClient.patch(
       environment.apiUrl + `v1/orders/${orderId}/delivery`,
       deliveryMethod,
