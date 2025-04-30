@@ -22,8 +22,8 @@
           <span class="product-property name">
             {{ product.name }}
           </span>
-          @if (product.quantity > 0) {
-            <span class="product-property quantity-wrapper">
+          @if (!unavailableProducts.includes(product.id)) {
+            <div class="product-property quantity-wrapper">
               <button
                 aria-label="decrease quantity"
                 mat-icon-button
@@ -32,17 +32,13 @@
               >
                 <mat-icon> chevron_left </mat-icon>
               </button>
-              <mat-form-field
-                style="width: 60px"
-                appearance="outline"
-                floatLabel="always"
-              >
+              <mat-form-field appearance="outline" floatLabel="always">
                 <input
                   aria-label="quantity of product"
                   type="number"
                   matInput
                   [(ngModel)]="product.quantity"
-                  (change)="ValidateQuantity(product)"
+                  (change)="HandleQuantityChange(product)"
                 />
               </mat-form-field>
               <button
@@ -53,7 +49,7 @@
               >
                 <mat-icon>chevron_right</mat-icon>
               </button>
-            </span>
+            </div>
           } @else {
             <span class="product-property unavailable">Not available</span>
           }

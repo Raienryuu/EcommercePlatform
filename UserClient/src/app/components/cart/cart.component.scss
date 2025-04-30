@@ -54,9 +54,6 @@ body {
   margin-left: 5px;
 }
 
-.product .product-property {
-  margin: 0 15px;
-}
 
 .product-property input {
   text-align: center;
@@ -71,7 +68,7 @@ body {
 .product .quantity-wrapper {
   display: grid;
   align-items: center;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 2fr 1fr;
   height: fit-content;
 }
 

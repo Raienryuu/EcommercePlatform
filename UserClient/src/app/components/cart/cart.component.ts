@@ -27,6 +27,7 @@ import { environment } from 'src/enviroment';
 })
 export class CartComponent implements OnInit {
   products: Product[] = environment.sampleData ? SampleProducts : [];
+  unavailableProducts: string[] = [];
   constructor(
     private userSettingsService: UserSettingsService,
     private cartService: CartService,
@@ -52,16 +53,19 @@ export class CartComponent implements OnInit {
         );
         p.quantity = this.GetProductAmount(p.quantity, localProduct!.amount);
         this.products.push(p);
+        if (p.quantity === 0) {
+          this.unavailableProducts.push(p.id);
+        }
       });
       this.RecalculateTotalCost();
     });
   }
 
   private GetProductAmount(storage: number, needed: number) {
-    if (storage > needed) {
+    if (storage >= needed) {
       return needed;
     } else {
-      return 0;
+      return storage;
     }
   }
 
@@ -85,10 +89,18 @@ export class CartComponent implements OnInit {
     this.totalCost = sum.toFixed(2);
   }
 
+  HandleQuantityChange(product: Product) {
+    this.ValidateQuantity(product);
+    this.SynchronizeCart(product);
+  }
+
   AddQuantity(product: Product, quantity: number) {
     product.quantity += quantity;
     this.ValidateQuantity(product);
+    this.SynchronizeCart(product);
+  }
 
+  SynchronizeCart(product: Product) {
     if (this.cartUpdateDelayedEvent.observed) {
       this.cartUpdateDelayedEvent.next(null);
       return;
@@ -105,13 +117,15 @@ export class CartComponent implements OnInit {
   }
 
   MAX_QUANTITY = 100;
-  ValidateQuantity(product: Product) {
+  ValidateQuantity(product: Product): boolean {
     if (product.quantity < 1) {
       const productIndex = this.products.findIndex((p) => p.id === product.id);
       this.products.splice(productIndex);
     }
     if (product.quantity > this.MAX_QUANTITY)
       product.quantity = this.MAX_QUANTITY;
+
+    return true;
   }
 
   IsDecrementationInvalid(product: Product): boolean {
