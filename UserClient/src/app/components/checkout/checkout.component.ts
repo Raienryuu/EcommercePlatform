@@ -13,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { OrderService } from 'src/app/services/orderService/order.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { Order } from 'src/app/models/order.model';
-import { Subscription, map, retry, tap } from 'rxjs';
+import { Subscription, map, retry } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
 import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
