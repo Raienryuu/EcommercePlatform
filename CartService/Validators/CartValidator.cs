@@ -9,7 +9,6 @@ public class UpdateCartValidator : Validator<UpdateCartRequest>
 {
   public UpdateCartValidator()
   {
-    _ = RuleFor(static c => c.Products).NotEmpty();
     RuleForEach(static c => c.Products).SetValidator(new ProductValidator());
   }
 }
