@@ -74,7 +74,7 @@ export function ToNewUser(form: FormGroup): NewUser {
     Password: form.value.password,
     Address: {
       id: 0,
-      fullName: form.value.name,
+      fullName: form.value.name + ' ' + form.value.lastname,
       email: form.value.email,
       phoneNumber: form.value.phoneNumber,
       address: form.value.address,
