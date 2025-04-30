@@ -31,7 +31,7 @@ public class OrderCalculateTotalCostConsumer(
     }
 
     var totalPrice = 0;
-    totalPrice += (int)delivery.Price;
+    totalPrice += (int)delivery.Price * 100;
     productsFromDb.ForEach(p =>
     {
       totalPrice += (int)(p.Price * 100) * command.Message.Products.First(x => x.ProductId == p.Id).Quantity;

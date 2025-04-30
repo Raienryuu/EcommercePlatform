@@ -40,7 +40,6 @@ public class OrderUpdateTotalCostActivity(
 
   private async Task SetPriceOnOrder(BehaviorContext<OrderState, IOrderPriceCalculated> context)
   {
-    logger.LogWarning("Started {Name}", nameof(SetPriceOnOrder));
     var order = await orderDb.Orders.FindAsync([context.Saga.CorrelationId], context.CancellationToken);
     if (order is null)
     {

@@ -11,23 +11,7 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
   {
     InstanceState(x => x.CurrentState);
 
-    Initially(
-      When(OrderCreatedByUser)
-        .Then(async x =>
-        {
-          await x.Publish<OrderCalculateTotalCostCommand>(
-            new
-            {
-              OrderId = x.Saga.CorrelationId,
-              x.Message.CurrencyISO,
-              EurToCurrencyMultiplier = 1m,
-              x.Message.Products,
-              // x.Message.DeliveryId,
-            }
-          );
-        })
-        .TransitionTo(InCheckout)
-    );
+    Initially(When(OrderCreatedByUser).TransitionTo(InCheckout));
 
     During(InCheckout, When(OrderPriceCalculated).Activity(x => x.OfType<OrderUpdateTotalCostActivity>()));
 
