@@ -112,11 +112,30 @@
           </div>
           <div class="price">
             <div>Subtotal</div>
-            <div class="money">€3821</div>
+            <div class="money">
+              {{
+                currencySymbol +
+                  "" +
+                  (order!.totalPriceInSmallestCurrencyUnit / 100 -
+                    order!.delivery?.price!)
+              }}
+            </div>
             <div>Delivery</div>
-            <div class="money">Free</div>
+            <div class="money">
+              {{ currencySymbol + "" + order!.delivery?.price?.toFixed(2) }}
+            </div>
             <div><b>Total</b></div>
-            <div class="money"><b>€3821</b></div>
+            <div class="money">
+              @if (order!.delivery?.price !== 0) {
+                <b>{{
+                  currencySymbol +
+                    "" +
+                    order!.totalPriceInSmallestCurrencyUnit / 100
+                }}</b>
+              } @else {
+                <b>Free</b>
+              }
+            </div>
           </div>
         </span>
       </div>
