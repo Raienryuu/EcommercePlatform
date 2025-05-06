@@ -28,8 +28,24 @@ public static partial class LoggerExtensions
 
   [LoggerMessage(
     EventId = 2001,
-    Level = LogLevel.Trace,
+    Level = LogLevel.Information,
     Message = "Sent ReserveOrderProductsCommand for order Id: {OrderId}"
   )]
   public static partial void OrderReserveOrderCommandSent(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(
+    EventId = 2002,
+    Level = LogLevel.Information,
+    Message = "Started order cancellation for order Id: {OrderId}"
+  )]
+  public static partial void StartedOrderCancellation(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(
+  EventId = 2003,
+  Level = LogLevel.Warning,
+  Message = "Order with id : {OrderId}, could not be cancelled"
+)]
+  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId);
+
+
 }

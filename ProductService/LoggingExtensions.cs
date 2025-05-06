@@ -18,4 +18,12 @@ public static partial class LoggingExtenstions
     Guid orderId,
     int totalPrice
   );
+
+  [LoggerMessage(1003, LogLevel.Warning, "Couldn't find reservation for order with id: {OrderId}")]
+  public static partial void CouldntFindOrderReservation(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(1004, LogLevel.Information, "Reservation removed for order with id: {OrderId}")]
+  public static partial void ReservationRemoved(this ILogger logger, Guid orderId);
+
+
 }

@@ -37,6 +37,17 @@ public static class FakeOrderDataInserter
           PaymentType = PaymentType.Online,
           DeliveryType = DeliveryType.DirectCustomerAddress,
           Name = "Standard shipping",
+          CustomerInformation = new()
+          {
+            City = "Cityname",
+            Address = "Adresso 5",
+            Email = "thats@mail.com",
+            Country = "Countryman",
+            FullName = "Joe Doe",
+            PhoneNumber = "+1324 231415",
+            ZIPCode = "34512"
+
+          }
         },
       }
     );
@@ -63,6 +74,18 @@ public static class FakeOrderDataInserter
           PaymentType = PaymentType.Online,
           DeliveryType = DeliveryType.DirectCustomerAddress,
           Name = "Standard shipping",
+          CustomerInformation = new()
+          {
+            City = "Cityname",
+            Address = "Adresso 5",
+            Email = "thats@mail.com",
+            Country = "Countryman",
+            FullName = "Joe Doe",
+            PhoneNumber = "+1324 231415",
+            ZIPCode = "34512"
+
+          }
+
         },
       }
     );
@@ -85,6 +108,16 @@ public static class FakeOrderDataInserter
         StripePaymentId = "h12978yh897gh987h",
         Delivery = new OrderDelivery()
         {
+          CustomerInformation = new()
+          {
+            City = "Cityname",
+            Address = "Adresso 5",
+            Email = "thats@mail.com",
+            Country = "Countryman",
+            FullName = "Joe Doe",
+            PhoneNumber = "+1324 231415",
+            ZIPCode = "34512"
+          },
           HandlerName = "dhl",
           Price = 0,
           PaymentType = PaymentType.Online,

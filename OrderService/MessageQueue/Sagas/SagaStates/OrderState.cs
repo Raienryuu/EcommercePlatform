@@ -11,8 +11,4 @@ public class OrderState : SagaStateMachineInstance, ISagaVersion
   /*public int CurrentState { get; set; }*/
 }
 
-public class CancelOrderState : OrderState
-{
-  public bool ProductsUnreserved { get; set; }
-  public bool OrderMarkedAsCancelled { get; set; }
-}
+

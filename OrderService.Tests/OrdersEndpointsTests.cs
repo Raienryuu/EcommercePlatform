@@ -58,6 +58,16 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
       CurrencyISO = "eur",
       Delivery = new OrderDelivery()
       {
+        CustomerInformation = new()
+        {
+          City = "Cityname",
+          Address = "Adresso 5",
+          Email = "thats@mail.com",
+          Country = "Countryman",
+          FullName = "Joe Doe",
+          PhoneNumber = "+1324 231415",
+          ZIPCode = "34512"
+        },
         HandlerName = "dhl",
         Price = 0,
         PaymentType = PaymentType.Online,
@@ -89,6 +99,16 @@ public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
       CurrencyISO = "eur",
       Delivery = new OrderDelivery()
       {
+        CustomerInformation = new()
+        {
+          City = "Cityname",
+          Address = "Adresso 5",
+          Email = "thats@mail.com",
+          Country = "Countryman",
+          FullName = "Joe Doe",
+          PhoneNumber = "+1324 231415",
+          ZIPCode = "34512"
+        },
         HandlerName = "dhl",
         Price = 0,
         PaymentType = PaymentType.Online,
