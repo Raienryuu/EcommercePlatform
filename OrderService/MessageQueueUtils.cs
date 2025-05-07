@@ -43,6 +43,15 @@ public static class MessageQueueUtils
           r.CollectionName = "orders";
         })
         .Endpoint(e => e.Name = nameof(NewOrderSaga));
+
+      _ = o.AddSagaStateMachine<CancelOrderSaga, CancelOrderState>()
+        .MongoDbRepository(r =>
+        {
+          r.Connection = mongoSection.GetValue<string>("HostAddress");
+          r.DatabaseName = "ordersdb";
+          r.CollectionName = "cancelledOrders";
+        })
+        .Endpoint(e => e.Name = nameof(CancelOrderSaga));
     });
   }
 }

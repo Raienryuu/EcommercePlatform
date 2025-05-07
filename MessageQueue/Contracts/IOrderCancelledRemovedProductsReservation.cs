@@ -1,9 +1,6 @@
-
 namespace MessageQueue.Contracts;
 
-public class IOrderCancelledRemovedProductsReservation
+public interface IOrderCancelledRemovedProductsReservation
 {
   public Guid OrderId { get; set; }
 }
-
-

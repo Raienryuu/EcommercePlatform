@@ -1,4 +1,3 @@
-
 namespace MessageQueue.Contracts;
 
 public interface IOrderCancelledCancellationUnavailable
