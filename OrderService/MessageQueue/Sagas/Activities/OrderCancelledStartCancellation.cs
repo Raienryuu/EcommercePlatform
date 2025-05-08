@@ -56,7 +56,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
 
       var action = order.Status switch
       {
-        OrderStatus.Type.AwaitingConfirmation => CancelOrder(order, context),
+        OrderStatus.Type.AwaitingConfirmation or OrderStatus.Type.Confirmed => CancelOrder(order, context),
         _ => OrderCancellationUnavailable(order, context),
       };
 

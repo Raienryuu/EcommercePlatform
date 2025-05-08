@@ -70,13 +70,14 @@ public class CancelOrderSagaTests
         _ = o.AddSagaStateMachine<CancelOrderSaga, CancelOrderState>().InMemoryRepository();
         o.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
       })
-      .AddDbContext<OrderDbContext>(builder =>
-      {
-        builder.UseInMemoryDatabase("cancelOrderSagaOrders");
-        builder.EnableSensitiveDataLogging();
-        builder.LogTo(Console.WriteLine, LogLevel.Warning);
-      }
-      // ServiceLifetime.Singleton
+      .AddDbContext<OrderDbContext>(
+        builder =>
+        {
+          builder.UseInMemoryDatabase("cancelOrderSagaOrders");
+          builder.EnableSensitiveDataLogging();
+          builder.LogTo(Console.WriteLine, LogLevel.Warning);
+        },
+        ServiceLifetime.Singleton
       )
       .AddLogging(l =>
       {
@@ -130,7 +131,7 @@ public class CancelOrderSagaTests
     await _harness.Bus.Publish<IOrderCancellationRequest>(new { orderId });
 
     await _harness.Bus.Publish<IOrderCancelledRemovedProductsReservation>(new { orderId });
-    await Task.Delay(1500); // makes sure events are fired and processed
+    await Task.Delay(500); // makes sure events are fired and processed
 
     var sagaInstance = await _cancelSagasHarness.Sagas.SelectAsync(s => s.CorrelationId == orderId).First();
     const string EXPECTED_STATE = "Confirmed";
@@ -146,6 +147,9 @@ public class CancelOrderSagaTests
     var scope = _provider.CreateScope();
     using var orders = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
     AddNewOrderWithId(orderId, orders);
+    var orderInDelivery = orders.Orders.Find(orderId);
+    orderInDelivery!.Status = OrderStatus.Type.Shipped;
+    orders.SaveChanges();
     await _harness.Bus.Publish<IOrderCancellationRequest>(new { orderId });
 
     await _harness.Bus.Publish<IOrderCancelledCancellationUnavailable>(new { orderId });
