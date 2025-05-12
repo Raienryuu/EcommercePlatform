@@ -41,11 +41,30 @@ public static partial class LoggerExtensions
   public static partial void StartedOrderCancellation(this ILogger logger, Guid orderId);
 
   [LoggerMessage(
-  EventId = 2003,
-  Level = LogLevel.Warning,
-  Message = "Order with id : {OrderId}, could not be cancelled"
-)]
+    EventId = 2003,
+    Level = LogLevel.Warning,
+    Message = "Order with id : {OrderId}, could not be cancelled"
+  )]
   public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId);
 
+  [LoggerMessage(
+    EventId = 2004,
+    Level = LogLevel.Error,
+    Message = "Tried to refund order that does not exists, order with id : {OrderId}"
+  )]
+  public static partial void RefundingNonexistentOrder(this ILogger logger, Guid orderId);
 
+  [LoggerMessage(
+    EventId = 2005,
+    Level = LogLevel.Information,
+    Message = "Order refunded, order with id : {OrderId}, amount: {Amount}, currency: {CurrencyISO}"
+  )]
+  public static partial void OrderRefunded(this ILogger logger, Guid orderId, int amount, string currencyISO);
+
+  [LoggerMessage(
+    EventId = 2006,
+    Level = LogLevel.Error,
+    Message = "Refunding without payment Id, order with id : {OrderId}"
+  )]
+  public static partial void RefundingWithoutPaymentId(this ILogger logger, Guid orderId);
 }

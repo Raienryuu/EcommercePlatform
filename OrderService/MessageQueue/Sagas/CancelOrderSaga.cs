@@ -17,9 +17,20 @@ namespace OrderService.MessageQueue.Sagas
           .TransitionTo(Pending)
       );
 
-      During(Pending, When(OrderCancelledRemovedProductsReservation).TransitionTo(Confirmed));
+      During(
+        Pending,
+        When(OrderCancelledRemovedProductsReservation)
+          .Then(static context =>
+          {
+            context.Saga.OrderProductsReservationCancelled = true;
+          })
+          .Activity(x => x.OfType<OrderRefundPaymentAcitivity>())
+          .TransitionTo(Confirmed)
+      );
 
       During(Pending, When(OrderCancelledCancellationUnavailable).TransitionTo(Final));
+
+      During(Confirmed, When(OrderCancelledPaymentRefunded).TransitionTo(Refunded));
 
       Event(() => OrderCancellationRequest, x => x.CorrelateById(context => context.Message.OrderId));
       Event(
@@ -30,13 +41,17 @@ namespace OrderService.MessageQueue.Sagas
         () => OrderCancelledCancellationUnavailable,
         x => x.CorrelateById(context => context.Message.OrderId)
       );
+
+      Event(() => OrderCancelledPaymentRefunded, x => x.CorrelateById(context => context.Message.OrderId));
     }
 
     public Event<IOrderCancellationRequest>? OrderCancellationRequest { get; set; }
     public Event<IOrderCancelledRemovedProductsReservation>? OrderCancelledRemovedProductsReservation { get; set; }
     public Event<IOrderCancelledCancellationUnavailable>? OrderCancelledCancellationUnavailable { get; set; }
+    public Event<IOrderCancelledPaymentRefunded>? OrderCancelledPaymentRefunded { get; set; }
 
     public State? Pending { get; set; }
     public State? Confirmed { get; set; }
+    public State? Refunded { get; set; }
   }
 }

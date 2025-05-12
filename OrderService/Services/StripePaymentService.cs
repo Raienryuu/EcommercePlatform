@@ -1,3 +1,4 @@
+using System.Data;
 using MassTransit;
 using MessageQueue.Contracts;
 using MessageQueue.DTOs;
@@ -105,5 +106,55 @@ public class StripePaymentService : IStripePaymentService
       _logger.OrderReserveOrderCommandSent(order.OrderId);
     }
     return Results.Ok();
+  }
+
+  public async Task RefundPaymentForOrder(Guid orderId, CancellationToken ct = default)
+  {
+    var order = await _context.Orders.FindAsync([orderId], ct);
+
+    if (order is null)
+    {
+      _logger.RefundingNonexistentOrder(orderId);
+      return;
+    }
+    if (order?.StripePaymentId is null)
+    {
+      _logger.RefundingWithoutPaymentId(orderId);
+      return;
+    }
+
+    if (!order.PaymentSucceded)
+    {
+      await CancelPaymentIntent(order.StripePaymentId);
+      return;
+    }
+
+    var refundService = new RefundService();
+    var refundOptions = new RefundCreateOptions { PaymentIntent = order?.StripePaymentId };
+
+    var response = await refundService.CreateAsync(refundOptions, cancellationToken: ct);
+    if (response.Status == "succeeded")
+    {
+      await _publisher.Publish<IOrderCancelledPaymentRefunded>(
+        new
+        {
+          order!.OrderId,
+          AmountInSmallestCurrencyUnit = response.Amount,
+          CurrencyISO = response.Currency,
+        },
+        ct
+      );
+      _logger.OrderRefunded(order.OrderId, (int)response.Amount, response.Currency);
+    }
+  }
+
+  private async Task CancelPaymentIntent(string stripePaymentId)
+  {
+    var paymentIntent = await _paymentService.GetAsync(stripePaymentId);
+    if (paymentIntent.Status is "processing" or "succeeded")
+    {
+      return;
+    }
+    await _paymentService.CancelAsync(stripePaymentId);
   }
 }

@@ -61,6 +61,8 @@ namespace OrderService.MessageQueue.Sagas.Activities
       };
 
       await action;
+
+      context.Saga.OrderMarkedAsCancelled = true;
     }
 
     private async Task OrderCancellationUnavailable(
