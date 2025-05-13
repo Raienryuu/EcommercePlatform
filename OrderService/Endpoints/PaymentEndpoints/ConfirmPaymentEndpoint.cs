@@ -15,7 +15,7 @@ public static class ConfirmPaymentEndpoint
           CancellationToken ct
         ) =>
         {
-          return await stripePaymentService.HandleWebhookPaymentConfirm(httpContext.Request);
+          return await stripePaymentService.HandleWebhookPaymentConfirm(httpContext.Request, ct);
         }
       )
       .WithName(nameof(ConfirmPaymentEndpoint))

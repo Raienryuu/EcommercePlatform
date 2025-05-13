@@ -32,6 +32,8 @@ namespace OrderService.MessageQueue.Sagas
 
       During(Confirmed, When(OrderCancelledPaymentRefunded).TransitionTo(Refunded));
 
+      During(Confirmed, When(OrderCancelledPaymentIntentCancelled).TransitionTo(Refunded));
+
       Event(() => OrderCancellationRequest, x => x.CorrelateById(context => context.Message.OrderId));
       Event(
         () => OrderCancelledRemovedProductsReservation,
@@ -49,6 +51,7 @@ namespace OrderService.MessageQueue.Sagas
     public Event<IOrderCancelledRemovedProductsReservation>? OrderCancelledRemovedProductsReservation { get; set; }
     public Event<IOrderCancelledCancellationUnavailable>? OrderCancelledCancellationUnavailable { get; set; }
     public Event<IOrderCancelledPaymentRefunded>? OrderCancelledPaymentRefunded { get; set; }
+    public Event<IOrderCancelledPaymentIntentCancelled>? OrderCancelledPaymentIntentCancelled { get; set; }
 
     public State? Pending { get; set; }
     public State? Confirmed { get; set; }

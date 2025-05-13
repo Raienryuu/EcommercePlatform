@@ -64,7 +64,21 @@ public static partial class LoggerExtensions
   [LoggerMessage(
     EventId = 2006,
     Level = LogLevel.Error,
-    Message = "Refunding without payment Id, order with id : {OrderId}"
+    Message = "Refunding without paymentId for  order with id : {OrderId}"
   )]
   public static partial void RefundingWithoutPaymentId(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(
+    EventId = 2007,
+    Level = LogLevel.Warning,
+    Message = "Unable to cancel payment intent for order with id : {OrderId}, reason: {Message}"
+  )]
+  public static partial void UnableToCancelPaymentIntent(this ILogger logger, Guid orderId, string Message);
+
+  [LoggerMessage(
+    EventId = 2008,
+    Level = LogLevel.Information,
+    Message = "Cancelled payment intent for order with id : {OrderId}"
+  )]
+  public static partial void CancelledPaymentIntent(this ILogger logger, Guid orderId);
 }

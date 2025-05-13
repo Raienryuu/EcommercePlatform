@@ -26,6 +26,11 @@ public class FakeStripePaymentService() : IStripePaymentService
   ///  </remarks>
   public Task<IResult> HandleWebhookPaymentConfirm(HttpRequest request, CancellationToken ct = default)
   {
-    throw new NotImplementedException();
+    return Task.FromResult(Results.Ok());
+  }
+
+  public Task RefundPaymentForOrder(Guid orderId, CancellationToken ct = default)
+  {
+    return Task.CompletedTask;
   }
 }

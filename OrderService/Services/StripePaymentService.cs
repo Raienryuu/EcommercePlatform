@@ -125,7 +125,7 @@ public class StripePaymentService : IStripePaymentService
 
     if (!order.PaymentSucceded)
     {
-      await CancelPaymentIntent(order.StripePaymentId);
+      await CancelPaymentIntent(orderId, order.StripePaymentId);
       return;
     }
 
@@ -148,13 +148,17 @@ public class StripePaymentService : IStripePaymentService
     }
   }
 
-  private async Task CancelPaymentIntent(string stripePaymentId)
+  private async Task CancelPaymentIntent(Guid orderId, string stripePaymentId)
   {
-    var paymentIntent = await _paymentService.GetAsync(stripePaymentId);
-    if (paymentIntent.Status is "processing" or "succeeded")
+    try
     {
-      return;
+      var result = await _paymentService.CancelAsync(stripePaymentId);
+      _logger.CancelledPaymentIntent(orderId);
+      await _publisher.Publish<IOrderCancelledPaymentIntentCancelled>(new { OrderId = orderId });
     }
-    await _paymentService.CancelAsync(stripePaymentId);
+    catch (StripeException e)
+    {
+      _logger.UnableToCancelPaymentIntent(orderId, e.Message);
+    }
   }
 }
