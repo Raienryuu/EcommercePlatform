@@ -13,18 +13,9 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
 
     Initially(When(OrderCreatedByUser).TransitionTo(InCheckout));
 
-    During(InCheckout, When(OrderPriceCalculated).Activity(x => x.OfType<OrderUpdateTotalCostActivity>()));
-
     During(
       InCheckout,
-      When(OrderSubmitted)
-        .Then(static async o =>
-        {
-          await o.Publish<ReserveOrderProductsCommand>(
-            new { o.Message.Products, OrderId = o.Saga.CorrelationId }
-          );
-        })
-        .TransitionTo(Pending)
+      When(OrderPriceCalculated).Activity(x => x.OfType<OrderUpdateTotalCostActivity>()).TransitionTo(Pending)
     );
 
     During(Pending, When(OrderReserved).TransitionTo(Confirmed));
@@ -45,13 +36,11 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
         x.InsertOnInitial = true;
       }
     );
-    Event(() => OrderSubmitted, x => x.CorrelateById(context => context.Message.OrderId));
     Event(() => OrderProductsNotAvailable, x => x.CorrelateById(context => context.Message.OrderId));
     Event(() => OrderPriceCalculated, x => x.CorrelateById(context => context.Message.OrderId));
   }
 
   public Event<IOrderCreatedByUser>? OrderCreatedByUser { get; set; }
-  public Event<IOrderSubmitted>? OrderSubmitted { get; set; }
   public Event<IOrderReserved>? OrderReserved { get; set; }
   public Event<IOrderProductsNotAvailable>? OrderProductsNotAvailable { get; set; }
   public Event<IOrderPriceCalculated>? OrderPriceCalculated { get; set; }

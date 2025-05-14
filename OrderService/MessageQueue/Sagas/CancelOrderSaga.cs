@@ -45,6 +45,10 @@ namespace OrderService.MessageQueue.Sagas
       );
 
       Event(() => OrderCancelledPaymentRefunded, x => x.CorrelateById(context => context.Message.OrderId));
+      Event(
+        () => OrderCancelledPaymentIntentCancelled,
+        x => x.CorrelateById(context => context.Message.OrderId)
+      );
     }
 
     public Event<IOrderCancellationRequest>? OrderCancellationRequest { get; set; }
