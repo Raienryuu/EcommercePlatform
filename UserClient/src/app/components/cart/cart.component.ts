@@ -1,7 +1,7 @@
 import { IMAGE_LOADER } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, take } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { CreateOrderRequest } from 'src/app/models/create-order-request';
@@ -25,7 +25,7 @@ import { environment } from 'src/enviroment';
     },
   ],
 })
-export class CartComponent implements OnInit {
+export class CartComponent {
   products: Product[] = environment.sampleData ? SampleProducts : [];
   unavailableProducts: string[] = [];
   constructor(
@@ -34,17 +34,16 @@ export class CartComponent implements OnInit {
     private productService: ProductService,
     private router: Router,
     private orderService: OrderService,
-  ) {}
-
-  cartUpdateDelayedEvent = new Subject();
-
-  ngOnInit() {
+  ) {
     this.RecalculateTotalCost();
     this.GetCartContent();
   }
 
+  cartUpdateDelayedEvent = new Subject();
+
   GetCartContent() {
     this.products = [];
+
     const productsList = this.cartService.GetCartProductsIds();
     this.productService.GetProductsBatch(productsList).subscribe((products) => {
       products.forEach((p) => {
@@ -101,18 +100,16 @@ export class CartComponent implements OnInit {
   }
 
   SynchronizeCart(product: Product) {
-    if (this.cartUpdateDelayedEvent.observed) {
-      this.cartUpdateDelayedEvent.next(null);
-      return;
-    }
-
-    this.cartUpdateDelayedEvent.pipe(debounceTime(800)).subscribe({
-      next: () => {
-        this.cartService
-          .ChangeProductQuantity(product.id, product.quantity)
-          .subscribe(() => this.RecalculateTotalCost());
-      },
-    });
+    this.cartUpdateDelayedEvent
+      // .pipe(debounceTime(800))
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.cartService
+            .ChangeProductQuantity(product.id, product.quantity)
+            .subscribe(() => this.RecalculateTotalCost());
+        },
+      });
     this.cartUpdateDelayedEvent.next(null);
   }
 
@@ -120,7 +117,7 @@ export class CartComponent implements OnInit {
   ValidateQuantity(product: Product): boolean {
     if (product.quantity < 1) {
       const productIndex = this.products.findIndex((p) => p.id === product.id);
-      this.products.splice(productIndex);
+      this.products.splice(productIndex, 1);
     }
     if (product.quantity > this.MAX_QUANTITY)
       product.quantity = this.MAX_QUANTITY;

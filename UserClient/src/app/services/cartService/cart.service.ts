@@ -88,13 +88,13 @@ export class CartService {
     if (newQuantity > 0) {
       this.localCart.products[productIndex].amount = newQuantity;
     } else {
-      this.localCart.products.splice(productIndex);
+      this.localCart.products.splice(productIndex, 1);
     }
     return this.UpdateCart();
   }
 
   /** Updates both remote and localStorage
-   * Return shared observable*/
+   * @return  Shared 'Observable<string>' */
   private UpdateCart(): Observable<string> {
     this.UpdateLocalStorage();
     if (this.remoteCartId === null) {

@@ -118,7 +118,7 @@
                   currencySymbol +
                     "" +
                     (order!.totalPriceInSmallestCurrencyUnit / 100 -
-                      order!.delivery?.price!)
+                      order!.delivery?.price!).toFixed(2)
                 }}
               </div>
               <div>Delivery</div>
@@ -131,7 +131,7 @@
                   <b>{{
                     currencySymbol +
                       "" +
-                      order!.totalPriceInSmallestCurrencyUnit / 100
+                      (order!.totalPriceInSmallestCurrencyUnit / 100).toFixed(2)
                   }}</b>
                 } @else {
                   <b>Free</b>
