@@ -1,5 +1,5 @@
 import { IMAGE_LOADER } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject, debounceTime, take } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
@@ -35,6 +35,9 @@ export class CartComponent {
     private router: Router,
     private orderService: OrderService,
   ) {
+    this.cartService.cartUpdatedEvent.subscribe(() => {
+      this.RecalculateTotalCost();
+    });
     this.RecalculateTotalCost();
     this.GetCartContent();
   }
@@ -100,27 +103,20 @@ export class CartComponent {
   }
 
   SynchronizeCart(product: Product) {
-    this.cartUpdateDelayedEvent
-      // .pipe(debounceTime(800))
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
-          this.cartService
-            .ChangeProductQuantity(product.id, product.quantity)
-            .subscribe(() => this.RecalculateTotalCost());
-        },
-      });
-    this.cartUpdateDelayedEvent.next(null);
+    console.log('updating ', product);
+    this.cartService.ChangeProductQuantity(product.id, product.quantity);
   }
 
   MAX_QUANTITY = 100;
+
   ValidateQuantity(product: Product): boolean {
     if (product.quantity < 1) {
       const productIndex = this.products.findIndex((p) => p.id === product.id);
       this.products.splice(productIndex, 1);
     }
-    if (product.quantity > this.MAX_QUANTITY)
+    if (product.quantity > this.MAX_QUANTITY) {
       product.quantity = this.MAX_QUANTITY;
+    }
 
     return true;
   }

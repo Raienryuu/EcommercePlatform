@@ -250,9 +250,7 @@ export class ProductsComponent implements OnInit {
   }
 
   AddToCart(productId: string) {
-    this.cartService.AddToCart(productId, 1).subscribe((cartId) => {
-      this.cartService.remoteCartId = cartId;
-    });
+    this.cartService.AddToCart(productId, 1);
   }
 
   GetPreviewImageSource(productId: string): string {

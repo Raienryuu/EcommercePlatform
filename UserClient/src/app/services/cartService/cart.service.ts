@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, share } from 'rxjs';
+import { Injectable, Output } from '@angular/core';
+import { Observable, Subject, debounceTime, share, take, tap } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
 import { environment } from 'src/enviroment';
 
@@ -10,6 +10,11 @@ import { environment } from 'src/enviroment';
 export class CartService {
   cart = 'cart';
   cartKey = 'cartKey';
+
+  cartUpdateDelayedEvent = new Subject();
+
+  @Output()
+  cartUpdatedEvent = new Subject<string>();
 
   constructor(private httpClient: HttpClient) {
     this.remoteCartId = localStorage.getItem(this.cartKey);
@@ -46,7 +51,7 @@ export class CartService {
     );
   }
 
-  AddToCart(productId: string, quantity = 1): Observable<string> {
+  AddToCart(productId: string, quantity = 1) {
     if (localStorage.getItem(this.cart) === null) {
       this.localCart = { products: [] };
     }
@@ -55,13 +60,7 @@ export class CartService {
       amount: quantity,
     });
     this.UpdateLocalCart();
-    const sharedObservable = this.UpdateCart();
-    sharedObservable.subscribe((id) => {
-      this.remoteCartId = id;
-      this.UpdateLocalCartKey();
-      console.info('Heres updated cartId ' + this.remoteCartId);
-    });
-    return sharedObservable;
+    this.UpdateCart();
   }
 
   GetCart(): Observable<Cart> {
@@ -70,18 +69,15 @@ export class CartService {
     );
   }
 
-  RemoveFromCart(productId: number): Observable<string> {
+  RemoveFromCart(productId: number) {
     const productIndex = this.localCart.products.findIndex(
       (p) => p.id === productId.toString(),
     );
     this.localCart.products.splice(productIndex, 1);
-    return this.UpdateCart();
+    this.UpdateCart();
   }
 
-  ChangeProductQuantity(
-    productId: string,
-    newQuantity: number,
-  ): Observable<string> {
+  ChangeProductQuantity(productId: string, newQuantity: number) {
     const productIndex = this.localCart.products.findIndex(
       (p) => p.id === productId,
     );
@@ -90,23 +86,36 @@ export class CartService {
     } else {
       this.localCart.products.splice(productIndex, 1);
     }
-    return this.UpdateCart();
+    this.UpdateCart();
   }
 
   /** Updates both remote and localStorage
    * @return  Shared 'Observable<string>' */
-  private UpdateCart(): Observable<string> {
+  private UpdateCart(): void {
     this.UpdateLocalStorage();
     if (this.remoteCartId === null) {
-      return this.CreateNewCart();
+      this.CreateNewCart().subscribe((newId) => {
+        this.cartKey = newId;
+        this.UpdateLocalCartKey();
+      });
     }
 
-    return this.httpClient
-      .put<string>(
-        environment.apiUrl + `cart/${this.remoteCartId}`,
-        this.localCart,
-      )
-      .pipe(share());
+    if (this.cartUpdateDelayedEvent.observed) {
+      this.cartUpdateDelayedEvent.next(null);
+      return;
+    }
+
+    this.cartUpdateDelayedEvent.pipe(debounceTime(800)).subscribe({
+      next: () => {
+        return this.httpClient
+          .put<string>(
+            environment.apiUrl + `cart/${this.remoteCartId}`,
+            this.localCart,
+          )
+          .subscribe((id) => this.cartUpdatedEvent.next(id));
+      },
+    });
+    this.cartUpdateDelayedEvent.next(null);
   }
 
   private UpdateLocalCartKey() {
