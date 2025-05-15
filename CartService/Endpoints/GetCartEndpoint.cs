@@ -4,7 +4,7 @@ using FastEndpoints;
 
 namespace CartService.Endpoints;
 
-public class GetCartEndpoint(ICartRepository cartProvider) : Endpoint<GetCartRequest, int>
+public class GetCartProductsCountEndpoint(ICartRepository cartProvider) : Endpoint<GetCartRequest, int>
 {
   public override void Configure()
   {
