@@ -13,6 +13,7 @@ import { CartService } from 'src/app/services/cartService/cart.service';
 import { LotsOfSampleProducts } from 'src/app/develSamples';
 import { IMAGE_LOADER } from '@angular/common';
 import { imageLoader } from 'src/app/images/imageLoader';
+import { ProductDetailsComponent } from '../product-details/product-details.component';
 
 @Component({
   selector: 'app-catalog',
@@ -281,5 +282,9 @@ export class ProductsComponent implements OnInit {
       Categories: paramsToClone.Categories,
       MinQuantity: paramsToClone.MinQuantity,
     };
+  }
+
+  NavigateToDetails(productId: string) {
+    this.router.navigate([`details/${productId}`]);
   }
 }

@@ -164,6 +164,10 @@ img {
   align-items: center;
 }
 
+img:hover {
+  cursor: pointer;
+}
+
 .product-name {
   display: -webkit-box;
   -webkit-box-orient: vertical;

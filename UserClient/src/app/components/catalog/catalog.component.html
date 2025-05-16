@@ -121,13 +121,14 @@
       </div>
       <div class="products" *ngIf="products.length > 0">
         <div *ngFor="let product of products" class="product">
-          <div class="product-details">
+          <div class="product-details" >
             <img
               alt="productImage"
               height="120"
               [ngSrc]="GetPreviewImageSource(product.id)"
               priority="true"
               width="170"
+              (click)="NavigateToDetails(product.id)"
             />
             <div class="product-name">{{ product.name }}</div>
             <div class="horizontal-flex" style="width: 100%">
