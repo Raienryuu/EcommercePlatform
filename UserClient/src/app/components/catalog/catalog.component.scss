@@ -34,6 +34,7 @@
 
 .categories .mdc-list-item {
   transition: scale 0.3s ease-out;
+
   &:hover {
     scale: 1.05;
   }
@@ -56,8 +57,7 @@
   width: 110px;
 }
 
-.filter-field .mdc-text-field--outlined {
-}
+.filter-field .mdc-text-field--outlined {}
 
 input.filter-input::-webkit-inner-spin-button {
   display: none;
@@ -151,8 +151,8 @@ input.filter-input::-webkit-inner-spin-button {
 img {
   filter: contrast(95%);
   box-sizing: border-box;
-  height: auto;
-  width: 100%;
+  //  height: auto;
+  //  width: 100%;
   max-width: 250px;
   border-radius: 0.5em;
 }
@@ -242,6 +242,7 @@ mat-spinner {
   display: flex;
   align-items: center;
 }
+
 .paginator-controls {
   display: flex;
   align-items: baseline;
