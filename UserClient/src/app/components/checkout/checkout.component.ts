@@ -70,16 +70,28 @@ export class CheckoutComponent {
       .subscribe((addresses) => (this.customerAddresses = addresses));
 
     if (environment.sampleData) {
+      this.deliveryMethods = [
+        {
+          name: 'DHL Parcel Locker',
+          deliveryId: '5',
+          price: 5,
+          deliveryType: 'DeliveryPoint',
+          paymentType: 'Online',
+          handlerName: 'dhl',
+        },
+      ];
       this.products = SampleProducts;
       this.RecalculateTotalCost();
       this.orderLoaded = true;
     }
 
     this.id = this.route.snapshot.paramMap.get('orderId')!;
+
     if (this.id == undefined) {
       this.products = [];
       throw new Error('Order id is null');
     }
+
     this.deliveryService
       .GetAvailableDeliveries()
       .subscribe(
@@ -259,7 +271,10 @@ export class CheckoutComponent {
   }
 
   openDhlDialog(): void {
-    this.deliveryOptionValue = 'dhl';
+    // this.deliveryOptionValue = this.deliveryMethods.find(
+    //   (x) => x.name == 'DHL Parcel Locker',
+    // )?.deliveryId;
+    this.deliveryOptionValue = this.deliveryMethods[0].deliveryId;
 
     const dialogRef = this.dialogDhl.open(LockerSelectorDialogComponent, {
       panelClass: 'dialogPanel',

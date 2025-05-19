@@ -1,7 +1,7 @@
 import { IMAGE_LOADER } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, debounceTime, take } from 'rxjs';
+import { Subject } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { CreateOrderRequest } from 'src/app/models/create-order-request';
@@ -45,10 +45,9 @@ export class CartComponent {
   cartUpdateDelayedEvent = new Subject();
 
   GetCartContent() {
-    this.products = [];
-
     const productsList = this.cartService.GetCartProductsIds();
     this.productService.GetProductsBatch(productsList).subscribe((products) => {
+      this.products = [];
       products.forEach((p) => {
         const localProduct = this.cartService.localCart.products.find(
           (fnd) => fnd.id === p.id.toString(),

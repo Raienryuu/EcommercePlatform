@@ -32,6 +32,7 @@ import {
 import { DebugElement } from '@angular/core';
 import { AddressEditorComponent } from '../address-editor/address-editor.component';
 import { environment } from 'src/enviroment';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 
 describe('CheckoutComponent', () => {
   let component: CheckoutComponent;
@@ -66,48 +67,75 @@ describe('CheckoutComponent', () => {
         NgxMatInputTelComponent,
         CountrySelectComponent,
       ],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap({
+                orderId: '3259dd0b-7066-4b76-a740-692cfcbefe73',
+              }),
+            },
+          },
+        },
+      ],
     });
     fixture = TestBed.createComponent(CheckoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     fixture.whenStable();
     const scripts = document.querySelectorAll('ngx-stripe-elements');
-    scripts.forEach(element => {
+    scripts.forEach((element) => {
       element.remove();
-    })
+    });
     done();
   });
 
-  it('should create', function() {
+  it('should create', function () {
     expect(component).toBeTruthy();
   });
 
-  it('should open dhl locker selector dialog', function() {
+  it('should open dhl locker selector dialog', function () {
     const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
 
+    expect(dhlButton)
+      .withContext('should find the dhl map button')
+      .toBeTruthy();
     dhlButton.nativeElement.click();
 
     const lockerSelector = new DebugElement(
-      document.querySelector('app-locker-selector')!,
+      document.querySelector('app-dhl-locker')!,
     );
     const dhlMapIframe = lockerSelector.query(By.css('.map')).nativeElement;
+    expect(dhlMapIframe)
+      .withContext('should find map iframe')
+      .toBeInstanceOf(HTMLIFrameElement);
     expect(dhlMapIframe).toBeInstanceOf(HTMLIFrameElement);
   });
 
-  it('should select dhl locker delivery option', function() {
+  it('should select dhl locker delivery option when opening map', async function () {
     const dhlButton = fixture.debugElement.query(By.css('.dhl-locker'));
-    const dhlRadioButton = fixture.debugElement.query(By.css('[value="dhl"]'));
+    const dhlRadioButton = fixture.debugElement.query(
+      By.css('[name=dhl-select-button]'),
+    );
+    expect(dhlRadioButton)
+      .withContext('found the dhl radio button')
+      .toBeTruthy();
 
     dhlButton.nativeElement.click();
+
     fixture.detectChanges();
-    component.dialogDhl.closeAll();
+    await fixture.whenStable();
     fixture.detectChanges();
     const ne = dhlRadioButton.nativeElement as HTMLElement;
-    expect(ne.classList.contains('mat-mdc-radio-checked')).toBeTruthy();
+    expect(ne.classList.contains('mat-mdc-radio-checked'))
+      .withContext('radio button is checked')
+      .toBeTruthy();
   });
 
-  it('should add new address', function(done) {
+  it('should add new address', function (done) {
     const httpTestingController = TestBed.inject(HttpTestingController);
     fixture.whenStable();
     const addAddressButton = fixture.debugElement.query(
@@ -125,7 +153,9 @@ describe('CheckoutComponent', () => {
     expect(editorComponent.isNew).toBeTruthy();
     const oldNumberOfAddresses =
       fixture.componentInstance.customerAddresses.length;
+
     // Setting form values
+    //
     editorComponent.addressForm.controls['address'].setValue('787 Dunbar Road');
     editorComponent.addressForm.controls['fullname'].setValue(
       'John California',
@@ -145,8 +175,8 @@ describe('CheckoutComponent', () => {
     addButton.nativeElement.click();
 
     const request = httpTestingController.expectOne(
-      { url: environment.apiUrl + 'address/', method: 'POST' },
-      'Request to save new address in database',
+      { url: environment.apiUrl + 'v1/addresses', method: 'POST' },
+      `Request to save new address in database`,
     );
     request.flush(editorComponent.address, {
       status: 200,
@@ -162,13 +192,13 @@ describe('CheckoutComponent', () => {
       .toEqual(oldNumberOfAddresses + 1);
     const newAddress = component.customerAddresses.at(-1)!;
 
-    expect(newAddress.Country.length).toBeGreaterThan(0);
-    expect(newAddress.FullName.length).toBeGreaterThan(0);
+    expect(newAddress.country.length).toBeGreaterThan(0);
+    expect(newAddress.fullName.length).toBeGreaterThan(0);
     component.dialogAddressEditor.closeAll();
     done();
   });
 
-  it('should update the address', function(done) {
+  it('should update the address', function (done) {
     const httpTestingController = TestBed.inject(HttpTestingController);
     fixture.whenStable();
     const editAddressButton = fixture.debugElement.query(
@@ -196,7 +226,7 @@ describe('CheckoutComponent', () => {
     editButton.nativeElement.click();
 
     const request = httpTestingController.expectOne(
-      { url: environment.apiUrl + 'address/', method: 'PUT' },
+      { url: environment.apiUrl + 'v1/addresses', method: 'PUT' },
       'Request to save updated address in database',
     );
     request.flush(editorComponent.address, {
@@ -206,17 +236,17 @@ describe('CheckoutComponent', () => {
 
     fixture.detectChanges();
 
-    expect(component.customerAddresses[0].FullName)
+    expect(component.customerAddresses[0].fullName)
       .withContext('should have new name value')
       .toEqual('Jimmy California');
-    expect(component.customerAddresses[0].Country)
+    expect(component.customerAddresses[0].country)
       .withContext('should keep old country value')
       .toEqual('United States');
     component.dialogAddressEditor.closeAll();
     done();
   });
 
-  it('should delete address', function(done) {
+  it('should delete address', function (done) {
     const httpTestingController = TestBed.inject(HttpTestingController);
     fixture.whenStable();
     const editAddressButton = fixture.debugElement.query(
@@ -245,8 +275,9 @@ describe('CheckoutComponent', () => {
     const request = httpTestingController.expectOne(
       {
         url:
-          environment.apiUrl + 'address/' +
-          component.customerAddresses[0].Id,
+          environment.apiUrl +
+          'v1/addresses/' +
+          component.customerAddresses[0].id,
         method: 'DELETE',
       },
       'Request to save new address in database',

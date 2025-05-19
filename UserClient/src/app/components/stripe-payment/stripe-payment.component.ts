@@ -21,7 +21,7 @@ import { environment } from 'src/enviroment';
 @Component({
   selector: 'app-stripe-payment',
   standalone: true,
-  imports: [NgxStripeModule, NgIf, MatButtonModule],
+  imports: [NgxStripeModule, MatButtonModule],
   template: `
     @defer {
       @if (clientSecret !== undefined) {

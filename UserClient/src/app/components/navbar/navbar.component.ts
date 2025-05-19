@@ -34,7 +34,6 @@ export class NavbarComponent {
 
   ShouldLoggedCapabilitiesBeVisible(): boolean {
     const route = this.activatedRoute.children[0].snapshot.url[0].path;
-    console.log(this.activatedRoute.children[0]);
 
     return !(route.includes('login') || route.includes('register'));
   }

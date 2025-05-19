@@ -123,6 +123,7 @@
                     <div class="delivery-method">
                       <mat-radio-button
                         [value]="method.deliveryId"
+                        name="dhl-select-button"
                         #dhlDelivery
                       >
                         <span class="locker-selection">
@@ -142,7 +143,7 @@
                       >
                         Select locker
                       </button>
-                      <span> {{ currencySymbol }}0 </span>
+                      <span> {{ currencySymbol + method.price.toFixed(2) }} </span>
                     </div>
                   } @else {
                     <div class="delivery-method">

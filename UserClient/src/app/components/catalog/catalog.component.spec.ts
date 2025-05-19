@@ -28,7 +28,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { environment } from 'src/enviroment';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-fdescribe('CatalogComponent', () => {
+describe('CatalogComponent', () => {
   let component: ProductsComponent;
   let fixture: ComponentFixture<ProductsComponent>;
 
@@ -73,56 +73,73 @@ fdescribe('CatalogComponent', () => {
   });
 
   it('should use test environment', () => {
-    expect(environment.sampleData).withContext('not using sample data').toBeTruthy();
-  })
+    expect(environment.sampleData)
+      .withContext('not using sample data')
+      .toBeTruthy();
+  });
 
   it('should display at least 1 product', () => {
-    const products = fixture.debugElement.queryAll(
-      By.css(".product-details"));
+    const products = fixture.debugElement.queryAll(By.css('.product-details'));
 
-    expect(products.length).withContext('there are no products displayed')
+    expect(products.length)
+      .withContext('there are no products displayed')
       .toBeGreaterThan(0);
   });
 
   it('should call AddToCart on click', () => {
-    const singleProdut = fixture.debugElement.query(
-      By.css(".product-details")).nativeElement as HTMLElement;
+    const singleProdut = fixture.debugElement.query(By.css('.product-details'))
+      .nativeElement as HTMLElement;
     const addToCartBtn = singleProdut.querySelector('button');
     const cartServiceSpy = spyOn(component, 'AddToCart');
 
     addToCartBtn?.click();
     fixture.detectChanges();
 
-    expect(cartServiceSpy).toHaveBeenCalled()
+    expect(cartServiceSpy).toHaveBeenCalled();
   });
-
 
   //filters tests
   it('should create buttons to remove min price filter', () => {
-    const updateFilters = spyOn(component, 'RefreshFilterDelay').and.callThrough();
+    const updateFilters = spyOn(
+      component,
+      'RefreshFilterDelay',
+    ).and.callThrough();
     const priceFilters = fixture.debugElement.query(By.css('.price-filter'));
-    expect(priceFilters).withContext('couldn\'t find price filter div')
+    expect(priceFilters)
+      .withContext("couldn't find price filter div")
       .toBeTruthy();
-    const priceInput = priceFilters.query(p => p.name == 'input').nativeElement as HTMLInputElement;
+    const priceInput = priceFilters.query((p) => p.name == 'input')
+      .nativeElement as HTMLInputElement;
     priceInput.valueAsNumber = 5;
     priceInput.dispatchEvent(new Event('input'));
     fixture.detectChanges();
-    expect(updateFilters).withContext('method to update filters was not called after inputing filter value')
+    expect(updateFilters)
+      .withContext(
+        'method to update filters was not called after inputing filter value',
+      )
       .toHaveBeenCalled();
 
-    const quickFilterPreviewButton = fixture.debugElement.query(By.css('.applied-filter')).nativeElement as HTMLButtonElement;
-    expect(quickFilterPreviewButton).withContext('didn\'t find the quick filter removal button')
+    const quickFilterPreviewButton = fixture.debugElement.query(
+      By.css('.applied-filter'),
+    ).nativeElement as HTMLButtonElement;
+    expect(quickFilterPreviewButton)
+      .withContext("didn't find the quick filter removal button")
       .toBeTruthy();
-    const removeFilterSpy = spyOn(component, 'RemoveMinPriceFilter').and.callThrough();
+    const removeFilterSpy = spyOn(
+      component,
+      'RemoveMinPriceFilter',
+    ).and.callThrough();
     quickFilterPreviewButton.click();
     fixture.detectChanges();
-    expect(removeFilterSpy).withContext('method to remove minimum price filter have not been called')
+    expect(removeFilterSpy)
+      .withContext('method to remove minimum price filter have not been called')
       .toHaveBeenCalled();
 
-    const buttonAfterRemoval = fixture.debugElement.query(By.css('.applied-filter'));
-    expect(buttonAfterRemoval).withContext('quickfilter button still exists')
+    const buttonAfterRemoval = fixture.debugElement.query(
+      By.css('.applied-filter'),
+    );
+    expect(buttonAfterRemoval)
+      .withContext('quickfilter button still exists')
       .toBeNull();
-
   });
-
 });

@@ -15,12 +15,12 @@ import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { AppRoutingModule } from 'src/app/app-routing.module';
 import { CountrySelectComponent } from '../country-select/country-select.component';
 import { provideHttpClient } from '@angular/common/http';
-import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatFormFieldModule } from '@angular/material/form-field';
 import {
   HttpTestingController,
-  provideHttpClientTesting
-} from "@angular/common/http/testing";
-import { MatDialogModule } from "@angular/material/dialog";
+  provideHttpClientTesting,
+} from '@angular/common/http/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 import { environment } from 'src/enviroment';
 
 describe('AddressEditorComponent', () => {
@@ -57,26 +57,21 @@ describe('AddressEditorComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-
   });
 
-  it('with empty value form should be invalid', function() {
+  it('with empty value form should be invalid', function () {
     expect(component.addressForm.invalid).toBeTruthy();
   });
 
-  describe('Filled form with valid values', function() {
+  describe('Filled form with valid values', function () {
     let emitterSpy: jasmine.Spy;
     let httpController: HttpTestingController;
     beforeEach(() => {
       httpController = TestBed.inject(HttpTestingController);
-      emitterSpy = spyOn(
-        component.actionResponse, 'emit')
-        .and.callThrough();
+      emitterSpy = spyOn(component.actionResponse, 'emit').and.callThrough();
 
       component.addressForm.controls['address'].setValue('787 Dunbar Road');
-      component.addressForm.controls['fullname'].setValue(
-        'John California',
-      );
+      component.addressForm.controls['fullname'].setValue('John California');
       component.addressForm.controls['email'].setValue('johnyboy@mail.com');
       component.addressForm.controls['phoneNumber'].setValue(
         '+1 (213) 555-3890',
@@ -87,13 +82,14 @@ describe('AddressEditorComponent', () => {
       component.addressForm.controls['id'].setValue(333);
     });
 
-    it('form should be valid', async function() {
+    it('form should be valid', async function () {
       expect(component.addressForm.valid).toBeTruthy();
     });
 
-    it('emits close window event', async function() {
+    it('emits close window event', async function () {
       const cancelButton = fixture.debugElement.query(
-        By.css('[name=cancel-button]')).nativeElement as HTMLButtonElement;
+        By.css('[name=cancel-button]'),
+      ).nativeElement as HTMLButtonElement;
 
       expect(cancelButton).withContext('no button found').toBeTruthy();
 
@@ -102,72 +98,80 @@ describe('AddressEditorComponent', () => {
       expect(emitterSpy).toHaveBeenCalledOnceWith(undefined);
     });
 
-    it('emits delete address event', async function() {
+    it('emits delete address event', async function () {
       const deleteButton = fixture.debugElement.query(
-        By.css('[name=delete-button]')).nativeElement as HTMLButtonElement;
+        By.css('[name=delete-button]'),
+      ).nativeElement as HTMLButtonElement;
       expect(deleteButton).withContext('no button found').toBeTruthy();
 
-      const deleteSpy = spyOn(component, 'DeleteAddress')
-        .and.callThrough();
+      const deleteSpy = spyOn(component, 'DeleteAddress').and.callThrough();
 
       deleteButton.click();
 
-      expect(deleteSpy).withContext('no interaction from UI received')
+      expect(deleteSpy)
+        .withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: environment.apiUrl + 'address/' + component.address.Id,
+        url: environment.apiUrl + 'v1/addresses/' + component.address.id,
         method: 'DELETE',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: true });
+      expect(emitterSpy).toHaveBeenCalledWith({
+        Address: component.address,
+        WasDeleted: true,
+      });
     });
 
-    it('emits add address event', async function() {
+    it('emits add address event', async function () {
       component.isNew = true;
       fixture.detectChanges();
-      const addButton = fixture.debugElement.query(
-        By.css('[name=add-button]')).nativeElement as HTMLButtonElement;
+      const addButton = fixture.debugElement.query(By.css('[name=add-button]'))
+        .nativeElement as HTMLButtonElement;
       expect(addButton).withContext('no button found').toBeTruthy();
 
-      const addSpy = spyOn(component, 'AddAddress')
-        .and.callThrough();
+      const addSpy = spyOn(component, 'AddAddress').and.callThrough();
 
       addButton.click();
 
-      expect(addSpy).withContext('no interaction from UI received')
+      expect(addSpy)
+        .withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: environment.apiUrl + 'address/',
+        url: environment.apiUrl + 'v1/addresses',
         method: 'POST',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: false });
-
+      expect(emitterSpy).toHaveBeenCalledWith({
+        Address: component.address,
+        WasDeleted: false,
+      });
     });
 
-    it('emits edit address event', async function() {
+    it('emits edit address event', async function () {
       const editButton = fixture.debugElement.query(
-        By.css('[name=edit-button]')).nativeElement as HTMLButtonElement;
+        By.css('[name=edit-button]'),
+      ).nativeElement as HTMLButtonElement;
       expect(editButton).withContext('no button found').toBeTruthy();
 
-      const editSpy = spyOn(component, 'UpdateAddress')
-        .and.callThrough();
+      const editSpy = spyOn(component, 'UpdateAddress').and.callThrough();
 
       editButton.click();
 
-      expect(editSpy).withContext('no interaction from UI received')
+      expect(editSpy)
+        .withContext('no interaction from UI received')
         .toHaveBeenCalled();
       const request = httpController.expectOne({
-        url: environment.apiUrl + 'address/',
+        url: environment.apiUrl + 'v1/addresses',
         method: 'PUT',
       });
       request.flush(component.address);
 
-      expect(emitterSpy).toHaveBeenCalledWith({ Address: component.address, WasDeleted: false });
+      expect(emitterSpy).toHaveBeenCalledWith({
+        Address: component.address,
+        WasDeleted: false,
+      });
     });
-
-  })
-
+  });
 });
