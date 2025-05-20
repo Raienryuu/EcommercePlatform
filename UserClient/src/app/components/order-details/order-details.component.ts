@@ -71,6 +71,7 @@ export class OrderDetailsComponent {
         this.orderStatus = order.status;
 
         this.isLoaded = true;
+        this.order.status = 0;
       },
       error: () => {
         this.orderNotFound = true;

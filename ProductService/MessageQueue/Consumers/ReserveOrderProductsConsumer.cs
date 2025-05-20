@@ -32,14 +32,9 @@ public class ReserveOrderProductsConsumer(ProductDbContext db, ILogger<ReserveOr
       .Products.Where(x => products.Select(x => x.ProductId).ToList().Contains(x.Id))
       .ToListAsync();
 
-    if (storageProducts.Count != products.Count)
-    {
-      await PublishProductsNotAvaiable(context);
-      return;
-    }
-
     storageProducts.ForEach(x => x.Quantity -= products.First(p => p.ProductId == x.Id).Quantity);
-    if (storageProducts.Any(x => x.Quantity < 0))
+
+    if (storageProducts.Count != products.Count || storageProducts.Any(x => x.Quantity < 0))
     {
       await PublishProductsNotAvaiable(context);
       return;
@@ -52,10 +47,7 @@ public class ReserveOrderProductsConsumer(ProductDbContext db, ILogger<ReserveOr
       ReserveTimestamp = DateTime.UtcNow,
     };
 
-    if (isInDb)
-      db.OrdersReserved.Update(potentialReservation);
-    else
-      await db.OrdersReserved.AddAsync(potentialReservation);
+    await db.OrdersReserved.AddAsync(potentialReservation);
 
     try
     {

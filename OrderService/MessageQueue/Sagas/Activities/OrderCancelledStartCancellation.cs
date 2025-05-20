@@ -11,8 +11,6 @@ namespace OrderService.MessageQueue.Sagas.Activities
     ILogger<OrderCancelledStartCancellationActivity> logger
   ) : IStateMachineActivity<CancelOrderState, IOrderCancellationRequest>
   {
-    private readonly OrderDbContext _db = db;
-
     public void Accept(StateMachineVisitor visitor)
     {
       visitor.Visit(this);
@@ -43,7 +41,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
 
     private async Task Handle(BehaviorContext<CancelOrderState, IOrderCancellationRequest> context)
     {
-      var order = await _db.Orders.FindAsync(
+      var order = await db.Orders.FindAsync(
         [context.Message.OrderId],
         cancellationToken: CancellationToken.None
       );
@@ -80,8 +78,8 @@ namespace OrderService.MessageQueue.Sagas.Activities
     )
     {
       order.Status = OrderStatus.Type.Cancelled;
-      _db.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-      await _db.SaveChangesAsync(CancellationToken.None);
+      db.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+      await db.SaveChangesAsync(CancellationToken.None);
       await context.Publish(
         new OrderCancelledRemoveProductsReservationCommand() { OrderId = context.Message.OrderId }
       );

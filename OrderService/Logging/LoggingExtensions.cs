@@ -27,6 +27,13 @@ public static partial class LoggerExtensions
   public static partial void OrderSuccessfulPaymentInfo(this ILogger logger, long amount);
 
   [LoggerMessage(
+    EventId = 1005,
+    Level = LogLevel.Warning,
+    Message = "Unable to save changes for order: {OrderId}"
+  )]
+  public static partial void OrderChangesSaveFailure(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(
     EventId = 2001,
     Level = LogLevel.Information,
     Message = "Sent ReserveOrderProductsCommand for order Id: {OrderId}"

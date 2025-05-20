@@ -18,7 +18,10 @@ public class NewOrderSaga : MassTransitStateMachine<OrderState>
       When(OrderPriceCalculated).Activity(x => x.OfType<OrderUpdateTotalCostActivity>()).TransitionTo(Pending)
     );
 
-    During(Pending, When(OrderReserved).TransitionTo(Confirmed));
+    During(
+      Pending,
+      When(OrderReserved).Activity(x => x.OfType<OrderMarkAsConfirmedActivity>()).TransitionTo(Confirmed)
+    );
 
     During(
       Pending,
