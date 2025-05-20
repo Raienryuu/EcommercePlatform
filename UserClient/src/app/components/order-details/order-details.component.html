@@ -21,7 +21,7 @@
             />
             @if ((orderStatus | orderStatusTransform) === 99) {
               <mat-step
-                [completed]="orderStatus > 4"
+                [completed]="true"
                 label="Cancelled"
                 editable="false"
               />
@@ -138,6 +138,12 @@
                 }
               </div>
             </div>
+          }
+          @if (order!.status < 3 && !cancellationRequested ){
+            <div class="cancel-order">
+            <button mat-button (click)="CancelOrder()"> Cancel order </button>
+            </div>
+
           }
         </span>
       </div>

@@ -29,6 +29,12 @@ export class OrderService {
     );
   }
 
+  CancelOrder(orderId: string) {
+    return this.httpClient.delete<string>(
+      environment.apiUrl + `v1/orders/${orderId}`,
+    );
+  }
+
   CreatePaymentIntent(orderId: string): Observable<HttpResponse<string>> {
     return this.httpClient.post<string>(
       environment.apiUrl + 'v1/payments/' + orderId,

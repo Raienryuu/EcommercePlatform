@@ -177,3 +177,15 @@ button.retry {
 .payment {
   margin: 1svh;
 }
+
+.cancel-order {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+}
+
+.cancel-order>button {
+  font-size: inherit;
+  text-decoration: underline;
+  color: $primary-400;
+}

@@ -5,6 +5,7 @@ export interface Order {
   orderId: string;
   userId: string;
   isConfirmed: boolean;
+  isCancelled: boolean;
   status: number;
   notes: string | null;
   created: Date;

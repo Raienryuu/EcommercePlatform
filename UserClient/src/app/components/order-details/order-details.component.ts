@@ -32,6 +32,7 @@ export class OrderDetailsComponent {
 
   paymentFormVisible = false;
   clientSecret: string | undefined;
+  cancellationRequested = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -66,12 +67,10 @@ export class OrderDetailsComponent {
     return this.orderService.GetOrder(orderId).subscribe({
       next: (order) => {
         this.order = order;
-        console.log(order);
 
         this.orderStatus = order.status;
 
         this.isLoaded = true;
-        this.order.status = 0;
       },
       error: () => {
         this.orderNotFound = true;
@@ -118,5 +117,11 @@ export class OrderDetailsComponent {
 
   GetPreviewImageSource(productId: string): string {
     return 'p-' + productId + '-0';
+  }
+
+  CancelOrder() {
+    this.orderService
+      .CancelOrder(this.orderId)
+      .subscribe(() => (this.cancellationRequested = true));
   }
 }
