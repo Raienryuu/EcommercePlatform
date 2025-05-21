@@ -103,7 +103,6 @@ public class StripePaymentService : IStripePaymentService
         new { order.OrderId, Products = productsIdsToReserve },
         ct
       );
-      _logger.OrderReserveOrderCommandSent(order.OrderId);
     }
     return Results.Ok();
   }
@@ -129,22 +128,33 @@ public class StripePaymentService : IStripePaymentService
       return;
     }
 
-    var refundService = new RefundService();
+    var client = new StripeClient(_options.Value.ApiKey);
+    var refundService = new RefundService(client);
     var refundOptions = new RefundCreateOptions { PaymentIntent = order?.StripePaymentId };
 
-    var response = await refundService.CreateAsync(refundOptions, cancellationToken: ct);
-    if (response.Status == "succeeded")
+    try
     {
-      await _publisher.Publish<IOrderCancelledPaymentRefunded>(
-        new
-        {
-          order!.OrderId,
-          AmountInSmallestCurrencyUnit = response.Amount,
-          CurrencyISO = response.Currency,
-        },
-        ct
-      );
-      _logger.OrderRefunded(order.OrderId, (int)response.Amount, response.Currency);
+      var response = await refundService.CreateAsync(refundOptions, cancellationToken: ct);
+      _logger.LogCritical("Current status of order payment refund is {status}", response.Status);
+      /// move to webhook
+      if (response.Status == "succeeded")
+      {
+        await _publisher.Publish<IOrderCancelledPaymentRefunded>(
+          new
+          {
+            order!.OrderId,
+            AmountInSmallestCurrencyUnit = response.Amount,
+            CurrencyISO = response.Currency,
+          },
+          ct
+        );
+        _logger.OrderRefunded(order.OrderId, (int)response.Amount, response.Currency);
+      }
+    }
+    catch (Exception e)
+    {
+      _logger.UnableToCancelOrder(orderId, e.Message);
+      throw;
     }
   }
 

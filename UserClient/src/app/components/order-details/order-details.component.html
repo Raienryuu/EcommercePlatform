@@ -35,6 +35,7 @@
           </mat-stepper>
         </div>
       </div>
+      @defer{
       <div class="products-wrapper">
         <div class="products">
           <div class="product" *ngFor="let product of products">
@@ -147,6 +148,7 @@
           }
         </span>
       </div>
+      }
     </span>
   }
   @if (orderNotFound) {

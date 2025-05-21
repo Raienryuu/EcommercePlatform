@@ -8,7 +8,7 @@ public static class OrderEndpointMapper
   {
     app.MapGetOrderEndpoint();
     app.MapCreateOrderEndpoint();
-    app.MapDeleteOrderEndpoint();
+    app.MapCancelOrderEndpoint();
     app.MapPutOrderEndpoint();
     app.MapGetUserOrdersEndpoint();
     app.MapSetDeliveryMethodEndpoint();

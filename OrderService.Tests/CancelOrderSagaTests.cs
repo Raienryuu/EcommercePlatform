@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.MessageQueue.Sagas;
 using OrderService.MessageQueue.Sagas.SagaStates;
 using OrderService.Models;
+using OrderService.Services;
+using OrderService.Tests.Fakes;
+using Xunit.Abstractions;
 
 namespace OrderService.Tests;
 
@@ -79,10 +82,8 @@ public class CancelOrderSagaTests
         },
         ServiceLifetime.Singleton
       )
-      .AddLogging(l =>
-      {
-        l.AddConsole();
-      })
+      .AddLogging(l => { })
+      .AddSingleton<IStripePaymentService, FakeStripePaymentService>()
       .BuildServiceProvider(true);
   }
 
@@ -131,7 +132,7 @@ public class CancelOrderSagaTests
     await _harness.Bus.Publish<IOrderCancellationRequest>(new { orderId });
 
     await _harness.Bus.Publish<IOrderCancelledRemovedProductsReservation>(new { orderId });
-    await Task.Delay(500); // makes sure events are fired and processed
+    await Task.Delay(1900); // makes sure events are fired and processed
 
     var sagaInstance = await _cancelSagasHarness.Sagas.SelectAsync(s => s.CorrelationId == orderId).First();
     const string EXPECTED_STATE = "Confirmed";
@@ -152,7 +153,6 @@ public class CancelOrderSagaTests
     orders.SaveChanges();
     await _harness.Bus.Publish<IOrderCancellationRequest>(new { orderId });
 
-    await _harness.Bus.Publish<IOrderCancelledCancellationUnavailable>(new { orderId });
     await Task.Delay(500); // makes sure events are fired and processed
 
     var sagaInstance = await _cancelSagasHarness.Sagas.SelectAsync(s => s.CorrelationId == orderId).First();

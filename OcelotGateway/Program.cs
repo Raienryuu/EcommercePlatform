@@ -41,7 +41,7 @@ new WebHostBuilder()
   .ConfigureLogging(
     static (hostingContext, logging) =>
     {
-      _ = logging.AddConsole();
+      _ = logging.AddConsole().SetMinimumLevel(LogLevel.None);
     }
   )
   .Configure(static app =>

@@ -12,4 +12,5 @@ public class StripeConfig
 public class Webhooks
 {
   public required string PaymentIntentConfirmCode { get; set; }
+  public required string RefundCode { get; set; }
 }

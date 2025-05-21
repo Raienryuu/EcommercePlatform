@@ -21,6 +21,7 @@ public static class MessageQueueUtils
         //var assembly = Assembly.GetEntryAssembly(); find consumers and others from Reflection
         o.AddConsumer<ReserveOrderProductsConsumer>();
         o.AddConsumer<OrderCalculateTotalCostConsumer>();
+        o.AddConsumer<OrderCancelledRemoveProductsReservationConsumer>();
 
         o.UsingRabbitMq(
           (context, cfg) =>

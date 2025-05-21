@@ -52,38 +52,16 @@ namespace OrderService.MessageQueue.Sagas.Activities
         return;
       }
 
-      var action = order.Status switch
-      {
-        OrderStatus.Type.AwaitingConfirmation or OrderStatus.Type.Confirmed => CancelOrder(order, context),
-        _ => OrderCancellationUnavailable(order, context),
-      };
-
-      await action;
-
-      context.Saga.OrderMarkedAsCancelled = true;
-    }
-
-    private async Task OrderCancellationUnavailable(
-      Order order,
-      BehaviorContext<CancelOrderState, IOrderCancellationRequest> context
-    )
-    {
-      await context.Publish<IOrderCancelledCancellationUnavailable>(new { context.Message.OrderId });
-      logger.UnableToCancelOrder(order.OrderId);
-    }
-
-    private async Task CancelOrder(
-      Order order,
-      BehaviorContext<CancelOrderState, IOrderCancellationRequest> context
-    )
-    {
-      order.Status = OrderStatus.Type.Cancelled;
+      order.IsCancelled = true;
       db.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
       await db.SaveChangesAsync(CancellationToken.None);
+
       await context.Publish(
         new OrderCancelledRemoveProductsReservationCommand() { OrderId = context.Message.OrderId }
       );
       logger.StartedOrderCancellation(order.OrderId);
+
+      context.Saga.OrderMarkedAsCancelled = true;
     }
   }
 }

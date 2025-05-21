@@ -1,3 +1,5 @@
+using OrderService.Models;
+
 namespace OrderService.Logging;
 
 public static partial class LoggerExtensions
@@ -34,13 +36,6 @@ public static partial class LoggerExtensions
   public static partial void OrderChangesSaveFailure(this ILogger logger, Guid orderId);
 
   [LoggerMessage(
-    EventId = 2001,
-    Level = LogLevel.Information,
-    Message = "Sent ReserveOrderProductsCommand for order Id: {OrderId}"
-  )]
-  public static partial void OrderReserveOrderCommandSent(this ILogger logger, Guid orderId);
-
-  [LoggerMessage(
     EventId = 2002,
     Level = LogLevel.Information,
     Message = "Started order cancellation for order Id: {OrderId}"
@@ -50,9 +45,9 @@ public static partial class LoggerExtensions
   [LoggerMessage(
     EventId = 2003,
     Level = LogLevel.Warning,
-    Message = "Order with id : {OrderId}, could not be cancelled"
+    Message = "Order with id : {OrderId}, could not be cancelled, current status was {Status}"
   )]
-  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId);
+  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId, OrderStatus.Type status);
 
   [LoggerMessage(
     EventId = 2004,
@@ -84,6 +79,13 @@ public static partial class LoggerExtensions
 
   [LoggerMessage(
     EventId = 2008,
+    Level = LogLevel.Error,
+    Message = "Order with id : {OrderId}, cancellation meet an error: {Message}"
+  )]
+  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId, string message);
+
+  [LoggerMessage(
+    EventId = 2009,
     Level = LogLevel.Information,
     Message = "Cancelled payment intent for order with id : {OrderId}"
   )]

@@ -66,6 +66,12 @@ public class NewOrderSagaTests
         _ = o.AddSagaStateMachine<NewOrderSaga, OrderState>().InMemoryRepository();
         o.UsingInMemory(static (context, cfg) => cfg.ConfigureEndpoints(context));
       })
+      .AddSingleton<OrderDbContext, FakeOrderDbContext>()
+      .AddSingleton<DbContextOptions>(static x =>
+        new DbContextOptionsBuilder<FakeOrderDbContext>()
+          .UseInMemoryDatabase($"orderSagas-{Guid.NewGuid()}")
+          .Options
+      )
       .BuildServiceProvider(true);
     var harness = provider.GetRequiredService<ITestHarness>();
     await harness.Start();
@@ -91,7 +97,16 @@ public class NewOrderSagaTests
         },
       }
     );
-    await harness.Bus.Publish<IOrderSubmitted>(new { OrderId = orderId });
+    await harness.Bus.Publish<IOrderPriceCalculated>(
+      new
+      {
+        OrderId = orderId,
+        CurrencyISO = "eur",
+        TotalPriceInSmallestCurrencyUnit = 921312,
+      }
+    );
+
+    await Task.Delay(500);
     var sagasHarness = harness.GetSagaStateMachineHarness<NewOrderSaga, OrderState>();
     _ = await sagasHarness.Exists(orderId);
 
@@ -121,6 +136,7 @@ public class NewOrderSagaTests
         o.UsingInMemory(static (context, cfg) => cfg.ConfigureEndpoints(context));
       })
       .BuildServiceProvider(true);
+
     var orderId = Guid.NewGuid();
     var db = provider.GetRequiredService<OrderDbContext>();
     _ = db.Orders.Add(
@@ -138,7 +154,7 @@ public class NewOrderSagaTests
             Country = "Countryman",
             FullName = "Joe Doe",
             PhoneNumber = "+1324 231415",
-            ZIPCode = "34512"
+            ZIPCode = "34512",
           },
           HandlerName = "dhl",
           Price = 0,
@@ -172,7 +188,14 @@ public class NewOrderSagaTests
         },
       }
     );
-    await harness.Bus.Publish<IOrderSubmitted>(new { OrderId = orderId });
+    await harness.Bus.Publish<IOrderPriceCalculated>(
+      new
+      {
+        OrderId = orderId,
+        CurrencyISO = "eur",
+        TotalPriceInSmallestCurrencyUnit = 921312,
+      }
+    );
     var sagasHarness = harness.GetSagaStateMachineHarness<NewOrderSaga, OrderState>();
     var pendingSaga = await sagasHarness.Exists(orderId, static x => x.Pending);
 
@@ -183,6 +206,7 @@ public class NewOrderSagaTests
       static x => x.Cancelled,
       TimeSpan.FromSeconds(1)
     );
+
     var freshOrder = await db.Orders.FindAsync(orderId);
     Assert.Equal(OrderStatus.Type.Cancelled, freshOrder!.Status);
     Assert.True(instanceConfirmed! == orderId);
@@ -227,7 +251,7 @@ public class NewOrderSagaTests
           Country = "Countryman",
           FullName = "Joe Doe",
           PhoneNumber = "+1324 231415",
-          ZIPCode = "34512"
+          ZIPCode = "34512",
         },
         DeliveryId = Guid.NewGuid(),
         HandlerName = "dhl",

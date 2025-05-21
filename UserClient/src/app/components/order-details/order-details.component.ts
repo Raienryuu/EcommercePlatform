@@ -67,6 +67,7 @@ export class OrderDetailsComponent {
     return this.orderService.GetOrder(orderId).subscribe({
       next: (order) => {
         this.order = order;
+        console.log(order);
 
         this.orderStatus = order.status;
 

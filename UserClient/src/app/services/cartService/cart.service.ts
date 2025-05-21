@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Output } from '@angular/core';
-import { Observable, Subject, debounceTime, share, take, tap } from 'rxjs';
+import { Observable, Subject, debounceTime } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
 import { environment } from 'src/enviroment';
 
@@ -145,5 +145,12 @@ export class CartService {
     return this.httpClient.get<number>(
       environment.apiUrl + `cart/${this.remoteCartId}/count`,
     );
+  }
+
+  Clear() {
+    localStorage.removeItem(this.cart);
+    localStorage.removeItem(this.cartKey);
+    this.localCart = { products: [] };
+    this.remoteCartId = null;
   }
 }

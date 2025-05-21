@@ -93,6 +93,18 @@
 			],
 			"UpstreamPathTemplate": "/api/v1/payments/confirm"
 		},
+        {
+			"DownstreamPathTemplate": "/api/v1/payments/refund", // orderService - refundUpdate - stripe webhook
+			"DownstreamScheme": "http",
+			"DownstreamHostAndPorts": [
+				{
+					"Host": "host.docker.internal",
+					"Port": 5138
+				}
+			],
+			"UpstreamPathTemplate": "/api/v1/payments/refund"
+		},
+
 		{
 			"DownstreamPathTemplate": "/api/v1/payments/{everything}", // orderService - payments
 			"DownstreamScheme": "http",
