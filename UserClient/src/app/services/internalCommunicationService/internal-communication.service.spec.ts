@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { InternalCommunicationService } from './internal-communication-service.service';
+import { InternalCommunicationService } from './internal-communication.service';
 
 describe('InternalCommunicationServiceService', () => {
   let service: InternalCommunicationService;

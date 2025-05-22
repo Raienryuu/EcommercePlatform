@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, Output } from '@angular/core';
-import { Observable, Subject, debounceTime } from 'rxjs';
+import { Observable, Subject, debounceTime, of } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
 import { environment } from 'src/enviroment';
 import { InternalCommunicationService } from '../internalCommunicationService/internal-communication.service';
@@ -64,7 +64,6 @@ export class CartService {
       id: productId,
       amount: quantity,
     });
-    this.UpdateLocalCart();
     this.UpdateCart();
     this.internalCommunicationService.NewProductInCartEvent(
       this.localCart.products.length,
@@ -101,11 +100,12 @@ export class CartService {
    * @return  Shared 'Observable<string>' */
   private UpdateCart(): void {
     this.UpdateLocalStorage();
-    if (this.remoteCartId === null) {
+    if (this.remoteCartId == null) {
       this.CreateNewCart().subscribe((newId) => {
         this.cartKey = newId;
         this.UpdateLocalCartKey();
       });
+      return;
     }
 
     if (this.cartUpdateDelayedEvent.observed) {
@@ -150,7 +150,7 @@ export class CartService {
   }
 
   GetCartProductsCount(): Observable<number> {
-    if (this.remoteCartId == null) throw new Error('Remote cart id is null');
+    if (this.remoteCartId == null) of(0);
     return this.httpClient.get<number>(
       environment.apiUrl + `cart/${this.remoteCartId}/count`,
     );
