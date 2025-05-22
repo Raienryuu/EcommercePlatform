@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CartService } from 'src/app/services/cartService/cart.service';
-import { InternalCommunicationServiceService } from 'src/app/services/internalCommunicationService/internal-communication-service.service';
+import { InternalCommunicationService } from 'src/app/services/internalCommunicationService/internal-communication.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 
 @Component({
@@ -18,14 +18,18 @@ export class NavbarComponent {
     private userSettingsService: UserSettingsService,
     private cartService: CartService,
     public activatedRoute: ActivatedRoute,
-    private internalCommunicationService: InternalCommunicationServiceService,
+    private internalCommunicationService: InternalCommunicationService,
   ) {
     this.LoadUserName();
-    this.LoadCartProductsCount();
+    if (this.cartService.localCart.products.length > 0) {
+      this.LoadCartProductsCount();
+    }
     this.internalCommunicationService.userLoggedInEvent.subscribe(() => {
       this.LoadUserName();
-      this.LoadCartProductsCount();
     });
+    this.internalCommunicationService.newProductInCartEvent.subscribe(
+      (newCartItemsCount) => (this.CartItemsCount = newCartItemsCount),
+    );
   }
 
   CartItemsCount = 0;

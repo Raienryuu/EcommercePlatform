@@ -62,7 +62,7 @@ public class OrderUpdateTotalCostActivity(
     try
     {
       logger.LogInformation(
-        "Attemting to save {Total} for orderId: {OrderId}",
+        "Attemting to save total price: {Total} for orderId: {OrderId}",
         order.TotalPriceInSmallestCurrencyUnit,
         order.OrderId
       );

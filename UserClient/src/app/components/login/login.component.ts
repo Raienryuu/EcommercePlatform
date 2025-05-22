@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../../services/userService/user.service';
 import { Router } from '@angular/router';
-import { InternalCommunicationServiceService } from 'src/app/services/internalCommunicationService/internal-communication-service.service';
+import { InternalCommunicationService } from 'src/app/services/internalCommunicationService/internal-communication.service';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +13,7 @@ export class LoginComponent {
   constructor(
     private loginService: UserService,
     private router: Router,
-    private internalCommunicationService: InternalCommunicationServiceService,
+    private internalCommunicationService: InternalCommunicationService,
   ) {
     this.login = '';
     this.password = '';

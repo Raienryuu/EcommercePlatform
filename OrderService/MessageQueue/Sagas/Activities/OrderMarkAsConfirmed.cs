@@ -33,7 +33,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
         return;
       }
 
-      order.Status = OrderStatus.Type.Confirmed;
+      order.Status = OrderStatus.Confirmed;
       db.Orders.Entry(order).State = EntityState.Modified;
 
       try

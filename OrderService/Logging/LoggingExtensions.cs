@@ -24,9 +24,9 @@ public static partial class LoggerExtensions
   [LoggerMessage(
     EventId = 1004,
     Level = LogLevel.Information,
-    Message = "A successful payment for {Amount} was made."
+    Message = "A successful payment for amount: {Amount}, orderId: {OrderId} was made."
   )]
-  public static partial void OrderSuccessfulPaymentInfo(this ILogger logger, long amount);
+  public static partial void OrderSuccessfulPaymentInfo(this ILogger logger, long amount, Guid orderId);
 
   [LoggerMessage(
     EventId = 1005,
@@ -47,7 +47,7 @@ public static partial class LoggerExtensions
     Level = LogLevel.Warning,
     Message = "Order with id : {OrderId}, could not be cancelled, current status was {Status}"
   )]
-  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId, OrderStatus.Type status);
+  public static partial void UnableToCancelOrder(this ILogger logger, Guid orderId, OrderStatus status);
 
   [LoggerMessage(
     EventId = 2004,

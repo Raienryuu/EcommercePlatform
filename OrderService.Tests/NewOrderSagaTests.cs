@@ -208,7 +208,7 @@ public class NewOrderSagaTests
     );
 
     var freshOrder = await db.Orders.FindAsync(orderId);
-    Assert.Equal(OrderStatus.Type.Cancelled, freshOrder!.Status);
+    Assert.Equal(OrderStatus.Cancelled, freshOrder!.Status);
     Assert.True(instanceConfirmed! == orderId);
   }
 

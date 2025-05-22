@@ -24,7 +24,7 @@ export class OrderDetailsComponent {
   isLoaded = false;
   orderNotFound = false;
   order: Order | undefined;
-  orderStatus = 0;
+  orderStatus = '';
   paymentStatus: string | undefined;
 
   @Input()

@@ -138,7 +138,7 @@ public class CancelOrderSagaTests
     const string EXPECTED_STATE = "Confirmed";
     Assert.Equal(EXPECTED_STATE, sagaInstance.Saga.CurrentState);
     var order = await orders.Orders.FindAsync(orderId);
-    Assert.Equal(OrderStatus.Type.Cancelled, order?.Status);
+    Assert.Equal(OrderStatus.Cancelled, order?.Status);
   }
 
   [Fact]
@@ -149,7 +149,7 @@ public class CancelOrderSagaTests
     using var orders = scope.ServiceProvider.GetRequiredService<OrderDbContext>();
     AddNewOrderWithId(orderId, orders);
     var orderInDelivery = orders.Orders.Find(orderId);
-    orderInDelivery!.Status = OrderStatus.Type.Shipped;
+    orderInDelivery!.Status = OrderStatus.Shipped;
     orders.SaveChanges();
     await _harness.Bus.Publish<IOrderCancellationRequest>(new { orderId });
 
@@ -159,6 +159,6 @@ public class CancelOrderSagaTests
     const string EXPECTED_STATE = "Final";
     Assert.Equal(EXPECTED_STATE, sagaInstance.Saga.CurrentState);
     var order = orders.Orders.Find(orderId);
-    Assert.NotEqual(OrderStatus.Type.Cancelled, order?.Status);
+    Assert.NotEqual(OrderStatus.Cancelled, order?.Status);
   }
 }

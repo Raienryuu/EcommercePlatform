@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Contracts;
 using Microsoft.EntityFrameworkCore;
 
 namespace OrderService.Models;
@@ -11,7 +12,8 @@ public class Order()
   public Guid UserId { get; set; }
   public bool IsConfirmed { get; set; } = false;
   public bool IsCancelled { get; set; } = false;
-  public OrderStatus.Type Status { get; set; } = OrderStatus.Type.AwaitingConfirmation;
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public OrderStatus Status { get; set; } = OrderStatus.AwaitingConfirmation;
   public string? Notes { get; set; }
   public DateTime Created { get; set; } = DateTime.UtcNow;
   public DateTime LastModified { get; set; } = DateTime.UtcNow;
@@ -19,6 +21,7 @@ public class Order()
   public string? StripePaymentId { get; set; }
   public int? TotalPriceInSmallestCurrencyUnit { get; set; }
   public required string CurrencyISO { get; set; }
-  public bool PaymentSucceded { get; set; } = false;
+  [JsonConverter(typeof(JsonStringEnumConverter))]
+  public PaymentStatus PaymentStatus { get; set; }
   public OrderDelivery? Delivery { get; set; }
 }

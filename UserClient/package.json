@@ -26,6 +26,7 @@
     "ngx-mat-input-tel": "^18.5.3",
     "ngx-stripe": "^18.0.0",
     "rxjs": "~7.8.0",
+    "ts-pattern": "^5.7.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.6"
   },

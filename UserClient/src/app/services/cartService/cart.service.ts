@@ -3,6 +3,7 @@ import { Injectable, Output } from '@angular/core';
 import { Observable, Subject, debounceTime } from 'rxjs';
 import { Cart } from 'src/app/models/cart.model';
 import { environment } from 'src/enviroment';
+import { InternalCommunicationService } from '../internalCommunicationService/internal-communication.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,19 +17,23 @@ export class CartService {
   @Output()
   cartUpdatedEvent = new Subject<string>();
 
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private internalCommunicationService: InternalCommunicationService,
+  ) {
     this.remoteCartId = localStorage.getItem(this.cartKey);
     this.localCart = JSON.parse(
       localStorage.getItem(this.cart) ?? '{"products":[]}',
     );
     console.info('local cart is null', this.localCart == null, this.localCart);
+
     if (this.remoteCartId == null && this.localCart.products.length > 0) {
       this.CreateNewCart().subscribe((res) => {
         this.remoteCartId = res;
         this.UpdateLocalStorage();
       });
       console.info('Creating new cart since localId was null');
-    } else if (this.remoteCartId !== null) {
+    } else if (this.remoteCartId != null) {
       this.GetCart().subscribe({
         next: (cart) => {
           this.localCart = cart;
@@ -61,6 +66,9 @@ export class CartService {
     });
     this.UpdateLocalCart();
     this.UpdateCart();
+    this.internalCommunicationService.NewProductInCartEvent(
+      this.localCart.products.length,
+    );
   }
 
   GetCart(): Observable<Cart> {
@@ -142,6 +150,7 @@ export class CartService {
   }
 
   GetCartProductsCount(): Observable<number> {
+    if (this.remoteCartId == null) throw new Error('Remote cart id is null');
     return this.httpClient.get<number>(
       environment.apiUrl + `cart/${this.remoteCartId}/count`,
     );

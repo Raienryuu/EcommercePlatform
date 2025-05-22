@@ -1,4 +1,5 @@
 using System.Data;
+using Contracts;
 using MassTransit;
 using MessageQueue.Contracts;
 using MessageQueue.DTOs;
@@ -73,8 +74,6 @@ public class StripePaymentService : IStripePaymentService
       throw new NullReferenceException("PaymentIntent object is null");
     }
 
-    _logger.OrderSuccessfulPaymentInfo(paymentIntent.Amount);
-
     var order = await _context.Orders.FirstOrDefaultAsync(
       x => x.StripePaymentId == paymentIntent.Id,
       cancellationToken: ct
@@ -85,11 +84,13 @@ public class StripePaymentService : IStripePaymentService
       return Results.NotFound("Order with given id doesn't exists.");
     }
 
-    var isDuplicatedRequest = order.PaymentSucceded;
+    _logger.OrderSuccessfulPaymentInfo(paymentIntent.Amount, order.OrderId);
+
+    var isDuplicatedRequest = order.PaymentStatus != PaymentStatus.Pending;
 
     if (!isDuplicatedRequest)
     {
-      order.PaymentSucceded = true;
+      order.PaymentStatus = PaymentStatus.Succeded;
       await _context.SaveChangesAsync(ct);
 
       var productsIdsToReserve = order.Products.Select(p => new OrderProductDTO
@@ -122,7 +123,7 @@ public class StripePaymentService : IStripePaymentService
       return;
     }
 
-    if (!order.PaymentSucceded)
+    if (order.PaymentStatus == PaymentStatus.Pending)
     {
       await CancelPaymentIntent(orderId, order.StripePaymentId);
       return;
@@ -135,21 +136,6 @@ public class StripePaymentService : IStripePaymentService
     try
     {
       var response = await refundService.CreateAsync(refundOptions, cancellationToken: ct);
-      _logger.LogCritical("Current status of order payment refund is {status}", response.Status);
-      /// move to webhook
-      if (response.Status == "succeeded")
-      {
-        await _publisher.Publish<IOrderCancelledPaymentRefunded>(
-          new
-          {
-            order!.OrderId,
-            AmountInSmallestCurrencyUnit = response.Amount,
-            CurrencyISO = response.Currency,
-          },
-          ct
-        );
-        _logger.OrderRefunded(order.OrderId, (int)response.Amount, response.Currency);
-      }
     }
     catch (Exception e)
     {

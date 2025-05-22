@@ -7,4 +7,5 @@ public enum OrderStatus
   ReadyToShip,
   Shipped,
   Cancelled,
+  Succeded,
 }

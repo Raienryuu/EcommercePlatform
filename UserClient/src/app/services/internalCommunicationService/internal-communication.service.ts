@@ -4,10 +4,15 @@ import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class InternalCommunicationServiceService {
+export class InternalCommunicationService {
   userLoggedInEvent = new Subject<null>();
+  newProductInCartEvent = new Subject<number>();
 
   NewUserLoggedInEvent() {
     this.userLoggedInEvent.next(null);
+  }
+
+  NewProductInCartEvent(cartItems: number) {
+    this.newProductInCartEvent.next(cartItems);
   }
 }

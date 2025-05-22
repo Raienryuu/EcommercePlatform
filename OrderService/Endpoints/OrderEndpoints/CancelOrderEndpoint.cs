@@ -30,17 +30,17 @@ public static class CancelOrderEndpoint
             return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
           }
 
-          if (!(order.Status is OrderStatus.Type.AwaitingConfirmation or OrderStatus.Type.Confirmed))
+          if (!(order.Status is OrderStatus.AwaitingConfirmation or OrderStatus.Confirmed))
           {
             return Results.BadRequest("Too late to cancel the order.");
           }
 
-          if (order.Status == OrderStatus.Type.Cancelled)
+          if (order.Status == OrderStatus.Cancelled)
           {
             return Results.NoContent();
           }
 
-          order.Status = OrderStatus.Type.Cancelled;
+          order.Status = OrderStatus.Cancelled;
           context.Orders.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
 
           await context.SaveChangesAsync();

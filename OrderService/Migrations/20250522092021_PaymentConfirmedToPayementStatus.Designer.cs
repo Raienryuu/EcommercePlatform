@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderService;
 
@@ -11,9 +12,11 @@ using OrderService;
 namespace OrderService.Migrations
 {
     [DbContext(typeof(OrderDbContext))]
-    partial class OrderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250522092021_PaymentConfirmedToPayementStatus")]
+    partial class PaymentConfirmedToPayementStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,13 +51,11 @@ namespace OrderService.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PaymentStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<string>("StripePaymentId")
                         .HasColumnType("nvarchar(max)");
@@ -80,9 +81,8 @@ namespace OrderService.Migrations
                             b1.Property<Guid>("DeliveryId")
                                 .HasColumnType("uniqueidentifier");
 
-                            b1.Property<string>("DeliveryType")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                            b1.Property<int>("DeliveryType")
+                                .HasColumnType("int");
 
                             b1.Property<string>("ExternalDeliveryId")
                                 .HasColumnType("nvarchar(max)");
@@ -95,12 +95,11 @@ namespace OrderService.Migrations
                                 .IsRequired()
                                 .HasColumnType("nvarchar(max)");
 
-                            b1.Property<string>("PaymentType")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
+                            b1.Property<int>("PaymentType")
+                                .HasColumnType("int");
 
                             b1.Property<decimal>("Price")
-                                .HasColumnType("money");
+                                .HasColumnType("decimal(18,2)");
 
                             b1.HasKey("OrderId");
 

@@ -1,25 +1,24 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { match } from 'ts-pattern';
 
 @Pipe({
   name: 'orderStatusTransform',
   standalone: true,
 })
 export class OrderStatusTransformPipe implements PipeTransform {
-  transform(value: number): number {
-    value += 1;
+  transform(value: string): number {
+    const matcher = (value: string) =>
+      match(value)
+        .returnType<number>()
+        .with('AwaitingConfirmation', () => 0)
+        .with('Confirmed', () => 1)
+        .with('Cancelled', () => 3)
+        .with('Succeded', () => 3)
+        .with('ReadyToShip', 'Shipped', () => 2)
+        .otherwise(() => 0);
 
-    if (value === 4 || value === 3) {
-      // delivery state
-      return 2;
-    }
-    if (value === 5) {
-      return 99;
-    }
+    const result = matcher(value);
 
-    if (value >= 5) {
-      return 3;
-    }
-
-    return value;
+    return result;
   }
 }

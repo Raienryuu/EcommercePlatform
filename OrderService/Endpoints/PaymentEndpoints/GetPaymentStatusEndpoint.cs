@@ -1,5 +1,7 @@
 using System.Net;
+using Contracts;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
@@ -30,13 +32,22 @@ public static class GetPaymentStatusEndpoint
             return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
           }
 
-          if (order.PaymentSucceded)
+          if (order.PaymentStatus is PaymentStatus.Succeded or PaymentStatus.Cancelled)
           {
-            return Results.Ok("succeeded");
+            return Results.Ok(order.PaymentStatus);
           }
 
           var paymentIntent = await paymentService.GetPaymentIntentForOrder(order);
-          return Results.Ok(paymentIntent.Status);
+
+          var status = paymentIntent.Status switch
+          {
+            "succeded" => PaymentStatus.Succeded,
+            "pending" => PaymentStatus.Pending,
+            "requires_payment_method" => PaymentStatus.Failed,
+            _ => PaymentStatus.Pending,
+          };
+
+          return Results.Ok(status);
         }
       )
       .WithName(nameof(GetPaymentStatusEndpoint))

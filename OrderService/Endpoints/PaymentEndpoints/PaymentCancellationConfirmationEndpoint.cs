@@ -1,7 +1,7 @@
 using System.Net;
+using Contracts;
 using MassTransit;
 using MessageQueue.Contracts;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OrderService.Logging;
@@ -45,12 +45,15 @@ public static class RefundUpdateWebhookEndpoint
 
             var order =
               await orderDb
-                .Orders.AsNoTracking()
-                .Where(x => x.StripePaymentId == eventData.PaymentIntentId)
-                .FirstOrDefaultAsync(cancellationToken: ct) ?? throw new Exception("got him!");
+                .Orders.Where(x => x.StripePaymentId == eventData.PaymentIntentId)
+                .FirstOrDefaultAsync(cancellationToken: ct)
+              ?? throw new Exception("Did not found relevant order");
 
             if (eventData.Status == "succeeded")
             {
+              order.PaymentStatus = PaymentStatus.Cancelled;
+
+              await orderDb.SaveChangesAsync(ct);
               await publisher.Publish<IOrderCancelledPaymentRefunded>(
                 new
                 {
@@ -65,7 +68,7 @@ public static class RefundUpdateWebhookEndpoint
           }
           catch (StripeException e)
           {
-            Console.WriteLine($"Stripe error: {e.Message}");
+            logger.LogError("Stripe error: {message}", e.Message);
             return Results.BadRequest();
           }
 

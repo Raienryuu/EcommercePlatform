@@ -53,7 +53,7 @@ namespace OrderService.MessageQueue.Sagas.Activities
         return;
       }
 
-      order.Status = Models.OrderStatus.Type.Cancelled;
+      order.Status = Models.OrderStatus.Cancelled;
       await _db.SaveChangesAsync(CancellationToken.None);
     }
   }

@@ -10,16 +10,16 @@
           >
             <mat-step completed="true" editable="false" label="Pending" />
             <mat-step
-              [completed]="orderStatus > 0"
+              [completed]="(orderStatus | orderStatusTransform) > 0"
               label="Confirmed"
               editable="false"
             />
             <mat-step
-              [completed]="orderStatus > 2"
+              [completed]="(orderStatus | orderStatusTransform) > 2"
               label="Delivery"
               editable="false"
             />
-            @if ((orderStatus | orderStatusTransform) === 99) {
+            @if (orderStatus === "Cancelled" ) {
               <mat-step
                 [completed]="true"
                 label="Cancelled"
@@ -27,7 +27,7 @@
               />
             } @else {
               <mat-step
-                [completed]="orderStatus > 4"
+                [completed]="(orderStatus | orderStatusTransform) > 3"
                 label="Completed"
                 editable="false"
               />
@@ -94,11 +94,11 @@
         <span class="side-padding">
           <div class="payment-status">
             <div>Payment status</div>
-            @if (paymentStatus === "proccessing") {
+            @if (paymentStatus == "Pending") {
               <div #paymentStatus class="default-status pending">Pending</div>
-            } @else if (paymentStatus === "succeeded") {
+            } @else if (paymentStatus == "Succeded") {
               <div #paymentStatus class="default-status succeeded">Success</div>
-            } @else if (paymentStatus === "cancelled") {
+            } @else if (paymentStatus == "Cancelled") {
               <div #paymentStatus class="default-status failed">Cancelled</div>
             } @else {
               <div #paymentStatus class="default-status failed">Failed</div>
@@ -140,7 +140,7 @@
               </div>
             </div>
           }
-          @if (order!.status < 3 && !cancellationRequested ){
+          @if ((order!.status | orderStatusTransform) < 2 && !cancellationRequested ){
             <div class="cancel-order">
             <button mat-button (click)="CancelOrder()"> Cancel order </button>
             </div>

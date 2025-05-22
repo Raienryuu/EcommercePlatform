@@ -132,7 +132,7 @@ export class CartComponent {
   ToCheckout() {
     this.orderService.CreateNewOrder(this.CreateOrder()).subscribe({
       next: (order) => {
-        this.cartService.Clear();
+        // this.cartService.Clear();
         this.router.navigate([`/checkout/${order.orderId}`]);
       },
       error: (error) => {
