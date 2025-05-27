@@ -129,6 +129,16 @@ services:
     ports:
       - "6379:6379"
 
+  otel-lgtm:
+    image: grafana/otel-lgtm:0.11.2
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "3000:3000"
+      - "9090:9090"
+      - "3100:3100"
+
+
 secrets:
   sqlpassword:
     file: sqlpassword.txt

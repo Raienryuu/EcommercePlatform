@@ -1,20 +1,12 @@
-using System.Net;
 using IdentityService.Data;
 using IdentityService.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityService.Services;
 
-public class AddressesService : IAddressesService
+public class AddressesService(ApplicationDbContext db) : IAddressesService
 {
-  private readonly ApplicationDbContext _db;
-
-  public AddressesService(ApplicationDbContext db)
-  {
-    _db = db;
-  }
+  private readonly ApplicationDbContext _db = db;
 
   public async Task<UserAddress> AddAddressAsync(UserAddress address)
   {
