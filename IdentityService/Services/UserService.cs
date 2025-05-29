@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
 using Humanizer;
 using IdentityService.Data;
 using IdentityService.Models;
@@ -42,7 +41,7 @@ public class UserService(
       await db.Addresses.AddAsync(userAddress);
       await db.SaveChangesAsync();
 
-      logger.LogInformation("Registerd new user");
+      logger.RegisteredNewUser(newUser.Id);
 
       return (true, []);
     }
@@ -62,7 +61,7 @@ public class UserService(
     var result = await userManager.CheckPasswordAsync(user, credentials.Password);
     if (!result)
     {
-      logger.LogInformation("User {User} used invalid password", user.Id);
+      logger.InvalidLogin(user.Id);
       return (false, "{\"message\":\"Not able to get matching values from database.\"}");
     }
     var jwtSection = configuration.GetRequiredSection("Jwt");
@@ -92,7 +91,7 @@ public class UserService(
 
     var response = $"{{ \"Authorization\" : \"{jwToken}\" }}";
 
-    logger.LogInformation("User {User} logged in successfully", user.Id);
+    logger.SuccessfullLogin(user.Id);
 
     return (true, response);
   }

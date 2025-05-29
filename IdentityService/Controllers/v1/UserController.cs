@@ -1,4 +1,3 @@
-using IdentityService.Data;
 using IdentityService.Models;
 using IdentityService.Models.Validators;
 using IdentityService.Services;

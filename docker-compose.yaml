@@ -52,6 +52,8 @@ services:
       - ConnectionStrings__User=user=identityManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-lgtm:4318/
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     ports:
       - "5156:8080"
     depends_on:

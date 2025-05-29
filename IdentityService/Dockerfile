@@ -2,8 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 5156
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
@@ -13,9 +12,11 @@ RUN dotnet restore "IdentityService.csproj"
 COPY ["IdentityService", "IdentityService"]
 
 WORKDIR "/src/."
+ARG BUILD_CONFIGURATION=Release
 RUN dotnet build "IdentityService/IdentityService.csproj" -c Release -o /app/build
 
 FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "IdentityService/IdentityService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 RUN dotnet dev-certs https
 

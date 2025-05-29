@@ -5,15 +5,15 @@ EXPOSE 5138
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["OrderService/OrderService.csproj", "OrderService/OrderService.csproj"]
 COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
 COPY ["Contracts/Contracts.csproj", "Contracts/Contracts.csproj"]
+COPY ["OrderService/OrderService.csproj", "OrderService/OrderService.csproj"]
 
 RUN dotnet restore "OrderService/OrderService.csproj"
 
-COPY ["OrderService", "OrderService"]
 COPY ["MessageQueue", "MessageQueue"]
 COPY ["Contracts", "Contracts"]
+COPY ["OrderService", "OrderService"]
 
 WORKDIR "/src/."
 ARG BUILD_CONFIGURATION=Release

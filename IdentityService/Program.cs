@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -23,7 +24,6 @@ builder
     options.SignIn.RequireConfirmedAccount = false
   )
   .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddLogging(configure => configure.AddOpenTelemetry(log => log.AddOtlpExporter()));
 builder.Services.AddScoped<IAddressesService, AddressesService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -81,6 +81,8 @@ builder.Services.AddControllers();
 var otel = builder.Services.AddOpenTelemetry();
 
 otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+
+builder.Services.AddLogging(configure => configure.AddOpenTelemetry(exporter => exporter.AddOtlpExporter()));
 
 otel.WithMetrics(metrics =>
 {

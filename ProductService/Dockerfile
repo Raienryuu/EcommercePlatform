@@ -5,15 +5,16 @@ EXPOSE 7107
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["ProductService/ProductService.csproj", "ProductService/ProductService.csproj"]
+
 COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
 COPY ["Contracts/Contracts.csproj", "Contracts/Contracts.csproj"]
+COPY ["ProductService/ProductService.csproj", "ProductService/ProductService.csproj"]
 
 RUN dotnet restore "ProductService/ProductService.csproj"
 
-COPY ["ProductService", "ProductService"]
 COPY ["MessageQueue", "MessageQueue"]
 COPY ["Contracts", "Contracts"]
+COPY ["ProductService", "ProductService"]
 
 WORKDIR "/src/."
 ARG BUILD_CONFIGURATION=Release
