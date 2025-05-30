@@ -1,3 +1,4 @@
+using System.Text.Json;
 using IdentityService.Models;
 using IdentityService.Models.Validators;
 using IdentityService.Services;
@@ -65,7 +66,7 @@ public class UserController(IUserService userService) : ControllerBase
     var (isSuccess, username) = await userService.GetUsernameForLoggedUser(userId);
     if (isSuccess)
     {
-      return Ok(username);
+      return Ok(JsonSerializer.Serialize(username));
     }
     return NotFound();
   }

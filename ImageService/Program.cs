@@ -5,6 +5,10 @@ using ImageService.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +23,30 @@ BsonSerializer.RegisterSerializer(objectSerializer);
 builder.Services.AddSingleton<IImageService, MongoImageService>();
 builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
+
+var otel = builder.Services.AddOpenTelemetry();
+
+otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+
+builder.Services.AddLogging(configure => configure.AddOpenTelemetry(exporter => exporter.AddOtlpExporter()));
+
+otel.WithMetrics(metrics =>
+{
+  metrics
+    .AddAspNetCoreInstrumentation()
+    // Metrics provides by ASP.NET Core in .NET 8
+    .AddMeter("Microsoft.AspNetCore.Hosting")
+    .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+    // Metrics provided by System.Net libraries
+    .AddMeter("System.Net.Http")
+    .AddMeter("System.Net.NameResolution")
+    .AddOtlpExporter();
+});
+
+otel.WithTracing(tracing =>
+{
+  tracing.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter();
+});
 
 if (
   builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development

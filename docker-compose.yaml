@@ -9,10 +9,17 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
       - RedisConfig__ConnectionString=valkey
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-lgtm:4318/
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     develop:
       watch:
-        - action: rebuild
-          path: .
+        - path: /CartService/appsettings.Development.json
+          action: sync+restart
+          target: /CartService/appsettings.Development.json
+        - path: /CartService
+          target: /app
+          action: rebuild
+
 
   imageservice:
     build:
@@ -22,14 +29,19 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - MongoDb__HostAddress=mongodb://mongodb
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-lgtm:4318/
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     ports:
       - "5271:8080"
     depends_on:
       - mongodb
     develop:
       watch:
-        - action: rebuild
-          path: .
+        - path: /ImageService/appsettings.Development.json
+          action: sync+restart
+          target: /ImageService/appsettings.Development.json
+        - path: /ImageService
+          action: rebuild
 
   orderservice:
     build:
@@ -43,6 +55,8 @@ services:
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - MongoDb__HostAddress=mongodb://mongodb
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-lgtm:4318/
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     ports:
       - "5138:8080"
     depends_on:
@@ -51,8 +65,11 @@ services:
       - mongodb
     develop:
       watch:
-        - action: rebuild
-          path: .
+      - path: /OrderService/appsettings.Development.json
+        action: sync+restart
+        target: /OrderService/appsettings.Development.json
+      - path: /OrderService
+        action: rebuild
 
   identityservice:
     build:
@@ -72,8 +89,11 @@ services:
       - sqlserver
     develop:
       watch:
-        - action: rebuild
-          path: .
+        - path: /IdentityService/appsettings.Development.json
+          action: sync+restart
+          target: /IdentityService/appsettings.Development.json
+        - path: /IdentityService
+          action: rebuild
 
   ocelotservice:
     build:
@@ -86,8 +106,8 @@ services:
       - "5044:8080"
     develop:
       watch:
-        - action: rebuild
-          path: .
+        - path: /OcelotGateway
+          action: rebuild
 
   productservice:
     build:
@@ -102,10 +122,16 @@ services:
       - ConnectionStrings__User=user=productManager;
       - ConnectionStrings__Password=password=totallynotamangerpassword!@#$5;
       - ASPNETCORE_URLS=http://+:8080;https://+:7070;
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-lgtm:4318/
+      - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
     develop:
       watch:
-        - action: rebuild
-          path: .
+        - path: /ProductService/appsettings.Development.json
+          action: sync+restart
+          target: /ProductService/appsettings.Development.json
+        - path: /ProductService
+          action: rebuild
+
     depends_on:
       rabbitmq:
         condition: service_started

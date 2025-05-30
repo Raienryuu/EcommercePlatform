@@ -98,7 +98,7 @@ public class UserService(
 
   public async Task<(bool isSuccess, string username)> GetUsernameForLoggedUser(Guid userId)
   {
-    var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstAsync();
+    var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstOrDefaultAsync();
     if (username is null)
     {
       return (false, string.Empty);

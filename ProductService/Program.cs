@@ -1,6 +1,10 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using ProductService.Endpoints;
 
 namespace ProductService;
@@ -45,6 +49,34 @@ public class Program
     builder.Services.AddDbContext<ProductDbContext>(options => options.UseSqlServer(connectionString));
 
     builder.Services.AddLogging(c => c.AddSimpleConsole());
+
+    var otel = builder.Services.AddOpenTelemetry();
+
+    otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+
+    builder.Services.AddLogging(configure =>
+      configure.AddOpenTelemetry(exporter => exporter.AddOtlpExporter())
+    );
+
+    otel.WithMetrics(metrics =>
+    {
+      metrics
+        .AddAspNetCoreInstrumentation()
+        // Metrics provides by ASP.NET Core in .NET 8
+        .AddMeter("Microsoft.AspNetCore.Hosting")
+        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+        // Metrics provided by System.Net libraries
+        .AddMeter("System.Net.Http")
+        .AddMeter("System.Net.NameResolution")
+        .AddOtlpExporter();
+    });
+
+    otel.WithTracing(tracing =>
+    {
+      tracing.AddAspNetCoreInstrumentation();
+      tracing.AddHttpClientInstrumentation();
+      tracing.AddOtlpExporter();
+    });
 
     MessageQueueUtils.Configure(builder);
 

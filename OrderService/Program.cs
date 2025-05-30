@@ -1,6 +1,10 @@
 using System.Configuration;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using OrderService.Endpoints;
 using OrderService.Endpoints.Requests;
 using OrderService.Options;
@@ -44,6 +48,34 @@ public class Program
     builder.Services.AddScoped<IValidator<CreateOrderRequest>, OrderValidator>();
     builder.Services.AddFluentValidationAutoValidation();
     builder.Services.AddLogging(c => c.AddSimpleConsole());
+
+    var otel = builder.Services.AddOpenTelemetry();
+
+    otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+
+    builder.Services.AddLogging(configure =>
+      configure.AddOpenTelemetry(exporter => exporter.AddOtlpExporter())
+    );
+
+    otel.WithMetrics(metrics =>
+    {
+      metrics
+        .AddAspNetCoreInstrumentation()
+        // Metrics provides by ASP.NET Core in .NET 8
+        .AddMeter("Microsoft.AspNetCore.Hosting")
+        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+        // Metrics provided by System.Net libraries
+        .AddMeter("System.Net.Http")
+        .AddMeter("System.Net.NameResolution")
+        .AddOtlpExporter();
+    });
+
+    otel.WithTracing(tracing =>
+    {
+      tracing.AddAspNetCoreInstrumentation();
+      tracing.AddHttpClientInstrumentation();
+      tracing.AddOtlpExporter();
+    });
 
     var app = builder.Build();
 
