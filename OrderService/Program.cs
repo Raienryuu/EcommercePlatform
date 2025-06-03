@@ -1,5 +1,6 @@
-using System.Configuration;
 using FluentValidation;
+using MassTransit.Logging;
+using MassTransit.Monitoring;
 using Microsoft.EntityFrameworkCore;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -46,12 +47,18 @@ public class Program
     MessageQueueUtils.Configure(builder.Configuration, builder.Services);
 
     builder.Services.AddScoped<IValidator<CreateOrderRequest>, OrderValidator>();
+    builder.Services.AddScoped<IOrderService, Services.OrderService>();
+
     builder.Services.AddFluentValidationAutoValidation();
-    builder.Services.AddLogging(c => c.AddSimpleConsole());
 
     var otel = builder.Services.AddOpenTelemetry();
 
-    otel.ConfigureResource(resource => resource.AddService(serviceName: builder.Environment.ApplicationName));
+    otel.ConfigureResource(resource =>
+      resource.AddService(
+        serviceName: builder.Environment.ApplicationName,
+        serviceInstanceId: Environment.MachineName
+      )
+    );
 
     builder.Services.AddLogging(configure =>
       configure.AddOpenTelemetry(exporter => exporter.AddOtlpExporter())
@@ -67,14 +74,17 @@ public class Program
         // Metrics provided by System.Net libraries
         .AddMeter("System.Net.Http")
         .AddMeter("System.Net.NameResolution")
+        .AddMeter(InstrumentationOptions.MeterName)
         .AddOtlpExporter();
     });
 
     otel.WithTracing(tracing =>
     {
-      tracing.AddAspNetCoreInstrumentation();
-      tracing.AddHttpClientInstrumentation();
-      tracing.AddOtlpExporter();
+      tracing
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddSource(DiagnosticHeaders.DefaultListenerName)
+        .AddOtlpExporter();
     });
 
     var app = builder.Build();
