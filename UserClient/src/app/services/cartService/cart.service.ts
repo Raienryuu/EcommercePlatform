@@ -60,14 +60,30 @@ export class CartService {
     if (localStorage.getItem(this.cart) === null) {
       this.localCart = { products: [] };
     }
+
     this.localCart.products.push({
       id: productId,
       amount: quantity,
     });
+
+    this.MergeCartProducts();
     this.UpdateCart();
     this.internalCommunicationService.NewProductInCartEvent(
       this.localCart.products.length,
     );
+  }
+
+  MergeCartProducts() {
+    const tempCart: Cart = { products: [] };
+    this.localCart.products.forEach((p) => {
+      const inTempCart = tempCart.products.find((p2) => p2.id == p.id);
+      if (inTempCart == undefined) {
+        tempCart.products.push(p);
+      } else {
+        inTempCart.amount += p.amount;
+      }
+    });
+    this.localCart = tempCart;
   }
 
   GetCart(): Observable<Cart> {
@@ -158,8 +174,8 @@ export class CartService {
 
   Clear() {
     localStorage.removeItem(this.cart);
-    localStorage.removeItem(this.cartKey);
+    localStorage.removeItem('cartKey');
     this.localCart = { products: [] };
-    this.remoteCartId = null;
+    this.remoteCartId = '';
   }
 }
