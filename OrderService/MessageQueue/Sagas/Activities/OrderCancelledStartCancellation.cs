@@ -52,9 +52,9 @@ namespace OrderService.MessageQueue.Sagas.Activities
         return;
       }
 
-      order.IsCancelled = true;
-      db.Entry(order).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-      await db.SaveChangesAsync(CancellationToken.None);
+      order.Status = OrderStatus.Cancelled;
+
+      await db.SaveChangesAsync(context.CancellationToken);
 
       await context.Publish(
         new OrderCancelledRemoveProductsReservationCommand() { OrderId = context.Message.OrderId }
