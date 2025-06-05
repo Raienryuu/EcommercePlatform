@@ -1,5 +1,4 @@
 using System.Reflection;
-using Contracts.Tracing;
 using MassTransit.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -8,7 +7,6 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductService.Endpoints;
-using ProductService.MessageQueue.Consumers;
 
 namespace ProductService;
 

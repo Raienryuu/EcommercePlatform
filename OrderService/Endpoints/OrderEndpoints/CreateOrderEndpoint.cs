@@ -1,9 +1,7 @@
 using FluentValidation;
-using MassTransit;
-using MessageQueue.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Endpoints.Requests;
-using OrderService.Models;
+using OrderService.Services;
 
 namespace OrderService.Endpoints.OrderEndpoints;
 
@@ -14,8 +12,7 @@ public static class CreateOrderEndpoint
     app.MapPost(
         EndpointRoutes.Orders.CREATE_ORDER,
         async (
-          OrderDbContext context,
-          IPublishEndpoint publisher,
+          IOrderService orderService,
           IValidator<CreateOrderRequest> validator,
           CancellationToken ct,
           [FromHeader(Name = "UserId")] Guid userId,
@@ -32,32 +29,7 @@ public static class CreateOrderEndpoint
             return Results.BadRequest("User Id is invalid");
           }
 
-          var newOrder = new Order
-          {
-            OrderId = NewId.NextGuid(),
-            UserId = userId,
-            IsConfirmed = false,
-            Created = DateTime.UtcNow,
-            LastModified = DateTime.UtcNow,
-            Notes = orderRequest.Notes,
-            Products = orderRequest.Products,
-            StripePaymentId = null,
-            CurrencyISO = orderRequest.CurrencyISO,
-            Status = OrderStatus.AwaitingConfirmation,
-          };
-
-          _ = await context.Orders.AddAsync(newOrder, ct);
-          _ = await context.SaveChangesAsync(ct);
-
-          await publisher.Publish<IOrderCreatedByUser>(
-            new
-            {
-              newOrder.OrderId,
-              newOrder.Products,
-              newOrder.CurrencyISO,
-            },
-            ct
-          );
+          var newOrder = await orderService.CreateOrder(userId, orderRequest, ct);
 
           return Results.CreatedAtRoute(
             nameof(GetOrderEndpoint),

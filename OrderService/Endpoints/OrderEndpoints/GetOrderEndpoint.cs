@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Services;
 
 namespace OrderService.Endpoints.OrderEndpoints;
 
@@ -9,17 +10,15 @@ public static class GetOrderEndpoint
     app.MapGet(
         EndpointRoutes.Orders.GET_ORDER,
         async (
-          OrderDbContext context,
+          IOrderService orderService,
           CancellationToken ct,
           [FromHeader(Name = "UserId")] Guid userId,
           [FromRoute] Guid orderId
         ) =>
         {
-          var order = await context.Orders.FindAsync([orderId], cancellationToken: ct);
-          return userId != order?.UserId
-              ? Results.BadRequest("Mismatch between logged user Id and order's user Id.")
-            : order is null ? Results.NotFound()
-            : Results.Ok(order);
+          var (order, error) = await orderService.GetOrder(orderId, userId, ct);
+
+          return order is null ? Results.BadRequest(error) : Results.Ok(order);
         }
       )
       .WithName(nameof(GetOrderEndpoint));

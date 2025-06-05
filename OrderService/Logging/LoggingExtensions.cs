@@ -35,6 +35,9 @@ public static partial class LoggerExtensions
   )]
   public static partial void OrderChangesSaveFailure(this ILogger logger, Guid orderId);
 
+  [LoggerMessage(EventId = 1006, Level = LogLevel.Information, Message = "New order created: {OrderId}")]
+  public static partial void NewOrderCreated(this ILogger logger, Guid orderId);
+
   [LoggerMessage(
     EventId = 2002,
     Level = LogLevel.Information,

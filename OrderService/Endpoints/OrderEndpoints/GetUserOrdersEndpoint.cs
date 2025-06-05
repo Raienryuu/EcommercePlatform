@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using OrderService.Services;
 
 namespace OrderService.Endpoints.OrderEndpoints;
 
@@ -9,10 +9,9 @@ public static class GetUserOrdersEndpoint
   {
     app.MapGet(
         EndpointRoutes.Orders.GET_USER_ORDERS,
-        async (OrderDbContext context, CancellationToken ct, [FromHeader(Name = "UserId")] Guid userId) =>
+        async (IOrderService orderService, CancellationToken ct, [FromHeader(Name = "UserId")] Guid userId) =>
         {
-          var orders = await context.Orders.Where(x => x.UserId == userId).ToListAsync();
-
+          var orders = await orderService.GetUserOrders(userId, ct);
           return Results.Ok(orders);
         }
       )
