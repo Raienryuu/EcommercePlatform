@@ -42,8 +42,8 @@ export class OrderDetailsComponent {
     this.orderId = this.activatedRoute.snapshot.paramMap.get('id')!;
     if (environment.sampleData === true) {
       this.isLoaded = true;
-      //return;
     }
+
     if (this.orderId == null) {
       this.orderNotFound = true;
       return;

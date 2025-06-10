@@ -8,7 +8,12 @@ import {
   AddressEditorResponse,
 } from '../address-editor/address-editor.component';
 import { MatRadioChange } from '@angular/material/radio';
-import { SampleCustomerAddresses, SampleProducts } from 'src/app/develSamples';
+import {
+  SampleCustomerAddresses,
+  SampleDeliveryMethod,
+  SampleProduct,
+  SampleProducts,
+} from 'src/app/develSamples';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from 'src/app/services/orderService/order.service';
 import { ProductService } from 'src/app/services/productService/product.service';
@@ -33,12 +38,17 @@ import { AddressService } from 'src/app/services/addressService/address.service'
   providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
 })
 export class CheckoutComponent {
-  products: Product[] = [];
   promoCodes: string[] = [];
   currencySymbol = '€';
   total = '0';
 
-  customerAddresses: CustomerAddress[] = SampleCustomerAddresses;
+  products: Product[] = environment.sampleData ? [SampleProduct] : [];
+  customerAddresses: CustomerAddress[] = environment.sampleData
+    ? SampleCustomerAddresses
+    : [];
+  deliveryMethods: DeliveryMethod[] = environment.sampleData
+    ? SampleDeliveryMethod
+    : [];
   activeAddressSelection: number = this.customerAddresses.length - 1;
 
   orderLoaded = false;
@@ -48,7 +58,6 @@ export class CheckoutComponent {
   @Input()
   id: string | undefined;
 
-  deliveryMethods: DeliveryMethod[] = [];
   showPaymentForm = false;
 
   constructor(
@@ -61,6 +70,11 @@ export class CheckoutComponent {
     private userSettingsService: UserSettingsService,
     private addressService: AddressService,
   ) {
+    if (environment.sampleData) {
+      this.RecalculateTotalCost();
+      this.orderLoaded = true;
+    }
+
     this.userSettingsService
       .GetCurrencySymbol()
       .subscribe((symbol) => (this.currencySymbol = symbol));
@@ -68,22 +82,6 @@ export class CheckoutComponent {
     this.addressService
       .GetAddresses()
       .subscribe((addresses) => (this.customerAddresses = addresses));
-
-    if (environment.sampleData) {
-      this.deliveryMethods = [
-        {
-          name: 'DHL Parcel Locker',
-          deliveryId: '5',
-          price: 5,
-          deliveryType: 'DeliveryPoint',
-          paymentType: 'Online',
-          handlerName: 'dhl',
-        },
-      ];
-      this.products = SampleProducts;
-      this.RecalculateTotalCost();
-      this.orderLoaded = true;
-    }
 
     this.id = this.route.snapshot.paramMap.get('orderId')!;
 

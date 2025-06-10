@@ -42,36 +42,28 @@ export class ProductDetailsComponent implements OnInit {
 
   ngOnInit() {
     if (!environment.sampleData) {
-      this.productService.GetProductById(this.id).subscribe({
-        next: (response) => {
-          this.product = response;
-          this.isLoading = false;
-        },
-        error: () => {
-          this.isLoading = false;
-          this.noProductFound = true;
-        },
-      });
+      this.SetSampleDataValues();
+      return;
+    }
 
-      this.imageService.GetProductImagesMetadata(this.id).subscribe((data) => {
-        this.imagesMetadata = data;
-        this.currentImageSrc = this.imagesMetadata.storedImages[0];
-        this.selectedImageNumber = parseInt(
-          this.imagesMetadata.storedImages[0].split('-')[2],
-        );
-      });
-    } else {
-      // Sample data route
-      this.product = SampleProduct;
-      this.product.id = this.id;
-      this.isLoading = false;
-      this.imagesMetadata = SampleImageMetadata;
-      this.imagesMetadata.productId = this.id;
+    this.productService.GetProductById(this.id).subscribe({
+      next: (response) => {
+        this.product = response;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.noProductFound = true;
+      },
+    });
+
+    this.imageService.GetProductImagesMetadata(this.id).subscribe((data) => {
+      this.imagesMetadata = data;
       this.currentImageSrc = this.imagesMetadata.storedImages[0];
       this.selectedImageNumber = parseInt(
         this.imagesMetadata.storedImages[0].split('-')[2],
       );
-    }
+    });
   }
 
   currencySymbol = '€';
@@ -97,5 +89,17 @@ export class ProductDetailsComponent implements OnInit {
 
   public AddToCart() {
     console.info('Clicked Add to cart button.');
+  }
+
+  SetSampleDataValues() {
+    this.product = SampleProduct;
+    this.product.id = this.id;
+    this.isLoading = false;
+    this.imagesMetadata = SampleImageMetadata;
+    this.imagesMetadata.productId = this.id;
+    this.currentImageSrc = this.imagesMetadata.storedImages[0];
+    this.selectedImageNumber = parseInt(
+      this.imagesMetadata.storedImages[0].split('-')[2],
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { CustomerAddress } from './models/customer-address.model';
+import { DeliveryMethod } from './models/delivery-method.model';
 import { Product } from './models/product';
 
 export const SampleProducts: Product[] = [
@@ -48,6 +49,17 @@ export const SampleCustomerAddresses: CustomerAddress[] = [
     city: 'San Jose, CA',
     zipCode: '95127',
     country: 'United States',
+  },
+];
+
+export const SampleDeliveryMethod: DeliveryMethod[] = [
+  {
+    name: 'DHL Parcel Locker',
+    deliveryId: '5',
+    price: 5,
+    deliveryType: 'DeliveryPoint',
+    paymentType: 'Online',
+    handlerName: 'dhl',
   },
 ];
 
