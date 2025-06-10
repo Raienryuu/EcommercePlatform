@@ -35,6 +35,7 @@ export class NavbarComponent {
   CartItemsCount = 0;
   Name = '';
   ShowLoggedCapabilities = true;
+  IsLoggedIn = false;
 
   ShouldLoggedCapabilitiesBeVisible(): boolean {
     const route = this.activatedRoute.children[0].snapshot.url[0].path;
@@ -45,6 +46,7 @@ export class NavbarComponent {
   LoadUserName() {
     this.userSettingsService.GetUserName().subscribe((name) => {
       this.Name = name;
+      this.IsLoggedIn = true;
     });
   }
 

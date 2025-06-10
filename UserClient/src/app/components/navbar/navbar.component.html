@@ -7,9 +7,9 @@
     </div>
     <div class="right">
       @defer {
-        @if (
-          activatedRoute.children[0].snapshot.url[0].path
-            | shouldShowLoggedCapabilities
+        @if (IsLoggedIn &&
+          (activatedRoute.children[0].snapshot.url[0].path
+            | shouldShowLoggedCapabilities)
         ) {
           Welcome, {{ Name }}
           <a routerLink="cart">
