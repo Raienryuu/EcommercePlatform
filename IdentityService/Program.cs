@@ -36,7 +36,7 @@ if (
   builder.Services.AddDatabaseDeveloperPageExceptionFilter();
   builder.Services.AddCors(o =>
     o.AddPolicy(
-      "MyPolicy",
+      "devel",
       builder =>
       {
         builder.WithOrigins("http://localhost:4200").AllowCredentials().AllowAnyHeader();
@@ -114,7 +114,10 @@ if (app.Environment.IsDevelopment() || app.Configuration["ASPNETCORE_ENVIRONMENT
   {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
   });
-  app.UseExceptionHandler("/Error");
+
+  using var scope = app.Services.CreateAsyncScope();
+  using var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+  CreateDevelopmentDatabase(dbContext);
 }
 else
 {
@@ -124,7 +127,7 @@ else
 
 app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
 
-app.UseCors("MyPolicy");
+app.UseCors("devel");
 
 // app.UseHttpsRedirection();
 
@@ -134,3 +137,20 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static void CreateDevelopmentDatabase(ApplicationDbContext? dbContext)
+{
+  while (true)
+  {
+    try
+    {
+      dbContext?.Database.EnsureCreated();
+    }
+    catch
+    {
+      Thread.Sleep(2000);
+      continue;
+    }
+    break;
+  }
+}
