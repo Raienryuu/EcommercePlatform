@@ -1,3 +1,4 @@
+using Common;
 using ImageService;
 using ImageService.Models;
 using ImageService.Services;
@@ -23,6 +24,7 @@ BsonSerializer.RegisterSerializer(objectSerializer);
 builder.Services.AddSingleton<IImageService, MongoImageService>();
 builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
 var otel = builder.Services.AddOpenTelemetry();
 
@@ -69,7 +71,10 @@ if (app.Environment.IsDevelopment())
   _ = app.MapOpenApi();
   _ = app.UseCors();
 }
-
+if (!app.Environment.IsDevelopment())
+{
+  app.UseExceptionHandler("/Error");
+}
 BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
 {
   _ = map.MapCreator(static p => new ProductImagesMetadata(

@@ -6,10 +6,12 @@ EXPOSE 5156
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["IdentityService/IdentityService.csproj", "."]
+COPY ["IdentityService/IdentityService.csproj", "IdentityService/IdentityService.csproj"]
+COPY ["Common/Common.csproj", "Common/Common.csproj"]
 
 RUN dotnet restore "IdentityService.csproj"
 COPY ["IdentityService", "IdentityService"]
+COPY ["Common", "Common"]
 
 WORKDIR "/src/."
 ARG BUILD_CONFIGURATION=Release

@@ -7,12 +7,14 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
 COPY ["Contracts/Contracts.csproj", "Contracts/Contracts.csproj"]
+COPY ["Common/Common.csproj", "Common/Common.csproj"]
 COPY ["OrderService/OrderService.csproj", "OrderService/OrderService.csproj"]
 
 RUN dotnet restore "OrderService/OrderService.csproj"
 
 COPY ["MessageQueue", "MessageQueue"]
 COPY ["Contracts", "Contracts"]
+COPY ["Common", "Common"]
 COPY ["OrderService", "OrderService"]
 
 WORKDIR "/src/."

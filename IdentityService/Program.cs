@@ -1,4 +1,5 @@
 using System.Text;
+using Common;
 using IdentityService.Data;
 using IdentityService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,8 @@ builder
     options.SignIn.RequireConfirmedAccount = false
   )
   .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 builder.Services.AddScoped<IAddressesService, AddressesService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -121,6 +124,8 @@ if (app.Environment.IsDevelopment() || app.Configuration["ASPNETCORE_ENVIRONMENT
 }
 else
 {
+  app.UseExceptionHandler("/Error");
+
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
 }

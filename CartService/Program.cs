@@ -1,5 +1,6 @@
 using CartService.Options;
 using CartService.Services;
+using Common;
 using FastEndpoints;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -16,6 +17,7 @@ public class Program
     _ = builder.Services.AddAuthorization();
     _ = builder.Services.AddEndpointsApiExplorer();
     _ = builder.Services.AddSwaggerGen();
+    _ = builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
     _ = builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("RedisConfig"));
 
@@ -71,6 +73,11 @@ public class Program
     {
       _ = app.UseSwagger();
       _ = app.UseSwaggerUI();
+    }
+
+    if (!app.Environment.IsDevelopment())
+    {
+      app.UseExceptionHandler("/Error");
     }
 
     _ = app.UseCors("DevPolicy");

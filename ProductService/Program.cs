@@ -1,4 +1,5 @@
 using System.Reflection;
+using Common;
 using MassTransit.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -17,6 +18,7 @@ public class Program
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddControllers();
+    builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(options =>
@@ -96,6 +98,11 @@ public class Program
       using var scope = app.Services.CreateAsyncScope();
       using var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
       CreateDevelopmentDatabase(dbContext);
+    }
+
+    if (!app.Environment.IsDevelopment())
+    {
+      app.UseExceptionHandler("/Error");
     }
 
     app.MapDeliveryEndpoints();

@@ -8,9 +8,11 @@ EXPOSE 7010
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY ["CartService/CartService.csproj", "."]
+COPY ["Common/Common.csproj", "."]
 
 RUN dotnet restore "./CartService.csproj"
 COPY ["CartService", "CartService"]
+COPY ["Common", "Common"]
 
 WORKDIR "/src/."
 ARG BUILD_CONFIGURATION=Release

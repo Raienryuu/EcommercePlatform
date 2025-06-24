@@ -1,3 +1,4 @@
+using Common;
 using FluentValidation;
 using MassTransit.Logging;
 using MassTransit.Monitoring;
@@ -26,6 +27,7 @@ public class Program
     builder.Services.AddSwaggerGen();
     var connectionString = BuildConnectionString(builder);
     builder.Services.Configure<StripeConfig>(builder.Configuration.GetRequiredSection(StripeConfig.KEY));
+    builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
     builder.Services.AddDbContext<OrderDbContext>(o =>
     {
@@ -99,7 +101,10 @@ public class Program
       CreateDevelopmentDatabase(dbContext);
     }
     /*app.UseHttpsRedirection();*/
-
+    if (!app.Environment.IsDevelopment())
+    {
+      app.UseExceptionHandler("/Error");
+    }
     app.UseCors("DevPolicy");
     /*app.UseAuthorization();*/
 

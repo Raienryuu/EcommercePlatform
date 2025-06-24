@@ -7,10 +7,12 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 COPY ["ImageService/ImageService.csproj", "ImageService/ImageService.csproj"]
 COPY ["MessageQueue/MessageQueue.csproj", "MessageQueue/MessageQueue.csproj"]
+COPY ["Common/Common.csproj", "Common/Common.csproj"]
 
 RUN dotnet restore "ImageService/ImageService.csproj"
 
 COPY ["ImageService", "ImageService"]
+COPY ["Common", "Common"]
 COPY ["MessageQueue", "MessageQueue"]
 
 WORKDIR "/src/."

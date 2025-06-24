@@ -18,6 +18,9 @@ services:
           target: /CartService/appsettings.Development.json
         - path: /CartService
           action: rebuild
+        - path: /Common
+          action: rebuild
+
 
 
   imageservice:
@@ -40,6 +43,8 @@ services:
           action: sync+restart
           target: /ImageService/appsettings.Development.json
         - path: /ImageService
+          action: rebuild
+        - path: /Common
           action: rebuild
 
   orderservice:
@@ -73,6 +78,8 @@ services:
         action: rebuild
       - path: /Contracts
         action: rebuild
+      - path: /Common
+        action: rebuild
 
   identityservice:
     build:
@@ -96,6 +103,8 @@ services:
           action: sync+restart
           target: /IdentityService/appsettings.Development.json
         - path: /IdentityService
+          action: rebuild
+        - path: /Common
           action: rebuild
 
   ocelotservice:
@@ -137,6 +146,8 @@ services:
         - path: /MessageQueue
           action: rebuild
         - path: /Contracts
+          action: rebuild
+        - path: /Common
           action: rebuild
 
 
