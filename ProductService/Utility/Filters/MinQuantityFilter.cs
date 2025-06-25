@@ -1,21 +1,14 @@
 using ProductService.Models;
 using EH = ProductService.Utility.EH<ProductService.Models.Product>;
-using Exp =
-  System.Linq.Expressions.Expression<
-	System.Func<ProductService.Models.Product, bool>>;
+using Exp = System.Linq.Expressions.Expression<System.Func<ProductService.Models.Product, bool>>;
 
 namespace ProductService.Utility.Filters;
 
-public class MinQuantityFilter(
-  PaginationParams.SortType order,
-  object? filterValue = null)
-  : IFilterable<Product>
+public class MinQuantityFilter(object? filterValue = null) : IFilterable<Product>
 {
-
   public object? FilterValue { get; set; } = filterValue;
 
-  public IQueryable<Product> ApplyFilterForOffsetPage(
-    IQueryable<Product> query)
+  public IQueryable<Product> ApplyFilterForOffsetPage(IQueryable<Product> query)
   {
     if (FilterValue is not null)
       query = query.Where(q => q.Quantity >= (int)FilterValue);
@@ -27,11 +20,9 @@ public class MinQuantityFilter(
     Exp expression = e => true;
 
     if (FilterValue is not null)
-      expression = EH.CombineAsAnd(
-        q => q.Quantity >= (int)FilterValue &&
-             q.Id != refProduct.Id, expression);
+      expression = EH.CombineAsAnd(q => q.Quantity >= (int)FilterValue && q.Id != refProduct.Id, expression);
 
     return expression;
   }
-
 }
+

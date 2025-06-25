@@ -4,7 +4,7 @@ using Exp = System.Linq.Expressions.Expression<System.Func<ProductService.Models
 
 namespace ProductService.Utility.Filters;
 
-public class NameFilter(PaginationParams.SortType order, object? filterValue = null) : IFilterable<Product>
+public class NameFilter(object? filterValue = null) : IFilterable<Product>
 {
   public object? FilterValue { get; set; } = filterValue;
 
