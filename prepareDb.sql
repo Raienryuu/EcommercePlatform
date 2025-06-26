@@ -9,6 +9,21 @@ GO
 
 USE ProductService;
 
+CREATE FUNCTION [GetProductsFromCategoryHierarchy] (@categoryId INT)
+RETURNS TABLE
+AS
+RETURN (
+WITH CategoryHierarchy AS ( SELECT c.Id, c.CategoryName, c.ParentCategoryId
+        FROM ProductCategories c WHERE c.Id = @categoryId
+        UNION ALL
+        SELECT pc.Id, pc.CategoryName, pc.ParentCategoryId FROM ProductCategories pc
+        INNER JOIN CategoryHierarchy ch ON pc.ParentCategoryId = ch.Id )
+        SELECT p.Id, p.CategoryId, p.ConcurrencyStamp, p.Description, p.Name, p.Price, p.Quantity
+        FROM Products p
+        INNER JOIN  CategoryHierarchy ch ON p.CategoryId = ch.Id;
+);
+GO
+
 DROP USER  IF EXISTS  productManager;
 DROP LOGIN productManager;
 

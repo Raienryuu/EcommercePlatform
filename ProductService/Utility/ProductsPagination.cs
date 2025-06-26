@@ -6,25 +6,28 @@ using Exp = System.Linq.Expressions.Expression<System.Func<ProductService.Models
 
 namespace ProductService.Utility;
 
-public class ProductsPagination
+public class ProductsPagination(PaginationParams filters, ProductDbContext db)
 {
-  private readonly Dictionary<PaginationParams.SortType, IOrderable<Product>> _orderers = new()
+  private IQueryable<Product> _query = GetBaseQuery(filters, db);
+  private readonly IOrderable<Product> _itemsOrderer = s_orderers[filters.Order];
+  private readonly IEnumerable<IFilterable<Product>> _activeFilters = CreateFilters(filters);
+
+  private static IQueryable<Product> GetBaseQuery(PaginationParams filters, ProductDbContext db)
+  {
+    if (filters.Category is not null)
+    {
+      return db.GetProductsFromCategoryHierarchy((int)filters.Category).AsNoTracking();
+    }
+
+    return db.Products.AsNoTracking();
+  }
+
+  private static readonly Dictionary<PaginationParams.SortType, IOrderable<Product>> s_orderers = new()
   {
     { PaginationParams.SortType.PriceAsc, new PriceAscendingOrder() },
     { PaginationParams.SortType.PriceDesc, new PriceDescendingOrder() },
     { PaginationParams.SortType.QuantityAsc, new QuantityAscendingOrder() },
   };
-
-  private IQueryable<Product> _query;
-  private readonly IEnumerable<IFilterable<Product>> _activeFilters;
-  private readonly IOrderable<Product> _itemsOrderer;
-
-  public ProductsPagination(PaginationParams filters, ProductDbContext db)
-  {
-    _query = db.Products.AsNoTracking();
-    _activeFilters = CreateFilters(filters);
-    _itemsOrderer = _orderers[filters.Order];
-  }
 
   public IQueryable<Product> GetOffsetPageQuery(int pageNumber, int pageSize)
   {

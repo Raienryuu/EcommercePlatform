@@ -1,5 +1,3 @@
-using ProductService.Utility.OrderSetters;
-
 namespace ProductService.Models;
 
 public class PaginationParams
@@ -18,7 +16,7 @@ public class PaginationParams
   public decimal? MaxPrice { get; set; }
   public int? MinQuantity { get; set; }
 
-  public IOrderable<int>? Categories { get; set; }
+  public int? Category { get; set; }
 
   public SortType Order { get; set; } = SortType.PriceAsc;
 }

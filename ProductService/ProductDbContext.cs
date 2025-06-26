@@ -33,19 +33,53 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
       .Property(d => d.DeliveryType)
       .HasConversion(c => c.ToString(), c => Enum.Parse<DeliveryType>(c));
 
+    _ = modelBuilder
+      .HasDbFunction(
+        typeof(ProductDbContext).GetMethod(nameof(GetProductsFromCategoryHierarchy), [typeof(int)])!
+      )
+      .HasName("GetProductsFromCategoryHierarchy");
     FillWithDevelData(modelBuilder);
   }
+
+  [DbFunction("GetProductsFromCategoryHierarchy", Schema = "dbo")]
+  public IQueryable<Product> GetProductsFromCategoryHierarchy(int categoryId) =>
+    FromExpression(() => GetProductsFromCategoryHierarchy(categoryId));
 
   private static void FillWithDevelData(ModelBuilder modelBuilder)
   {
     _ = modelBuilder
       .Entity<ProductCategory>()
       .HasData(
-        new ProductCategory { Id = 1, CategoryName = "Mugs", ParentCategory = null, },
-        new ProductCategory() { ParentCategory = null, Id = 2, CategoryName = "Tableware", },
-        new ProductCategory() { ParentCategory = null, Id = 3, CategoryName = "Cups", },
-        new ProductCategory { Id = 4, CategoryName = "Electronics", ParentCategory = null, },
-        new ProductCategory { Id = 5, CategoryName = "Laptops", ParentCategory = null, }
+        new ProductCategory
+        {
+          Id = 1,
+          CategoryName = "Mugs",
+          ParentCategory = null,
+        },
+        new ProductCategory()
+        {
+          ParentCategory = null,
+          Id = 2,
+          CategoryName = "Tableware",
+        },
+        new ProductCategory()
+        {
+          ParentCategory = null,
+          Id = 3,
+          CategoryName = "Cups",
+        },
+        new ProductCategory
+        {
+          Id = 4,
+          CategoryName = "Electronics",
+          ParentCategory = null,
+        },
+        new ProductCategory
+        {
+          Id = 5,
+          CategoryName = "Laptops",
+          ParentCategory = null,
+        }
       );
     _ = modelBuilder
       .Entity<Product>()
@@ -135,4 +169,12 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
     base.OnConfiguring(optionsBuilder);
     _ = optionsBuilder.EnableSensitiveDataLogging(false);
   }
+}
+
+public static class ProductDbContextExtensions
+{
+  public static IQueryable<Product> GetProductsFromCategoryHierarchy2(
+    this ProductDbContext query,
+    int categoryId
+  ) => throw new InvalidOperationException("This method should never be executed client side");
 }

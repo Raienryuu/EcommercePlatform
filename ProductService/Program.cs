@@ -49,7 +49,13 @@ public class Program
 
     var connectionString = BuildConnectionString(builder);
 
-    builder.Services.AddDbContext<ProductDbContext>(options => options.UseSqlServer(connectionString));
+    builder.Services.AddDbContext<ProductDbContext>(options =>
+    {
+      options.UseSqlServer(connectionString);
+      options.EnableSensitiveDataLogging();
+      options.ConfigureWarnings(w => w.Throw());
+      options.LogTo(Console.WriteLine, LogLevel.Information);
+    });
 
     var otel = builder.Services.AddOpenTelemetry();
 

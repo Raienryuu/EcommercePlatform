@@ -49,7 +49,7 @@ namespace ProductService.Migrations
 
                     b.HasKey("DeliveryId");
 
-                    b.ToTable("Deliveries");
+                    b.ToTable("Deliveries", (string)null);
 
                     b.HasData(
                         new
@@ -103,7 +103,7 @@ namespace ProductService.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("OrdersReserved");
+                    b.ToTable("OrdersReserved", (string)null);
                 });
 
             modelBuilder.Entity("ProductService.Models.Product", b =>
@@ -141,7 +141,7 @@ namespace ProductService.Migrations
 
                     b.HasIndex("Quantity");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
 
                     b.HasData(
                         new
@@ -208,7 +208,7 @@ namespace ProductService.Migrations
 
                     b.HasIndex("ParentCategoryId");
 
-                    b.ToTable("ProductCategories");
+                    b.ToTable("ProductCategories", (string)null);
 
                     b.HasData(
                         new
