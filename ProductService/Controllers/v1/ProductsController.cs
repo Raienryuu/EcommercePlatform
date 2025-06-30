@@ -1,6 +1,8 @@
+using Common;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
+using ProductService.Services;
 using ProductService.Utility;
 
 namespace ProductService.Controllers.v1;
@@ -8,7 +10,11 @@ namespace ProductService.Controllers.v1;
 [ApiController]
 [Route("/api/v1/[controller]")]
 [Produces("application/json")]
-public class ProductsController(ILogger<ProductsController> logger, ProductDbContext db) : ControllerBase
+public class ProductsController(
+  ILogger<ProductsController> logger,
+  ProductDbContext db,
+  IProductService productService
+) : ControllerBase
 {
   private readonly ILogger<ProductsController> _logger = logger;
 
@@ -20,7 +26,7 @@ public class ProductsController(ILogger<ProductsController> logger, ProductDbCon
   /// <response code="200">Found <ref name="Product">product</ref></response>
   /// <response code="404">If product doesn't exists</response>
   [HttpGet]
-  [Route("{id}")]
+  [Route("{id:guid}")]
   [ProducesResponseType<Product>(StatusCodes.Status200OK)]
   [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetProduct(Guid id)
@@ -121,7 +127,7 @@ public class ProductsController(ILogger<ProductsController> logger, ProductDbCon
   /// <response code="200">Product with updated values.</response>
   /// <response code="404">If product id doesn't exist.</response>
   /// <response code="422">If ConcurrencyStamps don't match.</response>
-  [HttpPatch("{id}")]
+  [HttpPatch("{id:guid}")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -173,22 +179,24 @@ public class ProductsController(ILogger<ProductsController> logger, ProductDbCon
   /// <param name="productsIds"></param>
   /// <returns>List of products.</returns>
   /// <response code="200">List of products.</response>
-  /// <response code="404">If product ids doesn't exists.</response>
+  /// <response code="404">If product ids doesn't exist.</response>
   [HttpPost("batch")]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<ActionResult<IEnumerable<Product>>> GetSelectiveProducts([FromBody] Guid[] productsIds)
+  public async Task<IResult> GetSelectiveProducts([FromBody] List<Guid> productsIds)
   {
-    if (productsIds is null)
+    if (productsIds.Count == 0)
     {
-      return NotFound(ProductsControllerHelpers.CreateErrorResponse("No products Id were passed."));
+      return Results.BadRequest("No products id's were provided.");
     }
 
-    var products = await db.Products.Where(x => productsIds.Contains(x.Id)).ToListAsync();
-
-    if (products.Count != productsIds.Length)
-      return NotFound(ProductsControllerHelpers.CreateErrorResponse("Some products Id were not found"));
-
-    return Ok(products);
+    var result = await productService.GetBatchProducts(productsIds);
+    return result.StatusCode switch
+    {
+      200 => Results.Ok(result.Value),
+      400 => Results.BadRequest(result.ErrorMessage),
+      404 => Results.NotFound(result.ErrorMessage),
+      _ => throw new NotImplementedException("Unexpected status code"),
+    };
   }
 }

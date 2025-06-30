@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using ProductService;
 using ProductService.Models;
+
+namespace ProductService.Utility;
 
 internal static class ProductsControllerHelpers
 {
@@ -23,4 +24,3 @@ internal static class ProductsControllerHelpers
     return $"\"type\": \"error\", \"message\": \"{message}\"";
   }
 }
-

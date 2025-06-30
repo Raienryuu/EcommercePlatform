@@ -8,6 +8,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductService.Endpoints;
+using ProductService.Services;
 
 namespace ProductService;
 
@@ -16,6 +17,8 @@ public class Program
   public static void Main(string[] args)
   {
     var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddScoped<IProductService, Services.ProductService>();
 
     builder.Services.AddControllers();
     builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
