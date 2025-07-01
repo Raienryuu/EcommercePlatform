@@ -3,7 +3,7 @@ using ProductService.Models;
 
 namespace ProductService.Utility;
 
-internal static class ProductsControllerHelpers
+internal static class ProductHelpers
 {
   public static async Task AssignNewValuesToProduct(
     ProductDbContext db,
@@ -17,10 +17,12 @@ internal static class ProductsControllerHelpers
     oldProduct.Description = updatedProduct.Description;
     oldProduct.CategoryId = updatedProduct.CategoryId;
     oldProduct.Category = await db.ProductCategories.FirstAsync(cat => cat.Id == updatedProduct.CategoryId);
+    oldProduct.RefreshConcurrencyStamp();
   }
 
-  public static string CreateErrorResponse(string message)
+  public static async Task<bool> DoesCategoryExists(ProductDbContext db, int categoryId)
   {
-    return $"\"type\": \"error\", \"message\": \"{message}\"";
+    var result = await db.ProductCategories.FirstOrDefaultAsync(cat => cat.Id == categoryId);
+    return result is not null;
   }
 }
