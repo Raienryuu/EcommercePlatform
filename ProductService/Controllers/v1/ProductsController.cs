@@ -1,4 +1,5 @@
 using Common;
+using MassTransit.Futures.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
@@ -11,29 +12,24 @@ namespace ProductService.Controllers.v1;
 [ApiController]
 [Route("/api/v1/[controller]")]
 [Produces("application/json")]
-public class ProductsController(
-  ILogger<ProductsController> logger,
-  ProductDbContext db,
-  IProductService productService
-) : ControllerBase
+public class ProductsController(ProductDbContext db, IProductService productService) : ControllerBase
 {
-  private readonly ILogger<ProductsController> _logger = logger;
-
   /// <summary>
   /// Gets product with a given <paramref name="id"/>.
   /// </summary>
   /// <param name="id">Identifier of a product to find.</param>
   /// <returns><ref name="result">product</ref> object</returns>
   /// <response code="200">Found <ref name="Product">product</ref></response>
-  /// <response code="404">If product doesn't exists</response>
+  /// <response code="404">If product doesn't exist</response>
   [HttpGet]
   [Route("{id:guid}")]
   [ProducesResponseType<Product>(StatusCodes.Status200OK)]
   [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetProduct(Guid id)
   {
-    var result = await db.Products.FindAsync(id);
-    return result is not null ? Ok(result) : NotFound(($"No product found with given ID: {id}.", id));
+    var result = await productService.GetProduct(id);
+
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
   }
 
   [HttpGet]
@@ -41,7 +37,7 @@ public class ProductsController(
   [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest)]
   public async Task<IActionResult> GetProductsPage([FromQuery] PaginationParams filters)
   {
-    var validationResult = new PaginationParamsValidator().Validate(filters);
+    var validationResult = await new PaginationParamsValidator().ValidateAsync(filters);
 
     if (!validationResult.IsValid)
     {
@@ -64,7 +60,7 @@ public class ProductsController(
     [FromBody] Product referenceProduct
   )
   {
-    var validationResult = new PaginationParamsValidator().Validate(filters);
+    var validationResult = await new PaginationParamsValidator().ValidateAsync(filters);
 
     if (!validationResult.IsValid)
     {
@@ -87,7 +83,7 @@ public class ProductsController(
     [FromBody] Product referenceProduct
   )
   {
-    var validationResult = new PaginationParamsValidator().Validate(filters);
+    var validationResult = await new PaginationParamsValidator().ValidateAsync(filters);
 
     if (!validationResult.IsValid)
     {
@@ -103,15 +99,18 @@ public class ProductsController(
 
   [HttpPost]
   [ProducesResponseType(StatusCodes.Status201Created)]
+  [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult> AddNewProduct([FromBody] Product newProduct)
   {
     var createdProductResult = await productService.AddProduct(newProduct);
 
-    return createdProductResult.IsSuccess switch
-    {
-      true => Ok(createdProductResult.Value),
-      false => Problem(createdProductResult.ErrorMessage, null, createdProductResult.StatusCode),
-    };
+    return createdProductResult.IsSuccess
+      ? CreatedAtAction(
+        nameof(GetProduct),
+        new { id = createdProductResult.Value?.Id },
+        createdProductResult.Value
+      )
+      : Problem(createdProductResult.ErrorMessage, null, createdProductResult.StatusCode);
   }
 
   /// <summary>
@@ -125,7 +124,7 @@ public class ProductsController(
   /// <response code="200">Product with updated values.</response>
   /// <response code="404">If product id doesn't exist.</response>
   /// <response code="422">If ConcurrencyStamps don't match.</response>
-  [HttpPatch()]
+  [HttpPut]
   [ProducesResponseType(StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
@@ -133,11 +132,7 @@ public class ProductsController(
   {
     var result = await productService.UpdateProduct(updatedProduct);
 
-    return result.IsSuccess switch
-    {
-      true => Ok(result.Value),
-      false => Problem(result.ErrorMessage, null, result.StatusCode),
-    };
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
   }
 
   /// <summary>
@@ -148,10 +143,10 @@ public class ProductsController(
   /// <response code="200">List of products.</response>
   /// <response code="404">If product ids doesn't exist.</response>
   [HttpPost("batch")]
-  [ProducesResponseType(StatusCodes.Status200OK)]
+  [ProducesResponseType(typeof(List<Product>), StatusCodes.Status200OK)]
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   [ProducesResponseType(StatusCodes.Status404NotFound)]
-  public async Task<IActionResult> GetSelectiveProducts([FromBody] List<Guid> productsIds)
+  public async Task<IActionResult> GetProductsBatch([FromBody] List<Guid> productsIds)
   {
     if (productsIds.Count == 0)
     {
@@ -160,15 +155,6 @@ public class ProductsController(
 
     var result = await productService.GetBatchProducts(productsIds);
 
-    return MapToObjectResult(result);
-  }
-
-  private ObjectResult MapToObjectResult<T>(ServiceResult<T> result)
-  {
-    return result.IsSuccess switch
-    {
-      true => Ok(result.Value),
-      false => Problem(result.ErrorMessage, null, result.StatusCode),
-    };
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
   }
 }

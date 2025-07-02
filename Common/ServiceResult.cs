@@ -5,7 +5,7 @@ public abstract partial record ServiceResult<T>(
   bool IsSuccess,
   int StatusCode,
   string? ErrorMessage
-) { }
+);
 
 public partial record ErrorServiceResult<T>(int StatusCode, string ErrorMessage)
   : ServiceResult<T>(default, false, StatusCode, ErrorMessage);
@@ -15,15 +15,13 @@ public partial record SuccessServiceResult<T>(T Value, int StatusCode)
 
 public static partial class ServiceResults
 {
-  public static SuccessServiceResult<T> OkServiceResult<T>(T value) => new(value, 200);
+  public static SuccessServiceResult<T> Success<T>(T value, int statusCode) => new(value, statusCode);
 
-  public static ErrorServiceResult<T> NotFoundServiceResult<T>(string errorMessage) => new(404, errorMessage);
-}
+  public static SuccessServiceResult<T> Ok<T>(T value) => new(value, 200);
 
-public static partial class ServiceResultsExtensions
-{
-  public static IResult MapToIResult<T>(this ErrorServiceResult<T> errorResult)
-  {
-    return Results.Problem(errorResult.ErrorMessage, statusCode: errorResult.StatusCode);
-  }
+  public static ErrorServiceResult<T> Error<T>(string errorMessage, int statusCode) =>
+    new(statusCode, errorMessage);
+
+  public static ErrorServiceResult<T> NotFound<T>(string errorMessage) =>
+    new(404, errorMessage);
 }

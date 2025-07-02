@@ -13,13 +13,13 @@ public partial class ProductService(ProductDbContext db) : IProductService
 
     if (newProduct.Category is null)
     {
-      return new ErrorServiceResult<Product>(400, "Category not found");
+      return ServiceResults.NotFound<Product>( "Category not found");
     }
     newProduct.RefreshConcurrencyStamp();
     db.Products.Add(newProduct);
     await db.SaveChangesAsync();
 
-    return new SuccessServiceResult<Product>(newProduct, 201);
+    return ServiceResults.Success(newProduct, 201);
   }
 
   public async Task<ServiceResult<List<Product>>> GetBatchProducts(List<Guid> productsIds)
@@ -27,9 +27,19 @@ public partial class ProductService(ProductDbContext db) : IProductService
     var products = await db.Products.Where(x => productsIds.Contains(x.Id)).ToListAsync();
 
     if (products.Count != productsIds.Count)
-      return ServiceResults.NotFoundServiceResult<List<Product>>("Some products id were not found");
+      return ServiceResults.NotFound<List<Product>>("Some products id were not found");
 
-    return ServiceResults.OkServiceResult(products);
+    return ServiceResults.Ok(products);
+  }
+
+  public async Task<ServiceResult<Product>> GetProduct(Guid productId)
+  {
+    var product = await db.Products.FindAsync(productId);
+    if (product is null)
+    {
+      return ServiceResults.NotFound<Product>($"No product found with given ID: {productId}.");
+    }
+    return ServiceResults.Ok(product);
   }
 
   public async Task<ServiceResult<Product>> UpdateProduct(Product updatedProduct)
@@ -37,11 +47,11 @@ public partial class ProductService(ProductDbContext db) : IProductService
     var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == updatedProduct.Id);
     if (oldProduct is null)
     {
-      return ServiceResults.NotFoundServiceResult<Product>("Product not found");
+      return ServiceResults.NotFound<Product>("Product not found");
     }
     if (!await ProductHelpers.DoesCategoryExists(db, updatedProduct.CategoryId))
     {
-      return ServiceResults.NotFoundServiceResult<Product>("Given category does not exists");
+      return ServiceResults.NotFound<Product>("Given category does not exists");
     }
     if (updatedProduct.ConcurrencyStamp != oldProduct.ConcurrencyStamp)
     {
@@ -52,6 +62,6 @@ public partial class ProductService(ProductDbContext db) : IProductService
 
     await db.SaveChangesAsync();
 
-    return ServiceResults.OkServiceResult(oldProduct);
+    return ServiceResults.Ok(oldProduct);
   }
 }
