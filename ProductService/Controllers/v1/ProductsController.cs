@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
 using ProductService.Services;
 using ProductService.Utility;
+using ProductService.Validation;
 
 namespace ProductService.Controllers.v1;
 
@@ -40,11 +41,11 @@ public class ProductsController(
   [ProducesResponseType<BadRequestResult>(StatusCodes.Status400BadRequest)]
   public async Task<IActionResult> GetProductsPage([FromQuery] PaginationParams filters)
   {
-    var validationResult = ValidatePaginationParams(filters.PageSize, filters.PageNum);
+    var validationResult = new PaginationParamsValidator().Validate(filters);
 
-    if (validationResult is not null)
+    if (!validationResult.IsValid)
     {
-      return validationResult;
+      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
     }
 
     var products = await new ProductsPagination(filters, db)
@@ -63,10 +64,13 @@ public class ProductsController(
     [FromBody] Product referenceProduct
   )
   {
-    if (filters.PageSize is < 1 or > 200)
+    var validationResult = new PaginationParamsValidator().Validate(filters);
+
+    if (!validationResult.IsValid)
     {
-      return BadRequest("PageSize should be between 1 and 200");
+      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
     }
+
     var products = await new ProductsPagination(filters, db)
       .GetNextPageQuery(filters.PageSize, referenceProduct)
       .ToListAsync();
@@ -83,10 +87,13 @@ public class ProductsController(
     [FromBody] Product referenceProduct
   )
   {
-    if (filters.PageSize is < 1 or > 200)
+    var validationResult = new PaginationParamsValidator().Validate(filters);
+
+    if (!validationResult.IsValid)
     {
-      return BadRequest("PageSize should be between 1 and 200");
+      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
     }
+
     var products = await new ProductsPagination(filters, db)
       .GetPreviousPageQuery(filters.PageSize, referenceProduct)
       .ToListAsync();
@@ -132,11 +139,6 @@ public class ProductsController(
       false => Problem(result.ErrorMessage, null, result.StatusCode),
     };
   }
-
-  private IActionResult? ValidatePaginationParams(int pageSize, int pageNum = 1) =>
-    pageNum < 1 || pageSize < 1 || pageSize > 200
-      ? BadRequest("Page and PageSize must be greater than 0 and PageSize less " + "than 200")
-      : (IActionResult?)null;
 
   /// <summary>
   /// Gets IEnumerable of Product for given Ids.

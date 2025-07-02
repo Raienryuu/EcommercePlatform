@@ -1,5 +1,6 @@
 using System.Reflection;
 using Common;
+using FluentValidation;
 using MassTransit.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -8,7 +9,9 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using ProductService.Endpoints;
+using ProductService.Models;
 using ProductService.Services;
+using ProductService.Validation;
 
 namespace ProductService;
 
@@ -20,7 +23,11 @@ public class Program
 
     builder.Services.AddScoped<IProductService, Services.ProductService>();
 
+    builder.Services.AddProblemDetails();
     builder.Services.AddControllers();
+
+    builder.Services.AddScoped<IValidator<PaginationParams>, PaginationParamsValidator>();
+
     builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
@@ -107,11 +114,7 @@ public class Program
       using var scope = app.Services.CreateAsyncScope();
       using var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
       CreateDevelopmentDatabase(dbContext);
-    }
-
-    if (!app.Environment.IsDevelopment())
-    {
-      app.UseExceptionHandler("/Error");
+      app.UseExceptionHandler();
     }
 
     app.MapDeliveryEndpoints();
