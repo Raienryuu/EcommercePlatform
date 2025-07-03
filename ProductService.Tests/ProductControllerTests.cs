@@ -413,8 +413,8 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
     var oldStamp = newProduct.ConcurrencyStamp!;
     msg = new()
     {
-      Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/products/{productID}").Uri,
+      Method = HttpMethod.Put,
+      RequestUri = new UriBuilder($"{API_URL}v1/products").Uri,
       Content = JsonContent.Create(newProduct),
     };
 
@@ -426,7 +426,7 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
   }
 
   [Fact]
-  public async Task UpdateProduct_OutdatedConcurrencyStamp_DbUpdateConcurrencyException()
+  public async Task UpdateProduct_OutdatedConcurrencyStamp_ConcurrencyStampMismatchError()
   {
     var productId = Guid.Parse("87817c15-d25f-4621-9135-2e7851b484b3");
     HttpRequestMessage msg = new()
@@ -439,21 +439,23 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
 
     msg = new()
     {
-      Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/products/{productId}").Uri,
+      Method = HttpMethod.Put,
+      RequestUri = new UriBuilder($"{API_URL}v1/products").Uri,
       Content = JsonContent.Create(product),
     };
     _ = await _client.SendAsync(msg);
     msg = new()
     {
-      Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/products/{productId}").Uri,
+      Method = HttpMethod.Put,
+      RequestUri = new UriBuilder($"{API_URL}v1/products").Uri,
       Content = JsonContent.Create(product),
     };
 
     var result = await _client.SendAsync(msg);
 
+    var content = await result.Content.ReadAsStringAsync();
     Assert.Equal(HttpStatusCode.UnprocessableEntity, result.StatusCode);
+    Assert.Contains("ConcurrencyStamp", content);
   }
 
   [Fact]
