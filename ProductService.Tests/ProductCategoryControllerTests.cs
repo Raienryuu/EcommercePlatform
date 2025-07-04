@@ -6,7 +6,7 @@ namespace ProductService.Tests;
 [Collection("Tests")]
 public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture(fixture)
 {
-  private const string API_URL = "http://localhost/api/";
+  private const string API_URL = "http://localhost/api/v1/ProductsCategories/";
   private const int CATEGORY_TO_DELETE_ID = 3;
 
   [Fact]
@@ -53,13 +53,13 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   }
 
   [Fact]
-  public async Task PostProductCategory_ValidNewCategory_Created201()
+  public async Task AddProductCategory_ValidNewCategory_Created201()
   {
     var newCategory = new ProductCategory() { CategoryName = "Glass" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      RequestUri = new UriBuilder(API_URL).Uri,
       Content = JsonContent.Create(newCategory),
     };
 
@@ -69,13 +69,13 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   }
 
   [Fact]
-  public async Task PostProductCategory_ExistingCategory_Conflict409()
+  public async Task AddProductCategory_ExistingCategory_Conflict409()
   {
     var existingCategory = new ProductCategory() { CategoryName = "Sample category" };
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      RequestUri = new UriBuilder(API_URL).Uri,
       Content = JsonContent.Create(existingCategory),
     };
 
@@ -85,7 +85,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
   }
 
   [Fact]
-  public async Task PostProductCategory_CategoryWithNonExistingParent_BadRequest400()
+  public async Task AddProductCategory_CategoryWithNonExistingParent_BadRequest400()
   {
     var newCategory = new ProductCategory()
     {
@@ -95,7 +95,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Post,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories").Uri,
+      RequestUri = new UriBuilder(API_URL).Uri,
       Content = JsonContent.Create(newCategory),
     };
 
@@ -111,7 +111,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}{updatedCategory.Id}").Uri,
       Content = JsonContent.Create(updatedCategory),
     };
 
@@ -128,7 +128,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}{updatedCategory.Id}").Uri,
       Content = JsonContent.Create(updatedCategory),
     };
 
@@ -149,7 +149,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Patch,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{updatedCategory.Id}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}{updatedCategory.Id}").Uri,
       Content = JsonContent.Create(updatedCategory),
     };
 
@@ -164,7 +164,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Delete,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{CATEGORY_TO_DELETE_ID}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}{CATEGORY_TO_DELETE_ID}").Uri,
     };
 
     var result = await _client.SendAsync(msg);
@@ -179,7 +179,7 @@ public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Delete,
-      RequestUri = new UriBuilder($"{API_URL}v1/ProductsCategories/{CATEGORYID}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}{CATEGORYID}").Uri,
     };
 
     var result = await _client.SendAsync(msg);
