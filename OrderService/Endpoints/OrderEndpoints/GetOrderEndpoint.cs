@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.OrderEndpoints;
@@ -9,16 +11,18 @@ public static class GetOrderEndpoint
   {
     app.MapGet(
         EndpointRoutes.Orders.GET_ORDER,
-        async (
+        async Task<Results<Ok<Order>, ProblemHttpResult>> (
           IOrderService orderService,
           CancellationToken ct,
           [FromHeader(Name = "UserId")] Guid userId,
           [FromRoute] Guid orderId
         ) =>
         {
-          var (order, error) = await orderService.GetOrder(orderId, userId, ct);
+          var results = await orderService.GetOrder(orderId, userId, ct);
 
-          return order is null ? Results.BadRequest(error) : Results.Ok(order);
+          return results.IsSuccess
+            ? TypedResults.Ok(results.Value)
+            : TypedResults.Problem(results.ErrorMessage, statusCode: results.StatusCode);
         }
       )
       .WithName(nameof(GetOrderEndpoint));

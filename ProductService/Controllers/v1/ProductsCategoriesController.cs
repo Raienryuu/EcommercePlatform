@@ -1,137 +1,111 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
+using ProductService.Services;
 
-namespace ProductService.Controllers.v1
+namespace ProductService.Controllers.V1
 {
   [Route("api/v1/[controller]")]
   [ApiController]
-  public class ProductsCategoriesController(ProductDbContext context) : ControllerBase
+  public class ProductsCategoriesController(IProductCategoryService productCategoryService) : ControllerBase
   {
-    private readonly ProductDbContext _context = context;
+    private readonly IProductCategoryService _productCategoryService = productCategoryService;
 
     // GET: api/ProductsCategories
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductCategory>>> GetProductCategories()
+    public async Task<ActionResult<List<ProductCategory>>> GetProductCategories()
     {
-      return await _context.ProductCategories.ToListAsync();
+      var result = await _productCategoryService.GetProductCategories();
+
+      if (result.IsSuccess)
+      {
+        return Ok(result.Value);
+      }
+      else
+      {
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+      }
     }
 
     // GET: api/ProductsCategories/5
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductCategory>> GetProductCategory(int id)
     {
-      var productCategory = await _context.ProductCategories.FindAsync(id);
+      var result = await _productCategoryService.GetProductCategory(id);
 
-      if (productCategory == null)
+      if (result.IsSuccess)
       {
-        return NotFound("No category found with a given ID.");
+        return Ok(result.Value);
       }
-
-      return (productCategory);
+      else
+      {
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+      }
     }
 
     // GET: api/ProductsCategories/children/5
     [HttpGet("children/{id}")]
     public async Task<ActionResult<List<ProductCategory>>> GetChildrenCategories(int id)
     {
-      var productCategory = await _context.ProductCategories.Where(x => x.Id == id).FirstOrDefaultAsync();
+      var result = await _productCategoryService.GetChildrenCategories(id);
 
-      if (productCategory == null)
+      if (result.IsSuccess)
       {
-        return NotFound("No category found with a given ID.");
+        return Ok(result.Value);
       }
-
-      var releatedChildCategories = await _context
-        .ProductCategories.AsNoTracking()
-        .Where(x => x.ParentCategory != null && x.ParentCategory.Id == productCategory.Id)
-        .ToListAsync();
-
-      return Ok(releatedChildCategories);
+      else
+      {
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+      }
     }
 
     // PATCH: api/ProductsCategories/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPatch("{id}")]
     public async Task<ActionResult> PatchProductCategory(int id, [FromBody] ProductCategory productCategory)
     {
-      if (id != productCategory.Id)
+      var result = await _productCategoryService.UpdateProductCategory(id, productCategory);
+
+      if (result.IsSuccess)
       {
-        return BadRequest();
+        return NoContent();
       }
-
-      if (!ProductCategoryExists(id))
-        return NotFound("No category found with a given ID.");
-
-      if (!AssignParent(productCategory))
-        return NotFound("Parent category not found.");
-      var localCategory = await _context.ProductCategories.FindAsync(productCategory.Id);
-
-      localCategory = productCategory;
-
-      await _context.SaveChangesAsync();
-
-      return NoContent();
+      else
+      {
+        return StatusCode(result.StatusCode, result.ErrorMessage);
+      }
     }
 
     // POST: api/ProductsCategories
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    public async Task<ActionResult<ProductCategory>> PostProductCategory(
+    public async Task<ActionResult<ProductCategory>> AddProductCategory(
       [FromBody] ProductCategory productCategory
     )
     {
-      var existingCategory = await _context
-        .ProductCategories.Where(_ => _.CategoryName == productCategory.CategoryName)
-        .FirstOrDefaultAsync();
+      var result = await _productCategoryService.CreateProductCategory(productCategory);
 
-      if (existingCategory is not null)
+      if (result.IsSuccess)
       {
-        return Conflict("Category already exists.");
+        return CreatedAtAction("GetProductCategory", new { id = result.Value?.Id }, result.Value);
       }
-
-      if (!AssignParent(productCategory))
-        return BadRequest("Parent category not found.");
-
-      _context.ProductCategories.Add(productCategory);
-
-      await _context.SaveChangesAsync();
-
-      return CreatedAtAction("GetProductCategory", new { id = productCategory.Id }, productCategory);
+      else
+      {
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      }
     }
 
     // DELETE: api/ProductsCategories/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteProductCategory(int id)
     {
-      var productCategory = await _context.ProductCategories.FindAsync(id);
-      if (productCategory == null)
+      var result = await _productCategoryService.DeleteProductCategory(id);
+
+      if (result.IsSuccess)
       {
-        return NotFound("No category found with a given ID.");
+        return NoContent();
       }
-
-      _context.ProductCategories.Remove(productCategory);
-      await _context.SaveChangesAsync();
-
-      return NoContent();
-    }
-
-    private bool ProductCategoryExists(int id)
-    {
-      return _context.ProductCategories.Any(e => e.Id == id);
-    }
-
-    private bool AssignParent(ProductCategory productCategory)
-    {
-      if (productCategory.ParentCategory is null)
-        return true;
-      var parent = _context.ProductCategories.FirstOrDefault(x => x.Id == productCategory.ParentCategory.Id);
-      if (parent?.CategoryName == productCategory.ParentCategory.CategoryName)
+      else
       {
-        productCategory.ParentCategory = parent;
-        return true;
+        return StatusCode(result.StatusCode, result.ErrorMessage);
       }
-      return false;
     }
   }
 }

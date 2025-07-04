@@ -22,6 +22,7 @@ public class Program
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddScoped<IProductService, Services.ProductService>();
+    builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
 
     builder.Services.AddProblemDetails();
     builder.Services.AddControllers();

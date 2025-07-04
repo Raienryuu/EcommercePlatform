@@ -1,6 +1,6 @@
+using Common;
 using MassTransit;
 using MessageQueue.Contracts;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Endpoints.Requests;
 using OrderService.Logging;
@@ -11,7 +11,7 @@ namespace OrderService.Services;
 public class OrderService(ILogger<OrderService> logger, OrderDbContext context, IPublishEndpoint publisher)
   : IOrderService
 {
-  public async Task<Order> CreateOrder(
+  public async Task<ServiceResult<Order>> CreateOrder(
     Guid userId,
     CreateOrderRequest orderRequest,
     CancellationToken ct = default
@@ -46,10 +46,10 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     logger.NewOrderCreated(newOrder.OrderId);
 
-    return newOrder;
+    return ServiceResults.Success(newOrder, 201);
   }
 
-  public async Task<(bool isSuccess, string error)> SetDeliveryMethod(
+  public async Task<ServiceResult> SetDeliveryMethod(
     Guid orderId,
     Guid userId,
     OrderDelivery deliveryMethod,
@@ -60,17 +60,17 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     if (order is null)
     {
-      return (false, "No order found with given id.");
+      return ServiceResults.Error("No order found with given id.", 404);
     }
 
     if (userId != order.UserId)
     {
-      return (false, "Mismatch between logged user Id and order's user Id.");
+      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", 401);
     }
 
     if (order.Delivery is not null)
     {
-      return (false, "Delivery method is already set.");
+      return ServiceResults.Error("Delivery method is already set.", 400);
     }
 
     order.Delivery = deliveryMethod;
@@ -91,34 +91,30 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
       ct
     );
 
-    return (true, "");
+    return ServiceResults.Success(200);
   }
 
-  public async Task<(bool isSuccess, string error)> CancelOrder(
-    Guid orderId,
-    Guid userId,
-    CancellationToken ct
-  )
+  public async Task<ServiceResult> CancelOrder(Guid orderId, Guid userId, CancellationToken ct)
   {
     var order = await context.Orders.FindAsync([orderId], cancellationToken: ct);
 
     if (order is null)
     {
-      return (false, "Order not found");
+      return ServiceResults.Error("Order not found", 404);
     }
     if (order.UserId != userId)
     {
-      return (false, "Mismatch between logged user Id and order's user Id.");
+      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", 401);
     }
 
     if (!(order.Status is OrderStatus.AwaitingConfirmation or OrderStatus.Confirmed))
     {
-      return (false, "Too late to cancel the order.");
+      return ServiceResults.Error("Too late to cancel the order.", 400);
     }
 
     if (order.Status == OrderStatus.Cancelled)
     {
-      return (true, "");
+      return ServiceResults.Success(200);
     }
 
     order.Status = OrderStatus.Cancelled;
@@ -126,15 +122,24 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     await context.SaveChangesAsync(ct);
     await publisher.Publish<IOrderCancellationRequest>(new { order.OrderId }, ct);
-    return (true, "");
+    return ServiceResults.Success(200);
   }
 
-  public async Task<(Order?, string error)> GetOrder(Guid orderId, Guid userId, CancellationToken ct)
+  public async Task<ServiceResult<Order>> GetOrder(Guid orderId, Guid userId, CancellationToken ct)
   {
     var order = await context.Orders.FindAsync([orderId], ct);
-    return userId != order?.UserId ? (null, "Mismatch between logged user Id and order's user Id.")
-      : order is null ? (null, "Order not found")
-      : (order, "");
+
+    if (order is null)
+    {
+      return ServiceResults.Error<Order>("Order not found", 404);
+    }
+
+    if (userId != order.UserId)
+    {
+      return ServiceResults.Error<Order>("Mismatch between logged user Id and order's user Id.", 401);
+    }
+
+    return ServiceResults.Success(order, 200);
   }
 
   public Task<List<Order>> GetUserOrders(Guid userId, CancellationToken ct)

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Models;
 using OrderService.Services;
@@ -10,7 +11,7 @@ public static class SetDeliveryMethodEndpoint
   {
     _ = app.MapPatch(
         EndpointRoutes.Orders.SET_DELIVERY,
-        async (
+        async Task<Results<NoContent, ProblemHttpResult>> (
           IOrderService orderService,
           [FromHeader(Name = "UserId")] Guid userId,
           [FromRoute] Guid orderId,
@@ -18,14 +19,11 @@ public static class SetDeliveryMethodEndpoint
           CancellationToken ct
         ) =>
         {
-          var (isSuccess, errorDetails) = await orderService.SetDeliveryMethod(
-            orderId,
-            userId,
-            deliveryMethod,
-            ct
-          );
+          var result = await orderService.SetDeliveryMethod(orderId, userId, deliveryMethod, ct);
 
-          return isSuccess ? Results.NoContent() : Results.BadRequest(errorDetails);
+          return result.IsSuccess
+            ? TypedResults.NoContent()
+            : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
         }
       )
       .WithName(nameof(SetDeliveryMethodEndpoint));

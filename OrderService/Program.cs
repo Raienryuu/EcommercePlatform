@@ -22,6 +22,7 @@ public class Program
   {
     var builder = WebApplication.CreateBuilder(args);
 
+    builder.Services.AddProblemDetails();
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -103,7 +104,7 @@ public class Program
     /*app.UseHttpsRedirection();*/
     if (!app.Environment.IsDevelopment())
     {
-      app.UseExceptionHandler("/Error");
+      app.UseExceptionHandler();
     }
     app.UseCors("DevPolicy");
     /*app.UseAuthorization();*/

@@ -170,11 +170,3 @@ public class ProductDbContext(DbContextOptions options) : DbContext(options)
     _ = optionsBuilder.EnableSensitiveDataLogging(false);
   }
 }
-
-public static class ProductDbContextExtensions
-{
-  public static IQueryable<Product> GetProductsFromCategoryHierarchy2(
-    this ProductDbContext query,
-    int categoryId
-  ) => throw new InvalidOperationException("This method should never be executed client side");
-}

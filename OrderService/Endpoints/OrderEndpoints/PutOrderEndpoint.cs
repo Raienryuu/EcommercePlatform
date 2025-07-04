@@ -4,6 +4,7 @@ using OrderService.Models;
 
 namespace OrderService.Endpoints.OrderEndpoints;
 
+// TODO either use or get rid of
 public static class PutOrderEndpoint
 {
   public static WebApplication MapPutOrderEndpoint(this WebApplication app)

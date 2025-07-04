@@ -1,6 +1,8 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Endpoints.Requests;
+using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.OrderEndpoints;
@@ -11,7 +13,7 @@ public static class CreateOrderEndpoint
   {
     app.MapPost(
         EndpointRoutes.Orders.CREATE_ORDER,
-        async (
+        async Task<Results<CreatedAtRoute<Order>, ProblemHttpResult, ValidationProblem>> (
           IOrderService orderService,
           IValidator<CreateOrderRequest> validator,
           CancellationToken ct,
@@ -22,20 +24,22 @@ public static class CreateOrderEndpoint
           var validationResult = await validator.ValidateAsync(orderRequest);
           if (!validationResult.IsValid)
           {
-            return Results.ValidationProblem(validationResult.ToDictionary());
+            return TypedResults.ValidationProblem(validationResult.ToDictionary());
           }
           if (userId.Equals(Guid.Empty))
           {
-            return Results.BadRequest("User Id is invalid");
+            return TypedResults.Problem("User Id is invalid", statusCode: 400);
           }
 
-          var newOrder = await orderService.CreateOrder(userId, orderRequest, ct);
+          var result = await orderService.CreateOrder(userId, orderRequest, ct);
 
-          return Results.CreatedAtRoute(
-            nameof(GetOrderEndpoint),
-            new { orderId = newOrder.OrderId },
-            newOrder
-          );
+          return result.IsSuccess
+            ? TypedResults.CreatedAtRoute(
+              result.Value,
+              nameof(GetOrderEndpoint),
+              new { orderId = result.Value?.OrderId }
+            )
+            : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
         }
       )
       .WithName(nameof(CreateOrderEndpoint));
