@@ -23,7 +23,7 @@ public class MongoProductImagesMetadataTests(MongoContainer mongoContainer)
     var metadata = await _mongoImageMetadataService.GetProductImagesMetadataAsync(productId);
 
     _ = await Assert.That(metadata).IsNotNull();
-    _ = await Assert.That(metadata.ProductId).IsEqualTo(productId);
-    _ = await Assert.That(metadata.MetadataState).IsTypeOf<MetadataAvailable>();
+    _ = await Assert.That(metadata.Value.ProductId).IsEqualTo(productId);
+    _ = await Assert.That(metadata.Value.MetadataState).IsTypeOf<MetadataAvailable>();
   }
 }

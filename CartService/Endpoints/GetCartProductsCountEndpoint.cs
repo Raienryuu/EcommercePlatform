@@ -1,21 +1,28 @@
-using CartService.Models;
 using CartService.Requests;
 using CartService.Services;
 using FastEndpoints;
 
 namespace CartService.Endpoints;
 
-public class GetCartEndpoint(ICartRepository cartProvider) : Endpoint<GetCartRequest, Cart?>
+public class GetCartProductsCountEndpoint(ICartRepository cartProvider) : Endpoint<GetCartRequest, int>
 {
   public override void Configure()
   {
-    Get("api/cart/{@cartGuid}", static x => new { x.Id });
+    Get("api/cart/{@cartGuid}/count", static x => new { x.Id });
     AllowAnonymous();
   }
 
   public override async Task HandleAsync(GetCartRequest request, CancellationToken ct)
   {
-    var cart = await cartProvider.GetCart(request.Id);
-    await SendAsync(cart, cancellation: ct);
+    var getResult = await cartProvider.GetCart(request.Id);
+    if (!getResult.IsSuccess)
+    {
+      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: getResult.StatusCode));
+    }
+    else
+    {
+      var distinctProductsCount = getResult.Value.Products.Count;
+      await SendOkAsync(distinctProductsCount, ct);
+    }
   }
 }

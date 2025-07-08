@@ -3,6 +3,7 @@ using ImageService;
 using ImageService.Models;
 using ImageService.Services;
 using ImageService.Services.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
@@ -16,6 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
 builder.Services.Configure<ConnectionOptions>(
   builder.Configuration.GetRequiredSection(ConnectionOptions.Key)
 );
@@ -73,7 +75,7 @@ if (app.Environment.IsDevelopment())
 }
 if (!app.Environment.IsDevelopment())
 {
-  app.UseExceptionHandler("/Error");
+  app.UseExceptionHandler();
 }
 BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
 {
@@ -91,16 +93,17 @@ BsonClassMap.RegisterClassMap<ProductImagesMetadata>(static map =>
 
 app.MapGet(
     "api/v1/image",
-    static async (
+    static async Task<Results<FileContentHttpResult, ProblemHttpResult>> (
       [FromQuery] Guid productId,
       [FromServices] IImageService images,
       [FromQuery] int imageNumber = 0
     ) =>
     {
-      var image = await images.GetProductImageAsync(productId, imageNumber);
-      return image is null
-        ? Results.NotFound("No image found")
-        : Results.File(image.Data, image.ContentType, image.Name);
+      var imageResult = await images.GetProductImageAsync(productId, imageNumber);
+      return imageResult.IsSuccess ?
+      TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name):
+      TypedResults.Problem(imageResult.ErrorMessage, statusCode:imageResult.StatusCode);
+
     }
   )
   .WithName("GetProductImages");
@@ -110,25 +113,26 @@ app.MapGet(
     static async ([FromQuery] Guid productId, IProductImagesMetadataService metadataService) =>
     {
       var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
-      return Results.Ok(metadata);
+      return TypedResults.Ok(metadata);
     }
   )
   .WithName("GetImageMetadata");
 
 app.MapPost(
     "api/v1/image",
-    static async (
+    static async Task<Results<CreatedAtRoute, ProblemHttpResult>> (
       [FromForm] IFormFile file,
       [FromQuery] Guid productId,
       [FromServices] IImageService images
     ) =>
     {
-      if (file is null)
+      if (file.Length == 0)
       {
-        return Results.BadRequest("No file provided");
+        return TypedResults.Problem("No file provided", statusCode: 400);
       }
-      await images.AddProductImageAsync(productId, file);
-      return Results.Ok("File saved");
+
+      var result = await images.AddProductImageAsync(productId, file);
+      return TypedResults.CreatedAtRoute("api/v1/image", new {productId, imageNumber = result.Value});
     }
   )
   .DisableAntiforgery()

@@ -1,17 +1,17 @@
 using System.Text.Json;
 using CartService.Helpers;
 using CartService.Models;
+using Common;
 using MassTransit;
 using StackExchange.Redis;
 
 namespace CartService.Services;
 
-public class RedisCartRepository(RedisConnectionFactory dbFactory, ILogger<RedisCartRepository> logger)
-  : ICartRepository
+public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartRepository
 {
   private readonly IDatabase _db = dbFactory.connection.GetDatabase();
 
-  public Task<Guid> CreateNewCart(Cart c)
+  public Task<ServiceResult<Guid>> CreateNewCart(Cart c)
   {
     var newId = NewId.NextSequentialGuid();
     c = CartHelper.MergeCart(c);
@@ -19,32 +19,44 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory, ILogger<Redis
     return SetCartValue(newId, c);
   }
 
-  public async Task DeleteCart(Guid g)
+  public async Task<ServiceResult> DeleteCart(Guid g)
   {
     var idString = g.ToString();
-    _ = await _db.KeyDeleteAsync(idString);
+    return await _db.KeyDeleteAsync(idString)
+      ? ServiceResults.Success(200)
+      : ServiceResults.Error("There was a problem deleting the cart", 500);
   }
 
-  public async Task<Cart?> GetCart(Guid g)
+  public async Task<ServiceResult<Cart>> GetCart(Guid g)
   {
     var objectJson = await _db.StringGetAsync(g.ToString());
+    if (objectJson.IsNullOrEmpty)
+    {
+      ServiceResults.Error<Cart>("Didn't find the specified cart.", 404);
+    }
     var cartAsString = objectJson.ToString();
+    var cart = JsonSerializer.Deserialize<Cart>(cartAsString);
 
-    return objectJson.IsNullOrEmpty ? null : JsonSerializer.Deserialize<Cart?>(cartAsString);
+    return ServiceResults.Success(cart!, 200);
   }
 
-  public async Task<Guid> UpdateCart(Guid id, Cart c)
+  public async Task<ServiceResult<Guid>> UpdateCart(Guid id, Cart c)
   {
     c = CartHelper.MergeCart(c);
     var objectJson = await _db.StringGetAsync(id.ToString());
-    logger.LogCritical("This is new cart that will be saved {c}", objectJson);
-    return objectJson.IsNullOrEmpty ? await CreateNewCart(c) : await SetCartValue(id, c);
+
+    if (objectJson.IsNullOrEmpty)
+    {
+      return await CreateNewCart(c);
+    }
+
+    return await SetCartValue(id, c);
   }
 
-  private async Task<Guid> SetCartValue(Guid key, Cart value)
+  private async Task<ServiceResult<Guid>> SetCartValue(Guid key, Cart value)
   {
     return await _db.StringSetAsync(key.ToString(), JsonSerializer.Serialize(value))
-      ? key
-      : throw new RedisCommandException("Could not create new cart");
+      ? ServiceResults.Success(key, 200)
+      : ServiceResults.Error<Guid>("Could not create new cart", 500);
   }
 }

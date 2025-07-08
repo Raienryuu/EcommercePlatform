@@ -1,11 +1,12 @@
+using Common;
 using ImageService.Models;
 
 namespace ImageService.Services.Interfaces;
 
 public interface IProductImagesMetadataService
 {
-  Task<ProductImagesMetadata> GetProductImagesMetadataAsync(Guid productId);
-  Task UpdateMetadataAsync(ProductImagesMetadata productMetadata);
-  Task AddNewMetadataAsync(ProductImagesMetadata productMetadata);
+  Task<ServiceResult<ProductImagesMetadata>> GetProductImagesMetadataAsync(Guid productId);
+  Task<ServiceResult> UpdateMetadataAsync(ProductImagesMetadata productMetadata);
+  Task<ServiceResult> AddNewMetadataAsync(ProductImagesMetadata productMetadata);
 }
 

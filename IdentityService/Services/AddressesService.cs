@@ -1,6 +1,7 @@
 using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.EntityFrameworkCore;
+using Common;
 
 namespace IdentityService.Services;
 
@@ -8,31 +9,38 @@ public class AddressesService(ApplicationDbContext db) : IAddressesService
 {
   private readonly ApplicationDbContext _db = db;
 
-  public async Task<UserAddress> AddAddressAsync(UserAddress address)
+  public async Task<ServiceResult<UserAddress>> AddAddressAsync(UserAddress address)
   {
-    address.Id = default;
+    address.Id = 0;
     await _db.Addresses.AddAsync(address);
     await _db.SaveChangesAsync();
-    return address;
+    return ServiceResults.Ok(address);
   }
 
-  public async Task<UserAddress?> EditAddressAsync(UserAddress newAddress)
+  public async Task<ServiceResult<UserAddress>> EditAddressAsync(UserAddress newAddress)
   {
     var oldAddress = await _db.Addresses.FindAsync(newAddress.Id);
     if (oldAddress == null)
-      return default;
+      return ServiceResults.NotFound<UserAddress>("Address not found");
 
-    var idInDb = oldAddress.Id;
+    var tempId = oldAddress.Id;
     oldAddress = newAddress;
-    oldAddress.Id = idInDb;
+    oldAddress.Id = tempId;
 
     await _db.SaveChangesAsync();
-    return oldAddress;
+    return ServiceResults.Ok(oldAddress);
   }
 
-  public async Task<UserAddress?> GetAddressAsync(int addressId)
+  public async Task<ServiceResult<UserAddress>> GetAddressAsync(int addressId)
   {
-    return await _db.Addresses.FindAsync(addressId);
+    var address = await _db.Addresses.FindAsync(addressId);
+
+    if (address is null)
+    {
+      return ServiceResults.NotFound<UserAddress>("Address not found");
+    }
+
+    return ServiceResults.Ok(address);
   }
 
   public async Task<List<UserAddress>> GetAddressesForUserAsync(Guid userId)
@@ -40,8 +48,18 @@ public class AddressesService(ApplicationDbContext db) : IAddressesService
     return await _db.Addresses.Where(x => x.UserId == userId).ToListAsync();
   }
 
-  public async Task RemoveAddressAsync(int addressId)
+  public async Task<ServiceResult> RemoveAddressAsync(int addressId)
   {
-    await _db.Addresses.Where(x => x.Id == addressId).ExecuteDeleteAsync();
+    var address = await _db.Addresses.FindAsync(addressId);
+
+    if (address is null)
+    {
+      return ServiceResults.Error("Address not found",404);
+    }
+
+    _db.Addresses.Remove(address);
+    await _db.SaveChangesAsync();
+
+    return ServiceResults.Success(200);
   }
 }

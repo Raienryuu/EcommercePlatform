@@ -1,3 +1,4 @@
+using Common;
 using OrderService.Models;
 using OrderService.Services;
 using Stripe;
@@ -6,27 +7,32 @@ namespace OrderService.Tests.Fakes;
 
 public class FakeStripePaymentService() : IStripePaymentService
 {
-  public Task<PaymentIntent> CreatePaymentIntent(Order order)
+  public Task<ServiceResult<PaymentIntent>> CreatePaymentIntent(Order order, CancellationToken ct = default)
   {
     if (order.StripePaymentId is not null)
     {
-      return GetPaymentIntentForOrder(order);
+      return GetPaymentIntentForOrder(order, ct);
     }
 
-    return Task.FromResult(new PaymentIntent() { ClientSecret = "secret" });
+    var paymentIntent = new PaymentIntent() { ClientSecret = "secret" };
+    var result = ServiceResults.Success(paymentIntent, 200);
+    return Task.FromResult<ServiceResult<PaymentIntent>>(result);
   }
 
-  public Task<PaymentIntent> GetPaymentIntentForOrder(Order order)
+  public Task<ServiceResult<PaymentIntent>> GetPaymentIntentForOrder(Order order, CancellationToken ct = default)
   {
-    return Task.FromResult(new PaymentIntent() { ClientSecret = "oldSecret" });
+    var paymentIntent = new PaymentIntent() { ClientSecret = "oldSecret" };
+    var result = ServiceResults.Success(paymentIntent, 200);
+    return Task.FromResult<ServiceResult<PaymentIntent>>(result);
   }
 
   ///<remarks>
   ///  Only for Stripe webhook handler to use
   ///  </remarks>
-  public Task<IResult> HandleWebhookPaymentConfirm(HttpRequest request, CancellationToken ct = default)
+  public Task<ServiceResult> HandleWebhookPaymentConfirm(HttpRequest request, CancellationToken ct = default)
   {
-    return Task.FromResult(Results.Ok());
+    var result = ServiceResults.Success(200);
+    return Task.FromResult<ServiceResult>(result);
   }
 
   public Task RefundPaymentForOrder(Guid orderId, CancellationToken ct = default)

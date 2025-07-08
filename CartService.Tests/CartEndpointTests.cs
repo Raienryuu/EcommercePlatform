@@ -15,14 +15,16 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
   {
     var createRequest = new CreateNewCartRequest
     {
-      Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 }],
+      Products =
+      [
+        new Product { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 5 },
+      ],
     };
-
-    var (_, response) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+    var (_, value) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
       createRequest
     );
 
-    _ = Assert.IsType<Guid>(response);
+    Assert.IsType<Guid>(value);
   }
 
   [Fact]
@@ -30,13 +32,13 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
   {
     var createRequest = new CreateNewCartRequest { Products = [] };
 
-    var (_, response) = await app.Client.POSTAsync<
-      CreateNewCartEndpoint,
-      CreateNewCartRequest,
-      ErrorResponse
-    >(createRequest);
+    var (response, _) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
+      createRequest
+    );
 
-    Assert.Contains("must not be empty", response.Errors.ElementAt(0).Value.ElementAt(0));
+    var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+    Assert.False(response.IsSuccessStatusCode);
+    Assert.Contains("must not be empty", content);
   }
 
   [Fact]
@@ -47,11 +49,12 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
       Products = [new() { Id = Guid.Parse("92d87665-97a9-4200-a354-f1c2cbcb63e0").ToString(), Amount = 0 }],
     };
 
-    var (_, res) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, ErrorResponse>(
+    var (response, _) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
       createRequest
     );
 
-    Assert.Contains("greater than '0'", res.Errors.ElementAt(0).Value.ElementAt(0));
+    var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+    Assert.Contains("greater than '0'", content);
   }
 
   [Fact]
@@ -64,8 +67,8 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
     var (_, res) = await app.Client.POSTAsync<CreateNewCartEndpoint, CreateNewCartRequest, Guid>(
       createRequest
     );
-
     var deleteCartRequest = new DeleteCartRequest { Id = res };
+
     var httpResponse = await app.Client.DELETEAsync<DeleteCartEndpoint, DeleteCartRequest>(deleteCartRequest);
 
     Assert.NotNull(httpResponse);

@@ -16,7 +16,16 @@ public class UpdateCartEndpoint(ICartRepository cartRepository) : Endpoint<Updat
   public override async Task HandleAsync(UpdateCartRequest request, CancellationToken ct)
   {
     var newCart = request.ToCart();
-    var cartGuid = await cartRepository.UpdateCart(request.Id, newCart);
-    await SendAsync(cartGuid, cancellation: ct);
+    var updateResult = await cartRepository.UpdateCart(request.Id, newCart);
+    if (!updateResult.IsSuccess)
+    {
+      await SendResultAsync(
+        TypedResults.Problem(updateResult.ErrorMessage, statusCode: updateResult.StatusCode)
+      );
+    }
+    else
+    {
+      await SendOkAsync(updateResult.Value, ct);
+    }
   }
 }

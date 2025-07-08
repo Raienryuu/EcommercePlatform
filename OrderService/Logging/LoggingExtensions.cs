@@ -93,4 +93,26 @@ public static partial class LoggerExtensions
     Message = "Cancelled payment intent for order with id : {OrderId}"
   )]
   public static partial void CancelledPaymentIntent(this ILogger logger, Guid orderId);
+
+  [LoggerMessage(
+    EventId = 2010,
+    Level = LogLevel.Warning,
+    Message = "Unable to create payment intent for order with id : {OrderId}"
+  )]
+  public static partial void UnableToCreatePaymentIntent(
+    this ILogger logger,
+    Guid orderId,
+    Exception exception
+  );
+
+  [LoggerMessage(
+    EventId = 2011,
+    Level = LogLevel.Information,
+    Message = "Unable to retrieve payment intent for order with id : {OrderId}"
+  )]
+  public static partial void UnableToRetrievePaymentIntent(
+    this ILogger logger,
+    Guid orderId,
+    Exception exception
+  );
 }

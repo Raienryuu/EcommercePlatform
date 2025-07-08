@@ -17,7 +17,6 @@ public class Program
     _ = builder.Services.AddAuthorization();
     _ = builder.Services.AddEndpointsApiExplorer();
     _ = builder.Services.AddSwaggerGen();
-    _ = builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
     _ = builder.Services.Configure<RedisOptions>(builder.Configuration.GetSection("RedisConfig"));
 
@@ -77,7 +76,7 @@ public class Program
 
     if (!app.Environment.IsDevelopment())
     {
-      app.UseExceptionHandler("/Error");
+      app.UseDefaultExceptionHandler();
     }
 
     _ = app.UseCors("DevPolicy");

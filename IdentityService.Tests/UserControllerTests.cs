@@ -4,14 +4,9 @@ using IdentityService.Tests.SampleData;
 
 namespace IdentityService.Tests;
 
-public class UserControllerTests : IClassFixture<AppFixture>
+public class UserControllerTests(AppFixture app) : IClassFixture<AppFixture>
 {
-  private readonly HttpClient _client;
-
-  public UserControllerTests(AppFixture app)
-  {
-    _client = app.CreateClient();
-  }
+  private readonly HttpClient _client = app.CreateClient();
 
   [Fact]
   public async Task RegisterNewUser_ValidRegistrationUserData_UserRegisteredSuccessfully()

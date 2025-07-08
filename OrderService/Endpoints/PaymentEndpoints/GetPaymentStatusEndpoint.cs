@@ -37,9 +37,9 @@ public static class GetPaymentStatusEndpoint
             return Results.Ok(order.PaymentStatus);
           }
 
-          var paymentIntent = await paymentService.GetPaymentIntentForOrder(order);
+          var paymentIntent = await paymentService.GetPaymentIntentForOrder(order, ct);
 
-          var status = paymentIntent.Status switch
+          var status = paymentIntent.Value.Status switch
           {
             "succeded" => PaymentStatus.Succeded,
             "pending" => PaymentStatus.Pending,

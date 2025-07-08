@@ -14,7 +14,14 @@ public class DeleteCartEndpoint(ICartRepository cartProvider) : Endpoint<DeleteC
 
   public override async Task HandleAsync(DeleteCartRequest request, CancellationToken ct)
   {
-    await cartProvider.DeleteCart(request.Id);
-    await SendNoContentAsync(ct);
+    var result = await cartProvider.DeleteCart(request.Id);
+    if (result.IsSuccess)
+    {
+      await SendNoContentAsync(ct);
+    }
+    else
+    {
+      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode));
+    }
   }
 }

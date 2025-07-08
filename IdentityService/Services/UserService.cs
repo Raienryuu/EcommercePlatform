@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using Common;
 using Humanizer;
 using IdentityService.Data;
 using IdentityService.Models;
@@ -18,7 +19,7 @@ public class UserService(
   ILogger<UserService> logger
 ) : IUserService
 {
-  public async Task<(bool isSucccess, IEnumerable<IdentityError> errorList)> RegisterNewUser(
+  public async Task<ServiceResult> RegisterNewUser(
     NewUser registrationData
   )
   {
@@ -30,40 +31,41 @@ public class UserService(
     var createdSuccessfully = await userManager.CreateAsync(newUser);
     if (createdSuccessfully.Succeeded == false)
     {
-      return (false, createdSuccessfully.Errors);
+      return ServiceResults.Error(createdSuccessfully.Errors.ToString()!, 400);
     }
 
     var addedToRole = await userManager.AddToRoleAsync(newUser, "User");
-
-    if (createdSuccessfully.Succeeded && addedToRole.Succeeded)
+    if (addedToRole.Succeeded == false)
     {
-      var userAddress = UserAddress.CreateFrom(registrationData, newUser);
-      await db.Addresses.AddAsync(userAddress);
-      await db.SaveChangesAsync();
-
-      logger.RegisteredNewUser(newUser.Id);
-
-      return (true, []);
+      return ServiceResults.Error(createdSuccessfully.Errors.ToString()!, 400);
     }
 
-    return (false, []);
+
+    var userAddress = UserAddress.CreateFrom(registrationData, newUser);
+    await db.Addresses.AddAsync(userAddress);
+    await db.SaveChangesAsync();
+
+    logger.RegisteredNewUser(newUser.Id);
+
+    return ServiceResults.Success(200);
   }
 
-  public async Task<(bool isSuccess, string message)> LogInUser(UserCredentials credentials)
+  public async Task<ServiceResult<string>> LogInUser(UserCredentials credentials)
   {
     var user = await userManager.FindByNameAsync(credentials.Login);
 
     if (user is null)
     {
-      return (false, "{\"message\":\"Not able to get matching values from database.\"}");
+      return ServiceResults.Error<string>("Not able to get matching values from database.", 400);
     }
 
-    var result = await userManager.CheckPasswordAsync(user, credentials.Password);
-    if (!result)
+    var isPasswordValid = await userManager.CheckPasswordAsync(user, credentials.Password);
+    if (!isPasswordValid)
     {
       logger.InvalidLogin(user.Id);
-      return (false, "{\"message\":\"Not able to get matching values from database.\"}");
+      return ServiceResults.Error<string>("Not able to get matching values from database.", 400);
     }
+
     var jwtSection = configuration.GetRequiredSection("Jwt");
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.GetValue<string>("Key")!));
@@ -93,18 +95,18 @@ public class UserService(
 
     logger.SuccessfullLogin(user.Id);
 
-    return (true, response);
+    return ServiceResults.Success(response, 200);
   }
 
-  public async Task<(bool isSuccess, string username)> GetUsernameForLoggedUser(Guid userId)
+  public async Task<ServiceResult<string>> GetUsernameForLoggedUser(Guid userId)
   {
     var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstOrDefaultAsync();
     if (username is null)
     {
-      return (false, string.Empty);
+      return ServiceResults.Error<string>("Couldn't find user with given Id", 404);
     }
-    username = username.ToLower().Pascalize();
-    return (true, username);
+
+    return ServiceResults.Success(username, 200);
   }
 
   private static IdentityUser<Guid> MapToNewUser(NewUser registrationData)

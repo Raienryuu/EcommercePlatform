@@ -1,3 +1,4 @@
+using Common;
 using ImageService.Models;
 using ImageService.Services.Interfaces;
 using Microsoft.Extensions.Options;
@@ -20,24 +21,26 @@ public class MongoProductImagesMetadataService : IProductImagesMetadataService, 
       .GetCollection<ProductImagesMetadata>("productImagesMetadata");
   }
 
-  public async Task<ProductImagesMetadata> GetProductImagesMetadataAsync(Guid productId)
+  public async Task<ServiceResult<ProductImagesMetadata>> GetProductImagesMetadataAsync(Guid productId)
   {
     var filter = Builders<ProductImagesMetadata>.Filter.Eq("ProductId", productId);
-    return await _metadataCollection.Find(filter).FirstOrDefaultAsync()
+    var metadata = await _metadataCollection.Find(filter).FirstOrDefaultAsync()
       ?? new ProductImagesMetadata(productId, [], new NoMetadataAvailable());
+    return ServiceResults.Success<ProductImagesMetadata>(metadata, 200);
   }
 
-  public async Task AddNewMetadataAsync(ProductImagesMetadata productMetadata) =>
+  public async Task<ServiceResult> AddNewMetadataAsync(ProductImagesMetadata productMetadata) {
     await _metadataCollection.InsertOneAsync(productMetadata);
+    return ServiceResults.Success(200);
+  }
 
-  public async Task UpdateMetadataAsync(ProductImagesMetadata productMetadata)
+  public async Task<ServiceResult> UpdateMetadataAsync(ProductImagesMetadata productMetadata)
   {
-    var builder = Builders<ProductImagesMetadata>.Update;
-    var updateDefinition = builder.Set(x => x.StoredImages, productMetadata.StoredImages);
     _ = await _metadataCollection.FindOneAndReplaceAsync(
       x => x.ProductId == productMetadata.ProductId,
       productMetadata
     );
+    return ServiceResults.Success(200);
   }
 
   public void Dispose()

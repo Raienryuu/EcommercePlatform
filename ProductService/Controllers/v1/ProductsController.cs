@@ -1,5 +1,3 @@
-using Common;
-using MassTransit.Futures.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
@@ -7,7 +5,7 @@ using ProductService.Services;
 using ProductService.Utility;
 using ProductService.Validation;
 
-namespace ProductService.Controllers.v1;
+namespace ProductService.Controllers.V1;
 
 [ApiController]
 [Route("/api/v1/[controller]")]
@@ -107,7 +105,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
     return createdProductResult.IsSuccess
       ? CreatedAtAction(
         nameof(GetProduct),
-        new { id = createdProductResult.Value?.Id },
+        new { id = createdProductResult.Value.Id },
         createdProductResult.Value
       )
       : Problem(createdProductResult.ErrorMessage, null, createdProductResult.StatusCode);

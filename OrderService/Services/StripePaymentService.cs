@@ -1,4 +1,5 @@
 using System.Data;
+using Common;
 using Contracts;
 using MassTransit;
 using MessageQueue.Contracts;
@@ -35,7 +36,10 @@ public class StripePaymentService : IStripePaymentService
     _logger = logger;
   }
 
-  public Task<PaymentIntent> CreatePaymentIntent(Order order)
+  public async Task<ServiceResult<PaymentIntent>> CreatePaymentIntent(
+    Order order,
+    CancellationToken ct = default
+  )
   {
     var requestOptions = new RequestOptions() { IdempotencyKey = order.OrderId.ToString() };
     var paymentOptions = new PaymentIntentCreateOptions
@@ -47,20 +51,45 @@ public class StripePaymentService : IStripePaymentService
       UseStripeSdk = true,
     };
 
-    return _paymentService.CreateAsync(paymentOptions, requestOptions);
+    try
+    {
+      var newPaymentIntent = await _paymentService.CreateAsync(paymentOptions, requestOptions, ct);
+      return ServiceResults.Success(newPaymentIntent, 200);
+    }
+    catch (StripeException e)
+    {
+      _logger.UnableToCreatePaymentIntent(order.OrderId, e);
+      return ServiceResults.Error<PaymentIntent>("Unable to start new transaction.", 503);
+    }
   }
 
-  public Task<PaymentIntent> GetPaymentIntentForOrder(Order order)
+  public async Task<ServiceResult<PaymentIntent>> GetPaymentIntentForOrder(
+    Order order,
+    CancellationToken ct = default
+  )
   {
     if (order.StripePaymentId is null)
     {
       throw new ArgumentNullException(nameof(order), "Order does not have stripe payment id");
     }
 
-    return _paymentService.GetAsync(order.StripePaymentId);
+    try
+    {
+      var paymentIntent = await _paymentService.GetAsync(order.StripePaymentId, cancellationToken: ct);
+
+      return ServiceResults.Ok(paymentIntent);
+    }
+    catch (StripeException e)
+    {
+      _logger.UnableToRetrievePaymentIntent(order.OrderId, e);
+      return ServiceResults.Error<PaymentIntent>("Unable to retrieve transaction details.", 503);
+    }
   }
 
-  public async Task<IResult> HandleWebhookPaymentConfirm(HttpRequest request, CancellationToken ct = default)
+  public async Task<ServiceResult> HandleWebhookPaymentConfirm(
+    HttpRequest request,
+    CancellationToken ct = default
+  )
   {
     var json = await new StreamReader(request.Body).ReadToEndAsync(ct);
     var endpointSecret = _options.Value.Webhooks.PaymentIntentConfirmCode;
@@ -81,7 +110,7 @@ public class StripePaymentService : IStripePaymentService
 
     if (order is null)
     {
-      return Results.NotFound("Order with given id doesn't exists.");
+      return ServiceResults.Error("Order with given id doesn't exists.", statusCode: 404);
     }
 
     _logger.OrderSuccessfulPaymentInfo(paymentIntent.Amount, order.OrderId);
@@ -105,7 +134,7 @@ public class StripePaymentService : IStripePaymentService
         ct
       );
     }
-    return Results.Ok();
+    return ServiceResults.Success(200);
   }
 
   public async Task RefundPaymentForOrder(Guid orderId, CancellationToken ct = default)
@@ -137,7 +166,7 @@ public class StripePaymentService : IStripePaymentService
     {
       var response = await refundService.CreateAsync(refundOptions, cancellationToken: ct);
     }
-    catch (Exception e)
+    catch (StripeException e)
     {
       _logger.UnableToCancelOrder(orderId, e.Message);
       throw;
@@ -155,6 +184,7 @@ public class StripePaymentService : IStripePaymentService
     catch (StripeException e)
     {
       _logger.UnableToCancelPaymentIntent(orderId, e.Message);
+      throw;
     }
   }
 }

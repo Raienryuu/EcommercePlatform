@@ -22,16 +22,12 @@ public class UserController(IUserService userService) : ControllerBase
 
     if (!isValid)
     {
-      return BadRequest("Invalid user data");
+      return Problem("Invalid user data", statusCode:400);
     }
 
-    var (isSucccess, errorList) = await userService.RegisterNewUser(registrationData);
+    var result = await userService.RegisterNewUser(registrationData);
 
-    if (isSucccess)
-    {
-      return Ok();
-    }
-    return BadRequest(errorList);
+    return result.IsSuccess ? Ok() : Problem(result.ErrorMessage, statusCode: result.StatusCode);
   }
 
   [HttpPost]
@@ -41,19 +37,9 @@ public class UserController(IUserService userService) : ControllerBase
   [AllowAnonymous]
   public async Task<ActionResult> Login([FromBody] UserCredentials credentials)
   {
-    if (credentials is null)
-    {
-      return BadRequest("No user credentials have been supplied.");
-    }
+    var result = await userService.LogInUser(credentials);
 
-    var (isSuccess, message) = await userService.LogInUser(credentials);
-
-    if (isSuccess)
-    {
-      return Ok(message);
-    }
-
-    return BadRequest(message);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode:result.StatusCode);
   }
 
   [HttpGet]
@@ -63,11 +49,7 @@ public class UserController(IUserService userService) : ControllerBase
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetUsernameForLoggedUser([FromHeader(Name = "UserId")] Guid userId)
   {
-    var (isSuccess, username) = await userService.GetUsernameForLoggedUser(userId);
-    if (isSuccess)
-    {
-      return Ok(JsonSerializer.Serialize(username));
-    }
-    return NotFound();
+    var result = await userService.GetUsernameForLoggedUser(userId);
+    return result.IsSuccess ? Ok(JsonSerializer.Serialize(result.Value)) : Problem(result.ErrorMessage, statusCode: result.StatusCode);
   }
 }

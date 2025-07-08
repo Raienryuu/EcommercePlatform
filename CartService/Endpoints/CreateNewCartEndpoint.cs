@@ -16,7 +16,18 @@ public class CreateNewCartEndpoint(ICartRepository cartProvider) : Endpoint<Crea
   public override async Task HandleAsync(CreateNewCartRequest req, CancellationToken ct)
   {
     var cart = req.ToCart();
-    var newId = await cartProvider.CreateNewCart(cart);
-    await SendCreatedAtAsync("api/cart/{guid}", newId, newId, cancellation: ct);
+    var result = await cartProvider.CreateNewCart(cart);
+    if (result.IsSuccess)
+    {
+      await SendCreatedAtAsync<GetCartEndpoint>(
+        new { cartGuid = result.Value },
+        result.Value,
+        cancellation: ct
+      );
+    }
+    else
+    {
+      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode));
+    }
   }
 }

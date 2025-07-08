@@ -38,9 +38,9 @@ public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
       //  options.SignIn.RequireConfirmedAccount = false)
       //  .AddEntityFrameworkStores<ApplicationDbContextFake>();
 
-      var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
-      _ = context.Database.EnsureCreated();
-      (context as ApplicationDbContextFake)!.FillData();
+      // var context = services.BuildServiceProvider().GetRequiredService<ApplicationDbContext>();
+      // _ = context.Database.EnsureCreated();
+      // (context as ApplicationDbContextFake)!.FillData();
     });
   }
 

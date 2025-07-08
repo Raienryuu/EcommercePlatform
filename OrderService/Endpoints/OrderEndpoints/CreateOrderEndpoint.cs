@@ -37,7 +37,7 @@ public static class CreateOrderEndpoint
             ? TypedResults.CreatedAtRoute(
               result.Value,
               nameof(GetOrderEndpoint),
-              new { orderId = result.Value?.OrderId }
+              new { orderId = result.Value.OrderId }
             )
             : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
         }

@@ -1,8 +1,7 @@
 using IdentityService.Models;
 using IdentityService.Services;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Common;
 
 namespace IdentityService.Controllers.V1;
 
@@ -20,22 +19,26 @@ public class AddressController(IAddressesService addresses) : ControllerBase
   }
 
   // GET api/<AddressController>/5
-  [HttpGet("{id}")]
+  [HttpGet("{id:int}")]
   [ActionName("GetAddressById")]
   public async Task<ActionResult<UserAddress>> GetAddressById(
     [FromHeader(Name = "UserId")] Guid userId,
     int id
   )
   {
-    var address = await _addresses.GetAddressAsync(id);
-    if (address?.UserId != userId)
+    var result = await _addresses.GetAddressAsync(id);
+
+    if (!result.IsSuccess)
+    {
+      return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    if (result.Value.UserId != userId)
     {
       return Forbid();
     }
 
-    if (address is null)
-      return NotFound();
-    return Ok(address);
+    return Ok(result.Value);
   }
 
   // POST api/<AddressController>
@@ -46,8 +49,14 @@ public class AddressController(IAddressesService addresses) : ControllerBase
   )
   {
     address.UserId = userId;
-    var addedAddress = await _addresses.AddAddressAsync(address);
-    return CreatedAtAction(nameof(GetAddressById), new { id = addedAddress.Id }, addedAddress);
+    var result = await _addresses.AddAddressAsync(address);
+
+    if (!result.IsSuccess)
+    {
+      return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
+    return CreatedAtAction(nameof(GetAddressById), new { id = result.Value.Id }, result.Value);
   }
 
   // PUT api/<AddressController>
@@ -58,25 +67,45 @@ public class AddressController(IAddressesService addresses) : ControllerBase
   )
   {
     var addressInDb = await _addresses.GetAddressAsync(newAddresss.Id);
-    if (addressInDb?.UserId != userId)
+
+    if (!addressInDb.IsSuccess)
+    {
+      return StatusCode(addressInDb.StatusCode, addressInDb.ErrorMessage);
+    }
+
+    if (addressInDb.Value.UserId != userId)
     {
       return Forbid();
     }
-    if (addressInDb is null)
-      return NotFound();
-    return Ok(await _addresses.EditAddressAsync(newAddresss));
+
+    var result = await _addresses.EditAddressAsync(newAddresss);
+
+    return result.IsSuccess ? Ok(result.Value) :StatusCode(result.StatusCode, result.ErrorMessage) ;
   }
 
   // DELETE api/<AddressController>/5
-  [HttpDelete("{id}")]
+  [HttpDelete("{id:int}")]
   public async Task<ActionResult> Delete([FromHeader(Name = "UserId")] Guid userId, int id)
   {
     var address = await _addresses.GetAddressAsync(id);
-    if (address?.UserId != userId)
+
+    if (!address.IsSuccess)
+    {
+      return StatusCode(address.StatusCode, address.ErrorMessage);
+    }
+
+    if (address.Value.UserId != userId)
     {
       return Forbid();
     }
-    await _addresses.RemoveAddressAsync(id);
+
+    var result = await _addresses.RemoveAddressAsync(id);
+
+    if (!result.IsSuccess)
+    {
+      return StatusCode(result.StatusCode, result.ErrorMessage);
+    }
+
     return NoContent();
   }
 }

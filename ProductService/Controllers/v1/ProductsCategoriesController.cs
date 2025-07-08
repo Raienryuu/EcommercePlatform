@@ -22,7 +22,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return StatusCode(result.StatusCode, result.ErrorMessage);
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
     }
 
@@ -38,7 +38,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return StatusCode(result.StatusCode, result.ErrorMessage);
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
     }
 
@@ -54,7 +54,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return StatusCode(result.StatusCode, result.ErrorMessage);
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
     }
 
@@ -70,7 +70,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return StatusCode(result.StatusCode, result.ErrorMessage);
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
     }
 
@@ -84,7 +84,7 @@ namespace ProductService.Controllers.V1
 
       if (result.IsSuccess)
       {
-        return CreatedAtAction("GetProductCategory", new { id = result.Value?.Id }, result.Value);
+        return CreatedAtAction("GetProductCategory", new { id = result.Value.Id }, result.Value);
       }
       else
       {
@@ -104,7 +104,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return StatusCode(result.StatusCode, result.ErrorMessage);
+        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
     }
   }

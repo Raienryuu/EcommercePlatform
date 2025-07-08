@@ -43,4 +43,8 @@
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <InternalsVisibleTo >IdentityService.Tests.csproj</InternalsVisibleTo>
+  </PropertyGroup>
+
 </Project>

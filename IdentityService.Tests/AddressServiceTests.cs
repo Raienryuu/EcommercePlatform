@@ -9,15 +9,13 @@ namespace IdentityService.Tests;
 public class AddressServiceTests : IClassFixture<DatabaseFixture>
 {
   private readonly AddressesService _addresses;
-  private readonly DatabaseFixture _databaseFixture;
   private readonly ApplicationDbContextFake _dbContext;
 
   public AddressServiceTests(DatabaseFixture databaseFixture)
   {
-    _databaseFixture = databaseFixture;
     _dbContext = new ApplicationDbContextFake(
       new DbContextOptionsBuilder<Data.ApplicationDbContext>()
-        .UseSqlServer(_databaseFixture.GetConnectionString())
+        .UseSqlServer(databaseFixture.GetConnectionString())
         .Options
     );
     _addresses = new AddressesService(_dbContext);
@@ -43,7 +41,7 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
 
     var addedObject = await _addresses.AddAddressAsync(newAddress);
 
-    Assert.True(addedObject.Id > 0);
+    Assert.True(addedObject.Value.Id > 0);
   }
 
   [Fact]
@@ -55,8 +53,8 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
 
     var address = await _addresses.GetAddressAsync(ADDRESS_ID);
 
-    Assert.True(address?.PhoneNumber == ALICE_PHONE);
-    Assert.True(address.UserId == aliceGuid);
+    Assert.True(address.Value.PhoneNumber == ALICE_PHONE);
+    Assert.True(address.Value.UserId == aliceGuid);
   }
 
   [Fact]
@@ -66,7 +64,7 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
 
     var addresses = await _addresses.GetAddressesForUserAsync(aliceGuid);
 
-    Assert.True(addresses.Count != 0);
+    Assert.NotEmpty(addresses);
   }
 
   [Fact]
@@ -80,7 +78,7 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
     await _addresses.AddAddressAsync(newAddress);
     var addresses = await _addresses.GetAddressesForUserAsync(aliceGuid);
     var addressesCountBeforeDelete = addresses.Count;
-    var idToDelete = addresses.Where(a => a.City == CITY).First().Id;
+    var idToDelete = addresses.First(a => a.City == CITY).Id;
 
     await _addresses.RemoveAddressAsync(idToDelete);
 
@@ -98,11 +96,10 @@ public class AddressServiceTests : IClassFixture<DatabaseFixture>
     oldAddress.UserId = aliceGuid;
     oldAddress.City = CITY;
     await _addresses.AddAddressAsync(oldAddress);
-    var newAddress = oldAddress;
-    newAddress.City = "Mexico";
+    oldAddress.City = "Mexico";
 
-    var updatedAddress = await _addresses.EditAddressAsync(newAddress);
+    var updatedAddress = await _addresses.EditAddressAsync(oldAddress);
 
-    Assert.NotEqual(CITY, updatedAddress!.City);
+    Assert.NotEqual(CITY, updatedAddress.Value.City);
   }
 }

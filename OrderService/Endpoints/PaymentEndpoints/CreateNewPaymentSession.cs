@@ -1,6 +1,9 @@
 using System.Net;
+using Common;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Services;
+using Stripe;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
 
@@ -10,7 +13,7 @@ public static class CreateNewPaymentSessionEndpoint
   {
     app.MapPost(
         EndpointRoutes.Payments.CREATE_NEW_PAYMENT_SESSION,
-        async (
+        async Task<Results<Ok<string>, ProblemHttpResult, AcceptedAtRoute>> (
           [FromHeader(Name = "UserId")] Guid userId,
           Guid orderId,
           OrderDbContext context,
@@ -22,17 +25,20 @@ public static class CreateNewPaymentSessionEndpoint
 
           if (order is null)
           {
-            return Results.NotFound("Order with given id doesn't exists.");
+            return TypedResults.Problem("Order with given id doesn't exists.", statusCode: 404);
           }
 
           if (order.UserId != userId)
           {
-            return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
+            return TypedResults.Problem(
+              "Mismatch between logged user Id and order's user Id.",
+              statusCode: 402
+            );
           }
 
           if (order.TotalPriceInSmallestCurrencyUnit is null)
           {
-            return Results.AcceptedAtRoute(
+            return TypedResults.AcceptedAtRoute(
               nameof(CreateNewPaymentSessionEndpoint),
               new { orderId = order.OrderId }
             );
@@ -40,19 +46,26 @@ public static class CreateNewPaymentSessionEndpoint
 
           if (order.StripePaymentId is not null)
           {
-            var oldIntent = await paymentService.GetPaymentIntentForOrder(order);
-            return Results.Ok(oldIntent.ClientSecret);
+            var oldIntent = await paymentService.GetPaymentIntentForOrder(order, ct);
+            if (oldIntent.IsSuccess)
+            {
+              return TypedResults.Ok(oldIntent.Value.ClientSecret);
+            }
           }
 
-          var paymentIntent = await paymentService.CreatePaymentIntent(order);
-          order.StripePaymentId = paymentIntent.Id;
+          var paymentIntent = await paymentService.CreatePaymentIntent(order, ct);
+          if (!paymentIntent.IsSuccess)
+          {
+            return TypedResults.Problem(paymentIntent.ErrorMessage, statusCode: paymentIntent.StatusCode);
+          }
+
+          order.StripePaymentId = paymentIntent.Value.Id;
           await context.SaveChangesAsync(ct);
 
-          return Results.Ok(paymentIntent.ClientSecret);
+          return TypedResults.Ok(paymentIntent.Value.ClientSecret);
         }
       )
-      .WithName(nameof(CreateNewPaymentSessionEndpoint))
-      .Produces<string>((int)HttpStatusCode.OK);
+      .WithName(nameof(CreateNewPaymentSessionEndpoint));
 
     return app;
   }

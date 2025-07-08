@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -27,6 +26,7 @@ builder
   .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddScoped<IAddressesService, AddressesService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
@@ -124,7 +124,7 @@ if (app.Environment.IsDevelopment() || app.Configuration["ASPNETCORE_ENVIRONMENT
 }
 else
 {
-  app.UseExceptionHandler("/Error");
+  app.UseExceptionHandler();
 
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
   app.UseHsts();
@@ -159,3 +159,6 @@ static void CreateDevelopmentDatabase(ApplicationDbContext? dbContext)
     break;
   }
 }
+
+
+public partial class Program {}

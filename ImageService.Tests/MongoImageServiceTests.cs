@@ -24,8 +24,8 @@ public class MongoImageServiceTests(MongoContainer mongoContainer)
     await _mongoImageService.AddProductImageAsync(productId, file);
     var image = await _mongoImageService.GetProductImageAsync(productId, 0);
 
-    _ = await Assert.That(image).IsNotNull();
-    _ = await Assert.That(image!.Length).IsEqualTo(file.Length);
+    _ = await Assert.That(image.Value).IsNotNull();
+    _ = await Assert.That(image.Value.Length).IsEqualTo(file.Length);
   }
 
   [Test]
@@ -36,6 +36,6 @@ public class MongoImageServiceTests(MongoContainer mongoContainer)
     var image = await _mongoImageService.GetProductImageAsync(productId, 0);
 
     _ = await Assert.That(image).IsNotNull();
-    _ = await Assert.That(image!.Length).IsEqualTo(file.Length);
+    _ = await Assert.That(image.Value.Length).IsEqualTo(file.Length);
   }
 }

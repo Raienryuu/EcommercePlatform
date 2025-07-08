@@ -13,7 +13,7 @@ public partial class ProductService(ProductDbContext db) : IProductService
 
     if (newProduct.Category is null)
     {
-      return ServiceResults.NotFound<Product>( "Category not found");
+      return ServiceResults.NotFound<Product>("Category not found");
     }
     newProduct.RefreshConcurrencyStamp();
     db.Products.Add(newProduct);
