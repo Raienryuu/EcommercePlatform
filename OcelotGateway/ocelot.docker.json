@@ -142,7 +142,7 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
-					"Port": 8080
+					"Port": 7107
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/productscategories/{everything}"
@@ -153,7 +153,7 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
-					"Port": 8080
+					"Port": 7107
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/deliveries/{everything}"

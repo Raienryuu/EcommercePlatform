@@ -117,15 +117,21 @@ public class Program
 
   static void CreateDevelopmentDatabase(OrderDbContext? dbContext)
   {
+    var retry = 0;
     while (true)
     {
+      retry++;
       try
       {
         dbContext?.Database.EnsureCreated();
       }
       catch
       {
-        Thread.Sleep(5000);
+        Thread.Sleep(4000);
+        if (retry > 5)
+        {
+          throw;
+        }
         continue;
       }
       break;

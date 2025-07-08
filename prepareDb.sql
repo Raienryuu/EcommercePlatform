@@ -9,6 +9,15 @@ GO
 
 USE ProductService;
 
+DROP USER  IF EXISTS  productManager;
+DROP LOGIN productManager;
+
+CREATE LOGIN productManager
+    WITH PASSWORD = 'totallynotamangerpassword!@#$5';
+CREATE USER productManager FOR LOGIN productManager;
+
+GO
+
 CREATE FUNCTION [GetProductsFromCategoryHierarchy] (@categoryId INT)
 RETURNS TABLE
 AS
@@ -22,6 +31,7 @@ WITH CategoryHierarchy AS ( SELECT c.Id, c.CategoryName, c.ParentCategoryId
         FROM Products p
         INNER JOIN  CategoryHierarchy ch ON p.CategoryId = ch.Id;
 );
+
 GO
 
 DROP USER  IF EXISTS  productManager;
