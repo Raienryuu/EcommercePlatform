@@ -16,13 +16,14 @@ public class GetCartEndpoint(ICartRepository cartProvider) : Endpoint<GetCartReq
   public override async Task HandleAsync(GetCartRequest request, CancellationToken ct)
   {
     var getResult = await cartProvider.GetCart(request.Id);
-    if (!getResult.IsSuccess)
+
+    if (getResult.IsSuccess)
     {
-      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: getResult.StatusCode));
+      await SendOkAsync(getResult.Value, ct);
     }
     else
     {
-      await SendOkAsync(getResult.Value, ct);
+      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: getResult.StatusCode));
     }
   }
 }

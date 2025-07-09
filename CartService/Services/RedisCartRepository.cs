@@ -32,7 +32,7 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
     var objectJson = await _db.StringGetAsync(g.ToString());
     if (objectJson.IsNullOrEmpty)
     {
-      ServiceResults.Error<Cart>("Didn't find the specified cart.", 404);
+      return ServiceResults.Error<Cart>("Didn't find the specified cart.", 404);
     }
     var cartAsString = objectJson.ToString();
     var cart = JsonSerializer.Deserialize<Cart>(cartAsString);
