@@ -1,10 +1,10 @@
+using System.Net;
 using CartService.Endpoints;
 using CartService.Models;
 using CartService.Requests;
 using CartService.Tests.Fixtures;
 using FastEndpoints;
 using FastEndpoints.Testing;
-using MassTransit;
 
 namespace CartService.Tests;
 
@@ -78,7 +78,7 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
   [Fact]
   public async Task DeleteCart_NonExistentCartId_OKResponse()
   {
-    var guid = NewId.NextGuid();
+    var guid = Guid.NewGuid();
     var deleteCartRequest = new DeleteCartRequest { Id = guid };
 
     var httpRes = await app.Client.DELETEAsync<DeleteCartEndpoint, DeleteCartRequest>(deleteCartRequest);
@@ -108,9 +108,10 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
   {
     var id = Guid.NewGuid();
     var getCartRequest = new GetCartRequest { Id = id };
-    var (_, cart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
+    var (response, cart) = await app.Client.GETAsync<GetCartEndpoint, GetCartRequest, Cart?>(getCartRequest);
 
     Assert.Null(cart);
+    Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
   }
 
   [Fact]
