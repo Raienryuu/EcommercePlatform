@@ -25,6 +25,11 @@ public class ProductsController(ProductDbContext db, IProductService productServ
   [ProducesResponseType<string>(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetProduct(Guid id)
   {
+    if (id == Guid.Empty)
+    {
+      return Problem("Product ID cannot be an empty GUID.", statusCode: StatusCodes.Status400BadRequest);
+    }
+
     var result = await productService.GetProduct(id);
 
     return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
@@ -39,7 +44,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     if (!validationResult.IsValid)
     {
-      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
+      return ValidationProblem(validationResult.ToString());
     }
 
     var products = await new ProductsPagination(filters, db)
@@ -62,7 +67,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     if (!validationResult.IsValid)
     {
-      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
+      return ValidationProblem(validationResult.ToString());
     }
 
     var products = await new ProductsPagination(filters, db)
@@ -85,7 +90,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     if (!validationResult.IsValid)
     {
-      return ValidationProblem(new ValidationProblemDetails() { Errors = validationResult.ToDictionary() });
+      return ValidationProblem(validationResult.ToString());
     }
 
     var products = await new ProductsPagination(filters, db)
@@ -100,6 +105,14 @@ public class ProductsController(ProductDbContext db, IProductService productServ
   [ProducesResponseType(StatusCodes.Status400BadRequest)]
   public async Task<ActionResult> AddNewProduct([FromBody] Product newProduct)
   {
+    var validator = new ProductValidator();
+    var validationResult = await validator.ValidateAsync(newProduct);
+
+    if (!validationResult.IsValid)
+    {
+      return ValidationProblem(validationResult.ToString());
+    }
+
     var createdProductResult = await productService.AddProduct(newProduct);
 
     return createdProductResult.IsSuccess
@@ -128,6 +141,19 @@ public class ProductsController(ProductDbContext db, IProductService productServ
   [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
   public async Task<ActionResult<Product>> UpdateProduct([FromBody] Product updatedProduct)
   {
+    if (updatedProduct.Id == Guid.Empty)
+    {
+      return Problem("Product ID cannot be an empty GUID.", statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    var validator = new ProductValidator();
+    var validationResult = await validator.ValidateAsync(updatedProduct);
+
+    if (!validationResult.IsValid)
+    {
+      return ValidationProblem(validationResult.ToString());
+    }
+
     var result = await productService.UpdateProduct(updatedProduct);
 
     return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
@@ -146,9 +172,23 @@ public class ProductsController(ProductDbContext db, IProductService productServ
   [ProducesResponseType(StatusCodes.Status404NotFound)]
   public async Task<IActionResult> GetProductsBatch([FromBody] List<Guid> productsIds)
   {
-    if (productsIds.Count == 0)
+    if (productsIds == null || productsIds.Count == 0)
     {
-      return ValidationProblem(null, null, 400, "No products id  provided.", null, null);
+      return Problem("No product IDs provided.", statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    if (productsIds.Any(id => id == Guid.Empty))
+    {
+      return Problem("Product IDs cannot contain empty GUIDs.", statusCode: StatusCodes.Status400BadRequest);
+    }
+
+    const int MAX_BATCH_SIZE = 20;
+    if (productsIds.Count > MAX_BATCH_SIZE)
+    {
+      return Problem(
+        $"Maximum batch size exceeded.  Maximum allowed: {MAX_BATCH_SIZE}",
+        statusCode: StatusCodes.Status400BadRequest
+      );
     }
 
     var result = await productService.GetBatchProducts(productsIds);

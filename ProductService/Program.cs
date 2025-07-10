@@ -29,6 +29,7 @@ public class Program
     builder.Services.AddControllers();
 
     builder.Services.AddScoped<IValidator<PaginationParams>, PaginationParamsValidator>();
+    builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
 
     builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

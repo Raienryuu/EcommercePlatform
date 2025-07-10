@@ -1,6 +1,7 @@
 using Contracts;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
+using ProductService.Services;
 
 namespace ProductService.Tests
 {
