@@ -1,7 +1,7 @@
 using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 using ProductService.Models;
+using ProductService.Services;
 
 namespace ProductService.Endpoints.DeliveryEndpoints;
 
@@ -11,10 +11,17 @@ public static class GetAvailableDeliveriesEndpoint
   {
     app.MapGet(
         EndpointRoutes.Deliveries.GET_AVAILABLE_DELIVERIES,
-        static async (ProductDbContext context, CancellationToken ct) =>
+        static async Task<Results<Ok<List<Delivery>>, ProblemHttpResult>> (
+          IDeliveryService deliveryService,
+          CancellationToken ct
+        ) =>
         {
-          var deliveries = await context.Deliveries.ToListAsync(cancellationToken: ct);
-          return Results.Ok(deliveries);
+          var deliveries = await deliveryService.GetAvailableDeliveries();
+          if (deliveries.IsSuccess)
+          {
+            return TypedResults.Ok(deliveries.Value);
+          }
+          return TypedResults.Problem(deliveries.ErrorMessage, statusCode: deliveries.StatusCode);
         }
       )
       .WithName(nameof(GetAvailableDeliveriesEndpoint))

@@ -37,7 +37,7 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
     );
 
     var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-    Assert.False(response.IsSuccessStatusCode);
+    Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     Assert.Contains("must not be empty", content);
   }
 

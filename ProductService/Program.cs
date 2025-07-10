@@ -23,6 +23,7 @@ public class Program
 
     builder.Services.AddScoped<IProductService, Services.ProductService>();
     builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
+    builder.Services.AddScoped<IDeliveryService, DeliveryService>();
 
     builder.Services.AddProblemDetails();
     builder.Services.AddControllers();
