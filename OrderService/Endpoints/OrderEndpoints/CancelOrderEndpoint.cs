@@ -17,6 +17,11 @@ public static class CancelOrderEndpoint
           [FromRoute] Guid orderId
         ) =>
         {
+          if (orderId == Guid.Empty)
+          {
+            return TypedResults.Problem("Order Id is required", statusCode: 400);
+          }
+
           var result = await orderService.CancelOrder(orderId, userId, ct);
           return result.IsSuccess
             ? TypedResults.NoContent()

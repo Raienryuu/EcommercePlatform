@@ -2,6 +2,7 @@ using System.Net;
 using Contracts;
 using MassTransit;
 using MessageQueue.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OrderService.Logging;
@@ -17,7 +18,7 @@ public static class RefundUpdateWebhookEndpoint
   {
     app.MapPost(
         EndpointRoutes.Payments.REFUND_UPDATE_WEBHOOK,
-        static async (
+        static async Task<Results<Ok, BadRequest>> (
           IStripePaymentService stripePaymentService,
           OrderDbContext orderDb,
           IOptions<StripeConfig> options,
@@ -69,10 +70,10 @@ public static class RefundUpdateWebhookEndpoint
           catch (StripeException e)
           {
             logger.LogError("Stripe error: {message}", e.Message);
-            return Results.BadRequest();
+            return TypedResults.BadRequest();
           }
 
-          return Results.Ok();
+          return TypedResults.Ok();
         }
       )
       .WithName(nameof(RefundUpdateWebhookEndpoint))

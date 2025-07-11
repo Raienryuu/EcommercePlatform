@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace IdentityService.Models;
 
-public class UserAddress : IUserData
+public class UserAddress
 {
   [Key]
   public int Id { get; set; }
@@ -16,6 +16,7 @@ public class UserAddress : IUserData
   public required string City { get; set; }
   public required string ZIPCode { get; set; }
   public required string Country { get; set; }
+
   public IdentityUser<Guid>? User { get; set; }
 
   [ForeignKey("User")]

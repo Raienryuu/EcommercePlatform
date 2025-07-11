@@ -1,7 +1,6 @@
 using IdentityService.Models;
 using IdentityService.Services;
 using Microsoft.AspNetCore.Mvc;
-using Common;
 
 namespace IdentityService.Controllers.V1;
 
@@ -30,7 +29,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!result.IsSuccess)
     {
-      return StatusCode(result.StatusCode, result.ErrorMessage);
+      return Problem(result.ErrorMessage, statusCode: result.StatusCode);
     }
 
     if (result.Value.UserId != userId)
@@ -80,7 +79,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     var result = await _addresses.EditAddressAsync(newAddresss);
 
-    return result.IsSuccess ? Ok(result.Value) :StatusCode(result.StatusCode, result.ErrorMessage) ;
+    return result.IsSuccess ? Ok(result.Value) : StatusCode(result.StatusCode, result.ErrorMessage);
   }
 
   // DELETE api/<AddressController>/5

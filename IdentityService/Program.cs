@@ -1,6 +1,9 @@
 using System.Text;
 using Common;
+using FluentValidation;
 using IdentityService.Data;
+using IdentityService.Models;
+using IdentityService.Models.Validators;
 using IdentityService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +14,7 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +31,13 @@ builder
 
 builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 builder.Services.AddProblemDetails();
-builder.Services.AddScoped<IAddressesService, AddressesService>();
 
+builder.Services.AddScoped<IAddressesService, AddressesService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IValidator<UserAddress>, UserAddressValidator>();
+builder.Services.AddScoped<IValidator<NewUser>, NewUserValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 
 if (
   builder.Configuration["ASPNETCORE_ENVIRONMENT"] == Environments.Development
@@ -160,5 +168,4 @@ static void CreateDevelopmentDatabase(ApplicationDbContext? dbContext)
   }
 }
 
-
-public partial class Program {}
+public partial class Program { }

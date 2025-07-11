@@ -1,7 +1,6 @@
-using System.Net;
 using Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using OrderService.Models;
 using OrderService.Services;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
@@ -12,32 +11,28 @@ public static class GetPaymentStatusEndpoint
   {
     app.MapGet(
         EndpointRoutes.Payments.GET_PAYMENT_STATUS,
-        static async (
+        static async Task<Results<Ok<PaymentStatus>, ProblemHttpResult>> (
           [FromHeader(Name = "UserId")] Guid userId,
           Guid orderId,
           OrderDbContext context,
+          IOrderService orderService,
           IStripePaymentService paymentService,
           CancellationToken ct
         ) =>
         {
-          var order = await context.Orders.FindAsync([orderId], cancellationToken: ct);
+          var order = await orderService.GetOrder(orderId, userId, ct);
 
-          if (order is null)
+          if (!order.IsSuccess)
           {
-            return Results.NotFound("Order with given id doesn't exists.");
+            return TypedResults.Problem(order.ErrorMessage, statusCode: order.StatusCode);
           }
 
-          if (order.UserId != userId)
+          if (order.Value.PaymentStatus is PaymentStatus.Succeded or PaymentStatus.Cancelled)
           {
-            return Results.BadRequest("Mismatch between logged user Id and order's user Id.");
+            return TypedResults.Ok(order.Value.PaymentStatus);
           }
 
-          if (order.PaymentStatus is PaymentStatus.Succeded or PaymentStatus.Cancelled)
-          {
-            return Results.Ok(order.PaymentStatus);
-          }
-
-          var paymentIntent = await paymentService.GetPaymentIntentForOrder(order, ct);
+          var paymentIntent = await paymentService.GetPaymentIntentForOrder(order.Value, ct);
 
           var status = paymentIntent.Value.Status switch
           {
@@ -47,11 +42,10 @@ public static class GetPaymentStatusEndpoint
             _ => PaymentStatus.Pending,
           };
 
-          return Results.Ok(status);
+          return TypedResults.Ok(status);
         }
       )
-      .WithName(nameof(GetPaymentStatusEndpoint))
-      .Produces<string>((int)HttpStatusCode.OK);
+      .WithName(nameof(GetPaymentStatusEndpoint));
 
     return app;
   }

@@ -26,9 +26,10 @@ public static class CreateOrderEndpoint
           {
             return TypedResults.ValidationProblem(validationResult.ToDictionary());
           }
-          if (userId.Equals(Guid.Empty))
+
+          if (userId == Guid.Empty)
           {
-            return TypedResults.Problem("User Id is invalid", statusCode: 400);
+            return TypedResults.Problem("User Id is required", statusCode: 400);
           }
 
           var result = await orderService.CreateOrder(userId, orderRequest, ct);

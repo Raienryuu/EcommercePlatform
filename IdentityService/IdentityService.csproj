@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
@@ -31,6 +32,7 @@
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.12.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.12.0" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.12.0" />
+    <PackageReference Include="SharpGrip.FluentValidation.AutoValidation.Mvc" Version="1.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
     <InternalsVisibleTo Include="IdentityService.Tests.Unit" />
   </ItemGroup>
@@ -44,7 +46,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <InternalsVisibleTo >IdentityService.Tests.csproj</InternalsVisibleTo>
+    <InternalsVisibleTo>IdentityService.Tests.csproj</InternalsVisibleTo>
   </PropertyGroup>
 
 </Project>

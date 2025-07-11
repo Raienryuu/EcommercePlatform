@@ -99,21 +99,35 @@ app.MapGet(
       [FromQuery] int imageNumber = 0
     ) =>
     {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
       var imageResult = await images.GetProductImageAsync(productId, imageNumber);
-      return imageResult.IsSuccess ?
-      TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name):
-      TypedResults.Problem(imageResult.ErrorMessage, statusCode:imageResult.StatusCode);
-
+      return imageResult.IsSuccess
+        ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
+        : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
     }
   )
   .WithName("GetProductImages");
 
 app.MapGet(
     "api/v1/imageMetadata",
-    static async ([FromQuery] Guid productId, IProductImagesMetadataService metadataService) =>
+    static async Task<Results<Ok<ProductImagesMetadata>, ProblemHttpResult>> (
+      [FromQuery] Guid productId,
+      IProductImagesMetadataService metadataService
+    ) =>
     {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
       var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
-      return TypedResults.Ok(metadata);
+      if (metadata.IsSuccess)
+      {
+        return TypedResults.Ok(metadata.Value);
+      }
+      return TypedResults.Problem(metadata.ErrorMessage, statusCode: metadata.StatusCode);
     }
   )
   .WithName("GetImageMetadata");
@@ -126,13 +140,21 @@ app.MapPost(
       [FromServices] IImageService images
     ) =>
     {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
       if (file.Length == 0)
       {
         return TypedResults.Problem("No file provided", statusCode: 400);
       }
 
       var result = await images.AddProductImageAsync(productId, file);
-      return TypedResults.CreatedAtRoute("api/v1/image", new {productId, imageNumber = result.Value});
+      if (result.IsSuccess)
+      {
+        return TypedResults.CreatedAtRoute("api/v1/image", new { productId, imageNumber = result.Value });
+      }
+      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
     }
   )
   .DisableAntiforgery()

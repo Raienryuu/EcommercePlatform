@@ -18,6 +18,11 @@ public static class GetOrderEndpoint
           [FromRoute] Guid orderId
         ) =>
         {
+          if (userId == Guid.Empty)
+          {
+            return TypedResults.Problem("User Id is required", statusCode: 400);
+          }
+
           var results = await orderService.GetOrder(orderId, userId, ct);
 
           return results.IsSuccess

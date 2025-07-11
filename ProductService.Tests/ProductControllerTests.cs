@@ -11,7 +11,7 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
   private const string API_URL = "http://localhost/api/";
 
   [Fact]
-  public async Task GetProdutsPage_ProductNameFilter_ProductsThatNameContainsSubstring()
+  public async Task GetProductsPage_ProductNameFilter_ProductsThatNameContainsSubstring()
   {
     PaginationParams nameFilter = new()
     {
@@ -401,16 +401,16 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
   [Fact]
   public async Task UpdateProduct_ChangedProduct_ConcurrencyStampChanged()
   {
-    var productID = Guid.Parse("87817c15-d25f-4621-9135-2e7851b484b3");
+    var productId = Guid.Parse("87817c15-d25f-4621-9135-2e7851b484b3");
     HttpRequestMessage msg = new()
     {
       Method = HttpMethod.Get,
-      RequestUri = new UriBuilder($"{API_URL}v1/products/{productID}").Uri,
+      RequestUri = new UriBuilder($"{API_URL}v1/products/{productId}").Uri,
     };
     var productResult = await _client.SendAsync(msg);
     var newProduct = await productResult.Content.ReadFromJsonAsync<Product>();
     newProduct!.Description = "Fresh and intriguing description";
-    var oldStamp = newProduct.ConcurrencyStamp!;
+    var oldStamp = newProduct.ConcurrencyStamp;
     msg = new()
     {
       Method = HttpMethod.Put,
@@ -419,7 +419,7 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
     };
 
     var result = await _client.SendAsync(msg);
-    // ReadFromStringAsync() was unable to correcly deserialize object, ConccurencyStamp was default instead of actuall value
+    // ReadFromStringAsync() was unable to correctly deserialize object, ConcurrencyStamp was default instead of actual value
     var updatedProduct = await result.Content.ReadAsStringAsync();
     var productInstance = JsonSerializer.Deserialize<Product>(updatedProduct, options: s_jsonOptions);
     Assert.NotEqual(oldStamp, productInstance!.ConcurrencyStamp);
@@ -461,7 +461,7 @@ public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixt
   [Fact]
   public async Task GetProductsList_ListOfExistingProductsIds_ProductsList()
   {
-    var productsIds = new Guid[]
+    var productsIds = new[]
     {
       Guid.Parse("87817c15-d25f-4621-9135-2e7851b484b3"),
       Guid.Parse("22ea176b-ea99-445f-97b3-c1afa5585562"),

@@ -1,9 +1,6 @@
-using System.Net;
-using Common;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using OrderService.Services;
-using Stripe;
 
 namespace OrderService.Endpoints.PaymentEndpoints;
 
@@ -21,6 +18,11 @@ public static class CreateNewPaymentSessionEndpoint
           CancellationToken ct
         ) =>
         {
+          if (orderId == Guid.Empty)
+          {
+            return TypedResults.Problem("Order Id is required", statusCode: 400);
+          }
+
           var order = await context.Orders.FindAsync([orderId], cancellationToken: ct);
 
           if (order is null)

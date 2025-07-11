@@ -1,6 +1,5 @@
 using System.Text.Json;
 using IdentityService.Models;
-using IdentityService.Models.Validators;
 using IdentityService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +17,6 @@ public class UserController(IUserService userService) : ControllerBase
   [AllowAnonymous]
   public async Task<ActionResult> RegisterNewUser([FromBody] NewUser registrationData)
   {
-    var isValid = new NewUserValidator().Validate(registrationData);
-
-    if (!isValid)
-    {
-      return Problem("Invalid user data", statusCode:400);
-    }
-
     var result = await userService.RegisterNewUser(registrationData);
 
     return result.IsSuccess ? Ok() : Problem(result.ErrorMessage, statusCode: result.StatusCode);
@@ -39,7 +31,7 @@ public class UserController(IUserService userService) : ControllerBase
   {
     var result = await userService.LogInUser(credentials);
 
-    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode:result.StatusCode);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode: result.StatusCode);
   }
 
   [HttpGet]
@@ -50,6 +42,8 @@ public class UserController(IUserService userService) : ControllerBase
   public async Task<IActionResult> GetUsernameForLoggedUser([FromHeader(Name = "UserId")] Guid userId)
   {
     var result = await userService.GetUsernameForLoggedUser(userId);
-    return result.IsSuccess ? Ok(JsonSerializer.Serialize(result.Value)) : Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    return result.IsSuccess
+      ? Ok(JsonSerializer.Serialize(result.Value))
+      : Problem(result.ErrorMessage, statusCode: result.StatusCode);
   }
 }

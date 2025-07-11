@@ -19,6 +19,11 @@ public static class SetDeliveryMethodEndpoint
           CancellationToken ct
         ) =>
         {
+          if (userId == Guid.Empty)
+          {
+            return TypedResults.Problem("User Id is required", statusCode: 400);
+          }
+
           var result = await orderService.SetDeliveryMethod(orderId, userId, deliveryMethod, ct);
 
           return result.IsSuccess
