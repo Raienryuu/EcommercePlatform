@@ -6,7 +6,7 @@ using CartService.Tests.Fixtures;
 using FastEndpoints;
 using FastEndpoints.Testing;
 
-namespace CartService.Tests;
+namespace CartService.Tests.Integration;
 
 public class CartServiceTests(CartApp app) : TestBase<CartApp>
 {

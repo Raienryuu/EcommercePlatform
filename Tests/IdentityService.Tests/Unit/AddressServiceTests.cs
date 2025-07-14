@@ -1,31 +1,36 @@
 using IdentityService.Models;
 using IdentityService.Services;
 using IdentityService.Tests.Fakes;
+using IdentityService.Tests.Fixtures;
 using IdentityService.Tests.SampleData;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityService.Tests;
+namespace IdentityService.Tests.Unit;
 
-public class AddressServiceTests : IClassFixture<DatabaseFixture>
+public class AddressServiceTests
 {
   private readonly AddressesService _addresses;
   private readonly ApplicationDbContextFake _dbContext;
 
-  public AddressServiceTests(DatabaseFixture databaseFixture)
+  public AddressServiceTests()
   {
-    _dbContext = new ApplicationDbContextFake(
-      new DbContextOptionsBuilder<Data.ApplicationDbContext>()
-        .UseSqlServer(databaseFixture.GetConnectionString())
-        .Options
-    );
+    var connection = new SqliteConnection("datasource=:memory:");
+    connection.Open();
+    var options = new DbContextOptionsBuilder<Data.ApplicationDbContext>()
+        .UseSqlite(connection)
+        .Options;
+    _dbContext = new ApplicationDbContextFake(options);
+    _dbContext.Database.EnsureCreated();
     _addresses = new AddressesService(_dbContext);
+    _dbContext.FillData();
   }
 
   [Fact]
   public async Task AddAddress_ValidAddress_AddressWithGivenId()
   {
     var aliceGuid = Guid.Parse("D0D480DA-1E50-4A78-A727-600D986D8075");
-    var aliceUser = await _dbContext.Users.FindAsync(aliceGuid);
+    var aliceUser = await _dbContext.Users.AsNoTracking().FirstAsync(user => user.Id == aliceGuid);
 
     var newAddress = new UserAddress
     {

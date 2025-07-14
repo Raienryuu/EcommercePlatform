@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -17,25 +17,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageQueue", "MessageQueue\MessageQueue.csproj", "{1595108C-0721-4712-989D-05711B493563}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Tests", "OrderService.Tests\OrderService.Tests.csproj", "{E608A66E-9A81-417E-B368-C9DFA2F098EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService.Tests", "Tests\OrderService.Tests\OrderService.Tests.csproj", "{E608A66E-9A81-417E-B368-C9DFA2F098EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Tests", "ProductService.Tests\ProductService.Tests.csproj", "{8354869F-28D0-4A65-874C-F7F948D71760}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService.Tests", "Tests\ProductService.Tests\ProductService.Tests.csproj", "{8354869F-28D0-4A65-874C-F7F948D71760}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService", "CartService\CartService.csproj", "{A15BF7CF-1B7A-4A62-A47F-86CFA275B2EC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Tests", "CartService.Tests\CartService.Tests.csproj", "{C4BD8F0F-9CD4-486E-BC13-B257387BF70F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService.Tests", "Tests\CartService.Tests\CartService.Tests.csproj", "{C4BD8F0F-9CD4-486E-BC13-B257387BF70F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OcelotGateway", "OcelotGateway\OcelotGateway.csproj", "{6E7B3139-FDA8-4057-8354-6774AD2A58DA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService", "IdentityService\IdentityService.csproj", "{E17CA9B3-F069-484A-B28B-00C90CF4784A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService.Tests", "IdentityService.Tests\IdentityService.Tests.csproj", "{188B1C14-32B5-4B47-AD24-F3DEC404818F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService.Tests", "Tests\IdentityService.Tests\IdentityService.Tests.csproj", "{188B1C14-32B5-4B47-AD24-F3DEC404818F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService", "ImageService\ImageService.csproj", "{CE704DBC-0464-4DB9-B685-D0FC76C9EEA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Tests", "ImageService.Tests\ImageService.Tests.csproj", "{66351A07-4AD1-4F50-A659-EB23DEA17EAE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Tests", "Tests\ImageService.Tests\ImageService.Tests.csproj", "{66351A07-4AD1-4F50-A659-EB23DEA17EAE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{680FAA62-B833-4F13-8E8F-E7BC577B3E01}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A5260BE9-F78B-4114-B24E-959C5A8374FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,5 +107,12 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4B55ECF0-D412-44D5-95CE-2555CF4BED13}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{188B1C14-32B5-4B47-AD24-F3DEC404818F} = {A5260BE9-F78B-4114-B24E-959C5A8374FC}
+		{66351A07-4AD1-4F50-A659-EB23DEA17EAE} = {A5260BE9-F78B-4114-B24E-959C5A8374FC}
+		{E608A66E-9A81-417E-B368-C9DFA2F098EE} = {A5260BE9-F78B-4114-B24E-959C5A8374FC}
+		{8354869F-28D0-4A65-874C-F7F948D71760} = {A5260BE9-F78B-4114-B24E-959C5A8374FC}
+		{C4BD8F0F-9CD4-486E-BC13-B257387BF70F} = {A5260BE9-F78B-4114-B24E-959C5A8374FC}
 	EndGlobalSection
 EndGlobal

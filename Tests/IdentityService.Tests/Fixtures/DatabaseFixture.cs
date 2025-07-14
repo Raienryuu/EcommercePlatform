@@ -2,7 +2,7 @@ using IdentityService.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.MsSql;
 
-namespace IdentityService.Tests;
+namespace IdentityService.Tests.Fixtures;
 
 public class DatabaseFixture : IAsyncLifetime
 {

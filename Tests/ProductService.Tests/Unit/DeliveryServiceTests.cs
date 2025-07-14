@@ -15,7 +15,7 @@ namespace ProductService.Tests
         .UseInMemoryDatabase(databaseName: "TestDatabase")
         .Options;
 
-      using var context = new ProductDbContext(options);
+      await using var context = new ProductDbContext(options);
 
       context.Deliveries.AddRange(
         new Delivery
@@ -37,7 +37,7 @@ namespace ProductService.Tests
           Price = 15.00m,
         }
       );
-      context.SaveChanges();
+      await context.SaveChangesAsync();
       var deliveryService = new DeliveryService(context);
 
       // Act
@@ -66,7 +66,7 @@ namespace ProductService.Tests
       var options = new DbContextOptionsBuilder<ProductDbContext>()
         .UseInMemoryDatabase(databaseName: "TestDatabase")
         .Options;
-      using var context = new ProductDbContext(options);
+      await using var context = new ProductDbContext(options);
       var deliveryService = new DeliveryService(context);
 
       // Act

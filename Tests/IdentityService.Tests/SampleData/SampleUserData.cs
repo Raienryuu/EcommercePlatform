@@ -10,7 +10,7 @@ namespace IdentityService.Tests.SampleData
     {
       UserName = "user111",
       Password = "passwd",
-      Address = new()
+      Address = new UserAddress
       {
         FullName = "Tom Dodo",
         Email = "dodoto@mailtown.com",
@@ -21,11 +21,11 @@ namespace IdentityService.Tests.SampleData
         Country = "United States",
       },
     };
-    public static readonly NewUser LoginUser = new()
+    public static NewUser LoginUser => new()
     {
       UserName = "loginUser",
       Password = "passwd",
-      Address = new()
+      Address = new UserAddress
       {
         FullName = "Alex Dodo",
         Email = "newMail@mailing.com",
@@ -36,7 +36,7 @@ namespace IdentityService.Tests.SampleData
         Country = "United States",
       },
     };
-    public static readonly IdentityUser IdentityUser = new()
+    public static IdentityUser IdentityUser => new()
     {
       AccessFailedCount = 0,
       ConcurrencyStamp = "7ae4e9ad-36bd-4fa4-af96-d81e96bcb6bf",
@@ -53,13 +53,13 @@ namespace IdentityService.Tests.SampleData
       UserName = "aliCe",
     };
 
-    public static readonly UserCredentials UserCredentials = new()
+    public static UserCredentials UserCredentials => new()
     {
       Login = "loginUser",
       Password = "passwd",
     };
 
-    public static readonly UserAddress SampleAddress = new()
+    public static UserAddress SampleAddress => new()
     {
       Address = "Willow St",
       City = "Chicago",

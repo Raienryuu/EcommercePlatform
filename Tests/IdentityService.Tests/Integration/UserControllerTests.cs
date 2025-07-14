@@ -1,8 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using IdentityService.Tests.Fixtures;
 using IdentityService.Tests.SampleData;
 
-namespace IdentityService.Tests;
+namespace IdentityService.Tests.Integration;
 
 public class UserControllerTests(AppFixture app) : IClassFixture<AppFixture>
 {
@@ -27,7 +28,7 @@ public class UserControllerTests(AppFixture app) : IClassFixture<AppFixture>
 
     var result = await _client.PostAsync("api/v1/user/login", JsonContent.Create(userCredentials));
 
-    string token = await result.Content.ReadAsStringAsync();
+    var token = await result.Content.ReadAsStringAsync();
     Assert.Contains("Bearer", token);
   }
 }

@@ -12,7 +12,7 @@ public class AddressesService(ApplicationDbContext db) : IAddressesService
   public async Task<ServiceResult<UserAddress>> AddAddressAsync(UserAddress address)
   {
     address.Id = 0;
-    await _db.Addresses.AddAsync(address);
+    _db.Addresses.Add(address);
     await _db.SaveChangesAsync();
     return ServiceResults.Ok(address);
   }

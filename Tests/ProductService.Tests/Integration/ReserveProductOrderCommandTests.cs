@@ -10,7 +10,6 @@ namespace ProductService.Tests;
 
 public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<DatabaseFixture>
 {
-  private readonly DatabaseFixture _db = db;
   private static bool s_isStarted;
   private readonly object _lock = new();
 
@@ -34,7 +33,7 @@ public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<Databa
   public async Task ReserveOrderProducts_ValidOrder_ProductsNotAvailable()
   {
     await using var provider = new ServiceCollection()
-      .AddDbContext<ProductDbContext, ProductDbContextFake>(o => o.UseSqlServer(_db.GetConnectionString()))
+      .AddDbContext<ProductDbContext, ProductDbContextFake>(o => o.UseSqlServer(db.GetConnectionString()))
       .AddMassTransitTestHarness(o =>
       {
         _ = o.AddConsumer<ReserveOrderProductsConsumer>();
@@ -74,7 +73,7 @@ public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<Databa
   public async Task ReserveOrderProducts_ValidOrder_ProductsReserved()
   {
     await using var provider = new ServiceCollection()
-      .AddDbContext<ProductDbContext, ProductDbContextFake>(o => o.UseSqlServer(_db.GetConnectionString()))
+      .AddDbContext<ProductDbContext, ProductDbContextFake>(o => o.UseSqlServer(db.GetConnectionString()))
       .AddMassTransitTestHarness(o =>
       {
         _ = o.AddConsumer<ReserveOrderProductsConsumer>();
@@ -110,7 +109,7 @@ public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<Databa
     Assert.True(orderCommandConsumed);
     _ = Assert.IsAssignableFrom<IOrderReserved>(publishedResponse.MessageObject);
 
-    using var scope = provider.CreateAsyncScope();
+    await using var scope = provider.CreateAsyncScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
     var reservationRecord = await dbContext.OrdersReserved.FindAsync(orderId);
     Assert.NotNull(reservationRecord);

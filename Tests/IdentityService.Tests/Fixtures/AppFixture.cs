@@ -2,13 +2,13 @@ using IdentityService.Data;
 using IdentityService.Tests.Fakes;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Testcontainers.MsSql;
-using Microsoft.AspNetCore.TestHost;
 
-namespace IdentityService.Tests;
+namespace IdentityService.Tests.Fixtures;
 
 public class AppFixture : WebApplicationFactory<Program>, IAsyncLifetime
 {
