@@ -11,7 +11,7 @@ public class SampleImagesGenerator : DataSourceGeneratorAttribute<Guid, IFormFil
     DataGeneratorMetadata dataGeneratorMetadata
   )
   {
-    var file = File.OpenRead("../../../../UserClient/src/assets/logo_DHL.jpg"); // MIGHT DISAPPEAR SOMEDAY
+    var file = File.OpenRead("../../../../../UserClient/src/assets/logo_DHL.jpg"); // MIGHT DISAPPEAR SOMEDAY
     var formFile = new FormFile(file, 0, file.Length, "file.jpg", "file")
     {
       Headers = new HeaderDictionary(),

@@ -368,3 +368,4 @@ FodyWeavers.xsd
 
 UserClient.Tests/tests/accessibility_local.spec.ts
 sql_db_pw.txt
+IdentityService.Tests/.idea/.idea.IdentityService.Tests.Unit/.idea
