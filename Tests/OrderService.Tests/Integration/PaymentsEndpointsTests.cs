@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace OrderService.Tests;
+namespace OrderService.Tests.Integration;
 
 public class PaymentsEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
 {
@@ -11,6 +11,7 @@ public class PaymentsEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
   public async Task CreateNewPaymentSession_OrderWithoutTotalPriceId_Accepted()
   {
     var orderId = Guid.Parse("3066ca92-207a-4333-909a-b257123791f7");
+
     var httpRequestMessage = new HttpRequestMessage
     {
       Method = HttpMethod.Post,

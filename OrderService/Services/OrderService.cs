@@ -38,7 +38,7 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
       new
       {
         newOrder.OrderId,
-        newOrder.Products,
+        Products = newOrder.Products.ToOrderProductDTOArray(),
         newOrder.CurrencyISO,
       },
       ct
@@ -75,15 +75,13 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     order.Delivery = deliveryMethod;
 
-    context.Orders.Entry(order).State = EntityState.Modified;
-
     _ = await context.SaveChangesAsync(ct);
 
     await publisher.Publish<OrderCalculateTotalCostCommand>(
       new
       {
         order.OrderId,
-        order.Products,
+        Products = order.Products.ToOrderProductDTOArray(),
         order.CurrencyISO,
         EurToCurrencyMultiplier = 1m,
         deliveryMethod.DeliveryId,
@@ -107,18 +105,18 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
       return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", 401);
     }
 
-    if (!(order.Status is OrderStatus.AwaitingConfirmation or OrderStatus.Confirmed))
-    {
-      return ServiceResults.Error("Too late to cancel the order.", 400);
-    }
-
     if (order.Status == OrderStatus.Cancelled)
     {
       return ServiceResults.Success(200);
     }
 
+    if (!(order.Status is OrderStatus.AwaitingConfirmation or OrderStatus.Confirmed))
+    {
+      return ServiceResults.Error("Too late to cancel the order.", 400);
+    }
+
+
     order.Status = OrderStatus.Cancelled;
-    context.Orders.Entry(order).State = EntityState.Modified;
 
     await context.SaveChangesAsync(ct);
     await publisher.Publish<IOrderCancellationRequest>(new { order.OrderId }, ct);

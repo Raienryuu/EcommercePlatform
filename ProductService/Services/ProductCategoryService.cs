@@ -74,6 +74,7 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
     {
       _context.Entry(productCategory).State = EntityState.Modified;
       await _context.SaveChangesAsync(ct);
+      _context.Entry(productCategory).State = EntityState.Detached;
     }
     catch (DbUpdateConcurrencyException)
     {
@@ -104,6 +105,7 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
 
     _context.ProductCategories.Add(productCategory);
     await _context.SaveChangesAsync(ct);
+    _context.Entry(productCategory).State = EntityState.Detached;
 
     return ServiceResults.Success(productCategory, 201); // Created
   }

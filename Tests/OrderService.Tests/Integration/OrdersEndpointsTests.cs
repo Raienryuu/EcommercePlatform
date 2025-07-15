@@ -2,7 +2,7 @@ using System.Net;
 using Contracts;
 using OrderService.Models;
 
-namespace OrderService.Tests;
+namespace OrderService.Tests.Integration;
 
 public class OrdersEndpointsTests(AppFactory app) : IClassFixture<AppFactory>
 {

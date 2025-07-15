@@ -7,9 +7,15 @@ namespace ProductService.Services;
 
 public partial class ProductService(ProductDbContext db) : IProductService
 {
-  public async Task<ServiceResult<Product>> AddProduct(Product newProduct)
+  public async Task<ServiceResult<Product>> AddProduct(
+    Product newProduct,
+    CancellationToken cancellationToken = default
+  )
   {
-    newProduct.Category = await db.ProductCategories.SingleOrDefaultAsync(c => c.Id == newProduct.CategoryId);
+    newProduct.Category = await db.ProductCategories.SingleOrDefaultAsync(
+      c => c.Id == newProduct.CategoryId,
+      cancellationToken
+    );
 
     if (newProduct.Category is null)
     {
@@ -17,14 +23,17 @@ public partial class ProductService(ProductDbContext db) : IProductService
     }
     newProduct.RefreshConcurrencyStamp();
     db.Products.Add(newProduct);
-    await db.SaveChangesAsync();
+    await db.SaveChangesAsync(cancellationToken);
 
     return ServiceResults.Success(newProduct, 201);
   }
 
-  public async Task<ServiceResult<List<Product>>> GetBatchProducts(List<Guid> productsIds)
+  public async Task<ServiceResult<List<Product>>> GetBatchProducts(
+    List<Guid> productsIds,
+    CancellationToken cancellationToken = default
+  )
   {
-    var products = await db.Products.Where(x => productsIds.Contains(x.Id)).ToListAsync();
+    var products = await db.Products.Where(x => productsIds.Contains(x.Id)).ToListAsync(cancellationToken);
 
     if (products.Count != productsIds.Count)
       return ServiceResults.NotFound<List<Product>>("Some products id were not found");
@@ -32,9 +41,12 @@ public partial class ProductService(ProductDbContext db) : IProductService
     return ServiceResults.Ok(products);
   }
 
-  public async Task<ServiceResult<Product>> GetProduct(Guid productId)
+  public async Task<ServiceResult<Product>> GetProduct(
+    Guid productId,
+    CancellationToken cancellationToken = default
+  )
   {
-    var product = await db.Products.FindAsync(productId);
+    var product = await db.Products.FindAsync([productId], cancellationToken: cancellationToken);
     if (product is null)
     {
       return ServiceResults.NotFound<Product>($"No product found with given ID: {productId}.");
@@ -42,14 +54,20 @@ public partial class ProductService(ProductDbContext db) : IProductService
     return ServiceResults.Ok(product);
   }
 
-  public async Task<ServiceResult<Product>> UpdateProduct(Product updatedProduct)
+  public async Task<ServiceResult<Product>> UpdateProduct(
+    Product updatedProduct,
+    CancellationToken cancellationToken = default
+  )
   {
-    var oldProduct = await db.Products.SingleOrDefaultAsync(p => p.Id == updatedProduct.Id);
+    var oldProduct = await db.Products.SingleOrDefaultAsync(
+      p => p.Id == updatedProduct.Id,
+      cancellationToken
+    );
     if (oldProduct is null)
     {
       return ServiceResults.NotFound<Product>("Product not found");
     }
-    if (!await ProductHelpers.DoesCategoryExists(db, updatedProduct.CategoryId))
+    if (!await ProductHelpers.DoesCategoryExists(db, updatedProduct.CategoryId, cancellationToken))
     {
       return ServiceResults.NotFound<Product>("Given category does not exists");
     }
@@ -58,9 +76,9 @@ public partial class ProductService(ProductDbContext db) : IProductService
       return new ErrorServiceResult<Product>(422, "ConcurrencyStamp mismatch");
     }
 
-    await ProductHelpers.AssignNewValuesToProduct(db, updatedProduct, oldProduct);
+    await ProductHelpers.AssignNewValuesToProduct(db, updatedProduct, oldProduct, cancellationToken);
 
-    await db.SaveChangesAsync();
+    await db.SaveChangesAsync(cancellationToken);
 
     return ServiceResults.Ok(oldProduct);
   }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ProductService.MessageQueue.Consumers;
 using ProductService.Tests.Fakes;
 
-namespace ProductService.Tests;
+namespace ProductService.Tests.Integration;
 
 public class ReserveProductOrderTests(DatabaseFixture db) : IClassFixture<DatabaseFixture>
 {

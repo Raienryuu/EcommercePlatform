@@ -38,7 +38,8 @@ public class OrderDbContext(DbContextOptions options) : DbContext(options)
       .Entity<Order>()
       .Property(d => d.Status)
       .HasConversion(c => c.ToString(), c => Enum.Parse<OrderStatus>(c));
+
   }
 
-  public required DbSet<Order> Orders { get; set; }
+  public DbSet<Order> Orders { get; set; }
 }

@@ -2,7 +2,7 @@ using System.Net;
 using System.Text.Json;
 using ProductService.Models;
 
-namespace ProductService.Tests;
+namespace ProductService.Tests.Integration;
 
 [Collection("Tests")]
 public class ProductControllerTests(AppFixture appFixture) : TempFixture(appFixture)

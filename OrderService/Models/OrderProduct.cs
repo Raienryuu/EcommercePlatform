@@ -5,6 +5,7 @@ namespace OrderService.Models;
 [Owned]
 public class OrderProduct
 {
+  public int Id { get; set; }
   public required Guid ProductId { get; init; }
   public required int Quantity { get; init; }
 

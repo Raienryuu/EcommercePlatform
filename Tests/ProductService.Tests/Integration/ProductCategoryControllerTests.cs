@@ -1,7 +1,7 @@
 using System.Net;
 using ProductService.Models;
 
-namespace ProductService.Tests;
+namespace ProductService.Tests.Integration;
 
 [Collection("Tests")]
 public class ProductsCategoriesControllerTests(AppFixture fixture) : TempFixture(fixture)
