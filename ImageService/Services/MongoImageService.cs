@@ -13,8 +13,11 @@ public class MongoImageService : IImageService, IDisposable
   private readonly INameFormatter _nameFormatter;
   private readonly IProductImagesMetadataService _metadataService;
 
-
-  public MongoImageService(IOptions<ConnectionOptions> connectionOptions, INameFormatter nameFormatter, IProductImagesMetadataService metadataService)
+  public MongoImageService(
+    IOptions<ConnectionOptions> connectionOptions,
+    INameFormatter nameFormatter,
+    IProductImagesMetadataService metadataService
+  )
   {
     _options = connectionOptions.Value;
     _client = new MongoClient(_options.ConnectionUri);
@@ -22,21 +25,25 @@ public class MongoImageService : IImageService, IDisposable
     _metadataService = metadataService;
   }
 
-
-  public async Task<ServiceResult<int>> AddProductImageAsync(Guid productId, IFormFile file)
+  public async Task<ServiceResult<int>> AddProductImageAsync(
+    Guid productId,
+    IFormFile file,
+    CancellationToken cancellationToken = default
+  )
   {
-    var productMetadataResult = await _metadataService.GetProductImagesMetadataAsync(productId);
+    var productMetadataResult = await _metadataService.GetProductImagesMetadataAsync(
+      productId,
+      cancellationToken
+    );
     if (productMetadataResult is { IsSuccess: false, ErrorMessage: not null })
     {
-      return ServiceResults.Error<int>(productMetadataResult.ErrorMessage,
-        productMetadataResult.StatusCode);
+      return ServiceResults.Error<int>(productMetadataResult.ErrorMessage, productMetadataResult.StatusCode);
     }
 
-    var collection = _client.GetDatabase(_options.DatabaseName)
-        .GetCollection<Image>("images");
+    var collection = _client.GetDatabase(_options.DatabaseName).GetCollection<Image>("images");
 
     var imageBytes = new byte[file.Length];
-    await file.OpenReadStream().ReadExactlyAsync(imageBytes);
+    await file.OpenReadStream().ReadExactlyAsync(imageBytes, cancellationToken);
 
     var nextImageNumber = _nameFormatter.GetNumberOfNextImage(productMetadataResult.Value);
 
@@ -50,19 +57,21 @@ public class MongoImageService : IImageService, IDisposable
 
     productMetadataResult.Value.StoredImages.Add(fileAsImage.Name);
     productMetadataResult.Value.MetadataState.Apply(_metadataService, productMetadataResult.Value);
-    await collection.InsertOneAsync(fileAsImage);
+    await collection.InsertOneAsync(fileAsImage, cancellationToken: cancellationToken);
     return ServiceResults.Success(nextImageNumber, 200);
   }
 
-  public async Task<ServiceResult<Image>> GetProductImageAsync(Guid productId, int imageNumber)
+  public async Task<ServiceResult<Image>> GetProductImageAsync(
+    Guid productId,
+    int imageNumber,
+    CancellationToken cancellationToken = default
+  )
   {
-    var collection = _client.GetDatabase(_options.DatabaseName)
-        .GetCollection<Image>("images");
+    var collection = _client.GetDatabase(_options.DatabaseName).GetCollection<Image>("images");
     var fileName = _nameFormatter.GetNameForProductImage(productId, imageNumber);
     var filter = Builders<Image>.Filter.Eq("Name", fileName);
-    var image = await collection.Find(filter).FirstOrDefaultAsync();
-    return image is null ?  ServiceResults.Error<Image>("Image not found", 404) :
-      ServiceResults.Ok(image);
+    var image = await collection.Find(filter).FirstOrDefaultAsync(cancellationToken);
+    return image is null ? ServiceResults.Error<Image>("Image not found", 404) : ServiceResults.Ok(image);
   }
 
   public void Dispose()

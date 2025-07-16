@@ -21,15 +21,20 @@ public class MongoProductImagesMetadataService : IProductImagesMetadataService, 
       .GetCollection<ProductImagesMetadata>("productImagesMetadata");
   }
 
-  public async Task<ServiceResult<ProductImagesMetadata>> GetProductImagesMetadataAsync(Guid productId)
+  public async Task<ServiceResult<ProductImagesMetadata>> GetProductImagesMetadataAsync(
+    Guid productId,
+    CancellationToken cancellationToken = default
+  )
   {
     var filter = Builders<ProductImagesMetadata>.Filter.Eq("ProductId", productId);
-    var metadata = await _metadataCollection.Find(filter).FirstOrDefaultAsync()
+    var metadata =
+      await _metadataCollection.Find(filter).FirstOrDefaultAsync(cancellationToken)
       ?? new ProductImagesMetadata(productId, [], new NoMetadataAvailable());
-    return ServiceResults.Success<ProductImagesMetadata>(metadata, 200);
+    return ServiceResults.Success(metadata, 200);
   }
 
-  public async Task<ServiceResult> AddNewMetadataAsync(ProductImagesMetadata productMetadata) {
+  public async Task<ServiceResult> AddNewMetadataAsync(ProductImagesMetadata productMetadata)
+  {
     await _metadataCollection.InsertOneAsync(productMetadata);
     return ServiceResults.Success(200);
   }

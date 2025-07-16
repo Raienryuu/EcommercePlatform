@@ -213,14 +213,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -305,14 +306,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -380,14 +382,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
       Delivery = delivery,
@@ -432,14 +435,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.Shipped,
     };
@@ -486,14 +490,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -539,14 +544,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -571,14 +577,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.Cancelled,
     };
@@ -608,14 +615,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = status,
     };
@@ -642,14 +650,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -682,14 +691,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -731,14 +741,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -763,14 +774,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.Cancelled,
     };
@@ -799,14 +811,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.AwaitingConfirmation,
     };
@@ -815,14 +828,15 @@ public class OrderServiceTests : IDisposable
       OrderId = Guid.NewGuid(),
       UserId = userId,
       CurrencyISO = "USD",
-      Products = [
+      Products =
+      [
         new OrderProduct
         {
           Id = 1,
           ProductId = Guid.NewGuid(),
           Quantity = 1,
           Price = 100,
-        }
+        },
       ],
       Status = OrderStatus.Confirmed,
     };
@@ -865,14 +879,15 @@ public class OrderServiceTests : IDisposable
         OrderId = Guid.NewGuid(),
         UserId = userId,
         CurrencyISO = "USD",
-        Products = [
+        Products =
+        [
           new OrderProduct
           {
             Id = 1,
             ProductId = Guid.NewGuid(),
             Quantity = 1,
             Price = 100,
-          }
+          },
         ],
         Status = OrderStatus.AwaitingConfirmation,
       },
@@ -881,14 +896,15 @@ public class OrderServiceTests : IDisposable
         OrderId = Guid.NewGuid(),
         UserId = userId,
         CurrencyISO = "USD",
-        Products = [
+        Products =
+        [
           new OrderProduct
           {
             Id = 1,
             ProductId = Guid.NewGuid(),
             Quantity = 1,
             Price = 100,
-          }
+          },
         ],
         Status = OrderStatus.Confirmed,
       },
@@ -897,14 +913,15 @@ public class OrderServiceTests : IDisposable
         OrderId = Guid.NewGuid(),
         UserId = userId,
         CurrencyISO = "USD",
-        Products = [
+        Products =
+        [
           new OrderProduct
           {
             Id = 1,
             ProductId = Guid.NewGuid(),
             Quantity = 1,
             Price = 100,
-          }
+          },
         ],
         Status = OrderStatus.Cancelled,
       },
@@ -913,14 +930,15 @@ public class OrderServiceTests : IDisposable
         OrderId = Guid.NewGuid(),
         UserId = userId,
         CurrencyISO = "USD",
-        Products = [
+        Products =
+        [
           new OrderProduct
           {
             Id = 1,
             ProductId = Guid.NewGuid(),
             Quantity = 1,
             Price = 100,
-          }
+          },
         ],
         Status = OrderStatus.Shipped,
       },

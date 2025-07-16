@@ -20,7 +20,8 @@ public class UserService(
 ) : IUserService
 {
   public async Task<ServiceResult> RegisterNewUser(
-    NewUser registrationData
+    NewUser registrationData,
+    CancellationToken cancellationToken = default
   )
   {
     PasswordHasher<IdentityUser<Guid>> passwordHasher = new();
@@ -40,17 +41,19 @@ public class UserService(
       return ServiceResults.Error(createdSuccessfully.Errors.ToString()!, 400);
     }
 
-
     var userAddress = UserAddress.CreateFrom(registrationData, newUser);
-    await db.Addresses.AddAsync(userAddress);
-    await db.SaveChangesAsync();
+    await db.Addresses.AddAsync(userAddress, cancellationToken);
+    await db.SaveChangesAsync(cancellationToken);
 
     logger.RegisteredNewUser(newUser.Id);
 
     return ServiceResults.Success(200);
   }
 
-  public async Task<ServiceResult<string>> LogInUser(UserCredentials credentials)
+  public async Task<ServiceResult<string>> LogInUser(
+    UserCredentials credentials,
+    CancellationToken cancellationToken = default
+  )
   {
     var user = await userManager.FindByNameAsync(credentials.Login);
 
@@ -98,9 +101,15 @@ public class UserService(
     return ServiceResults.Success(response, 200);
   }
 
-  public async Task<ServiceResult<string>> GetUsernameForLoggedUser(Guid userId)
+  public async Task<ServiceResult<string>> GetUsernameForLoggedUser(
+    Guid userId,
+    CancellationToken cancellationToken = default
+  )
   {
-    var username = await db.Users.Where(x => x.Id == userId).Select(x => x.UserName).FirstOrDefaultAsync();
+    var username = await db
+      .Users.Where(x => x.Id == userId)
+      .Select(x => x.UserName)
+      .FirstOrDefaultAsync(cancellationToken);
     if (username is null)
     {
       return ServiceResults.Error<string>("Couldn't find user with given Id", 404);

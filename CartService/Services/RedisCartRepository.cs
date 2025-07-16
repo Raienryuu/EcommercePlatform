@@ -11,12 +11,12 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
 {
   private readonly IDatabase _db = dbFactory.connection.GetDatabase();
 
-  public Task<ServiceResult<Guid>> CreateNewCart(Cart c)
+  public async Task<ServiceResult<Guid>> CreateNewCart(Cart c)
   {
     var newId = NewId.NextSequentialGuid();
     c = CartHelper.MergeCart(c);
 
-    return SetCartValue(newId, c);
+    return await SetCartValue(newId, c);
   }
 
   public async Task<ServiceResult> DeleteCart(Guid g)
