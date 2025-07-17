@@ -69,5 +69,24 @@ namespace IdentityService.Tests.SampleData
       PhoneNumber = "+132132412312",
       ZIPCode = "1423-1234",
     };
+
+    public static NewUser UniqueNewUser(string uniqueSuffix)
+    {
+      return new NewUser
+      {
+        UserName = $"user_{uniqueSuffix}",
+        Password = "passwd",
+        Address = new UserAddress
+        {
+          FullName = "Tom Dodo",
+          Email = $"dodoto_{uniqueSuffix}@mailtown.com",
+          PhoneNumber = "+48823928132",
+          Address = "2231 Oliver Street",
+          City = "Fort Worth",
+          ZIPCode = "76147",
+          Country = "United States",
+        },
+      };
+    }
   }
 }

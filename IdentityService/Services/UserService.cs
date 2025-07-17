@@ -3,7 +3,6 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Common;
-using Humanizer;
 using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
@@ -32,13 +31,15 @@ public class UserService(
     var createdSuccessfully = await userManager.CreateAsync(newUser);
     if (createdSuccessfully.Succeeded == false)
     {
-      return ServiceResults.Error(createdSuccessfully.Errors.ToString()!, 400);
+      var errorMsg = string.Join(", ", createdSuccessfully.Errors.Select(e => e.Description));
+      return ServiceResults.Error(errorMsg, 400);
     }
 
     var addedToRole = await userManager.AddToRoleAsync(newUser, "User");
     if (addedToRole.Succeeded == false)
     {
-      return ServiceResults.Error(createdSuccessfully.Errors.ToString()!, 400);
+      var errorMsg = string.Join(", ", addedToRole.Errors.Select(e => e.Description));
+      return ServiceResults.Error(errorMsg, 400);
     }
 
     var userAddress = UserAddress.CreateFrom(registrationData, newUser);
@@ -69,7 +70,11 @@ public class UserService(
       return ServiceResults.Error<string>("Not able to get matching values from database.", 400);
     }
 
-    var jwtSection = configuration.GetRequiredSection("Jwt");
+    var jwtSection = configuration.GetSection("Jwt");
+    if (jwtSection == null)
+    {
+      throw new InvalidOperationException("Section 'Jwt' not found in configuration.");
+    }
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection.GetValue<string>("Key")!));
     var tokenCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

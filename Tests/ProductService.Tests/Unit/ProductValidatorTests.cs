@@ -14,7 +14,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_CategoryIdEmpty_ShouldHaveValidationError()
+  public void ProductValidator_CategoryIdIsZero_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product
@@ -34,7 +34,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_NameEmpty_ShouldHaveValidationError()
+  public void ProductValidator_NameIsEmpty_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product
@@ -74,7 +74,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_DescriptionEmpty_ShouldHaveValidationError()
+  public void ProductValidator_DescriptionIsEmpty_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product
@@ -114,7 +114,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_PriceZero_ShouldHaveValidationError()
+  public void ProductValidator_PriceIsZero_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product
@@ -134,7 +134,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_PriceNegative_ShouldHaveValidationError()
+  public void ProductValidator_PriceIsNegative_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product
@@ -154,7 +154,7 @@ public class ProductValidatorTests
   }
 
   [Fact]
-  public void ProductValidator_QuantityNegative_ShouldHaveValidationError()
+  public void ProductValidator_QuantityIsNegative_ShouldHaveValidationError()
   {
     // Arrange
     var product = new Product

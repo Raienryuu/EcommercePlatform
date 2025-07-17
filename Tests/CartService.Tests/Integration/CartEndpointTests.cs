@@ -38,7 +38,7 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
 
     var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
     Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-    Assert.Contains("must not be empty", content);
+    Assert.Contains("Cart must contain at least one product", content);
   }
 
   [Fact]
@@ -54,7 +54,7 @@ public class CartServiceTests(CartApp app) : TestBase<CartApp>
     );
 
     var content = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-    Assert.Contains("greater than '0'", content);
+    Assert.Contains("Amount must be greater than 0", content);
   }
 
   [Fact]

@@ -2,6 +2,7 @@ using CartService.Options;
 using CartService.Services;
 using Common;
 using FastEndpoints;
+using FluentValidation;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -14,6 +15,7 @@ public class Program
   private static void Main(string[] args)
   {
     var builder = WebApplication.CreateBuilder(args);
+
     _ = builder.Services.AddAuthorization();
     _ = builder.Services.AddEndpointsApiExplorer();
     _ = builder.Services.AddSwaggerGen();

@@ -21,8 +21,18 @@ public class ProductsPagination(PaginationParams filters, ProductDbContext db)
   private static IQueryable<Product> GetBaseQuery(PaginationParams filters, ProductDbContext db)
   {
     if (filters.Category is not null)
-      return db.GetProductsFromCategoryHierarchy((int)filters.Category).AsNoTracking();
-
+    {
+      var sql = @"
+        WITH RECURSIVE CategoryHierarchy AS (
+          SELECT Id FROM ProductCategories WHERE Id = {0}
+          UNION ALL
+          SELECT pc.Id FROM ProductCategories pc
+          JOIN CategoryHierarchy ch ON pc.ParentCategoryId = ch.Id
+        )
+        SELECT * FROM Products WHERE CategoryId IN (SELECT Id FROM CategoryHierarchy)
+      ";
+      return db.Products.FromSqlRaw(sql, (int)filters.Category).AsNoTracking();
+    }
     return db.Products.AsNoTracking();
   }
 

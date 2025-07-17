@@ -1,4 +1,5 @@
 using CartService.Mappers;
+using CartService.Validators;
 using CartService.Requests;
 using CartService.Services;
 using FastEndpoints;

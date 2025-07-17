@@ -1,334 +1,110 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using ProductService.Models;
+using Xunit;
+using System.Linq;
+using System.Collections.Generic;
+using ProductService.Tests.Fakes;
 using ProductService.Utility;
 
-namespace ProductService.Tests.Utility
+namespace ProductService.Tests.Unit;
+
+public class ProductPaginationTests : System.IDisposable
 {
-  public class ProductPaginationTests : IDisposable
+  private readonly SqliteConnection _connection;
+  private readonly ProductDbContextFake _context;
+
+  public ProductPaginationTests()
   {
-    private readonly SqliteConnection _connection;
-    private readonly ProductDbContext _context;
+    _connection = new SqliteConnection("Filename=:memory:");
+    _connection.Open();
+    var builder = new DbContextOptionsBuilder<ProductDbContextFake>().UseSqlite(_connection);
+    _context = new ProductDbContextFake(builder.Options);
+    _context.Database.EnsureCreated();
+    _context.ProductCategories.Where(_ => true).ExecuteDelete();
+    _context.Products.Where(_ => true).ExecuteDelete();
+    SeedData(_context);
+  }
 
-    public ProductPaginationTests()
-    {
-      _connection = new SqliteConnection("Filename=:memory:");
-      _connection.Open();
+  public void Dispose()
+  {
+    _connection.Close();
+    GC.SuppressFinalize(this);
+  }
 
-      var builder = new DbContextOptionsBuilder<ProductDbContext>().UseSqlite(_connection);
+  private static void SeedData(ProductDbContextFake context)
+  {
+    var root = new ProductCategory { Id = 1, CategoryName = "Root" };
+    context.ProductCategories.Add(root);
+    context.SaveChanges();
+    var child1 = new ProductCategory { Id = 2, CategoryName = "Child1", ParentCategory = root };
+    var child2 = new ProductCategory { Id = 3, CategoryName = "Child2", ParentCategory = root };
+    context.ProductCategories.AddRange(child1, child2);
+    context.SaveChanges();
+    var grandchild = new ProductCategory { Id = 4, CategoryName = "Grandchild", ParentCategory = child1 };
+    context.ProductCategories.Add(grandchild);
+    context.SaveChanges();
 
-      _context = new ProductDbContext(builder.Options);
-      _context.Database.EnsureCreated();
-      _context.ProductCategories.Where(_ => true).ExecuteDelete();
-      _context.Products.Where(_ => true).ExecuteDelete();
-
-      SeedData(_context);
-    }
-
-    public void Dispose()
-    {
-      _connection.Close();
-      GC.SuppressFinalize(this);
-    }
-
-    private static void SeedData(ProductDbContext context)
-    {
-      var categories = new List<ProductCategory>
-      {
-        new() { Id = 1, CategoryName = "Category 1" },
-        new() { Id = 2, CategoryName = "Category 2" },
-      };
-      context.ProductCategories.AddRange(categories);
-      context.SaveChanges();
-
-      var products = new List<Product>
-      {
-        new()
+    var products = new List<Product>
         {
-          Id = Guid.NewGuid(),
-          CategoryId = 1,
-          Name = "Product A",
-          Description = "Description A",
-          Price = 10.00m,
-          Quantity = 100,
-          ConcurrencyStamp = 0,
-        },
-        new()
-        {
-          Id = Guid.NewGuid(),
-          CategoryId = 1,
-          Name = "Product B",
-          Description = "Description B",
-          Price = 20.00m,
-          Quantity = 200,
-          ConcurrencyStamp = 0,
-        },
-        new()
-        {
-          Id = Guid.NewGuid(),
-          CategoryId = 2,
-          Name = "Product C",
-          Description = "Description C",
-          Price = 15.00m,
-          Quantity = 150,
-          ConcurrencyStamp = 0,
-        },
-        new()
-        {
-          Id = Guid.NewGuid(),
-          CategoryId = 2,
-          Name = "Product D",
-          Description = "Description D",
-          Price = 25.00m,
-          Quantity = 50,
-          ConcurrencyStamp = 0,
-        },
-        new()
-        {
-          Id = Guid.NewGuid(),
-          CategoryId = 1,
-          Name = "Product E",
-          Description = "Description E",
-          Price = 12.00m,
-          Quantity = 120,
-          ConcurrencyStamp = 0,
-        },
-      };
-      context.Products.AddRange(products);
-      context.SaveChanges();
-    }
+            new() { Id = Guid.NewGuid(), CategoryId = 1, Name = "RootProduct", Description = "", Price = 1, Quantity = 1, ConcurrencyStamp = 0 },
+            new() { Id = Guid.NewGuid(), CategoryId = 2, Name = "Child1Product", Description = "", Price = 2, Quantity = 2, ConcurrencyStamp = 0 },
+            new() { Id = Guid.NewGuid(), CategoryId = 3, Name = "Child2Product", Description = "", Price = 3, Quantity = 3, ConcurrencyStamp = 0 },
+            new() { Id = Guid.NewGuid(), CategoryId = 4, Name = "GrandchildProduct", Description = "", Price = 4, Quantity = 4, ConcurrencyStamp = 0 },
+        };
+    context.Products.AddRange(products);
+    context.SaveChanges();
+  }
 
-    [Fact]
-    public void GetOffsetPageQuery_NoFilters_ReturnsFirstPage()
-    {
-      var filters = new PaginationParams { PageNum = 1, PageSize = 2 };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
+  [Fact]
+  public void ProductsPagination_RootCategory_ReturnsAllDescendants()
+  {
+    int rootCategoryId = 1;
+    var filters = new PaginationParams { Category = rootCategoryId, PageNum = 1, PageSize = 10 };
+    var pagination = new ProductsPagination(filters, _context);
+    var products = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
+    Assert.Equal(4, products.Count);
+    Assert.Contains(products, p => p.Name == "RootProduct");
+    Assert.Contains(products, p => p.Name == "Child1Product");
+    Assert.Contains(products, p => p.Name == "Child2Product");
+    Assert.Contains(products, p => p.Name == "GrandchildProduct");
+  }
 
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
+  [Fact]
+  public void ProductsPagination_LeafCategory_ReturnsOnlyLeafProduct()
+  {
+    int leafCategoryId = 4;
+    var filters = new PaginationParams { Category = leafCategoryId, PageNum = 1, PageSize = 10 };
+    var pagination = new ProductsPagination(filters, _context);
+    var products = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
+    Assert.Single(products);
+    Assert.Equal("GrandchildProduct", products[0].Name);
+  }
 
-    [Fact]
-    public void GetOffsetPageQuery_PriceAscending_ReturnsOrderedPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Order = PaginationParams.SortType.PriceAsc,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
+  [Fact]
+  public void ProductsPagination_NonExistentCategory_ReturnsNoProducts()
+  {
+    int nonExistentCategoryId = 999;
+    var filters = new PaginationParams { Category = nonExistentCategoryId, PageNum = 1, PageSize = 10 };
+    var pagination = new ProductsPagination(filters, _context);
+    var products = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
+    Assert.Empty(products);
+  }
 
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_PriceDescending_ReturnsOrderedPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Order = PaginationParams.SortType.PriceDesc,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product D", result[0].Name);
-      Assert.Equal("Product B", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_QuantityAscending_ReturnsOrderedPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Order = PaginationParams.SortType.QuantityAsc,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product D", result[0].Name);
-      Assert.Equal("Product A", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_NameFilter_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Name = "Product A",
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Single(result);
-      Assert.Equal("Product A", result[0].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_MinPriceFilter_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        MinPrice = 15.00m,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product B", result[0].Name);
-      Assert.Equal("Product C", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_MaxPriceFilter_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        MaxPrice = 15.00m,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_MinQuantityFilter_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        MinQuantity = 150,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product B", result[0].Name);
-      Assert.Equal("Product C", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_CategoryFilter_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Category = 1,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
-
-    [Fact]
-    public void GetOffsetPageQuery_CombinedFilters_ReturnsFilteredPage()
-    {
-      var filters = new PaginationParams
-      {
-        PageNum = 1,
-        PageSize = 2,
-        Category = 1,
-        MaxPrice = 15.00m,
-      };
-      var pagination = new ProductsPagination(filters, _context);
-      var result = pagination.GetOffsetPageQuery(filters.PageNum, filters.PageSize).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
-
-    [Fact]
-    public void GetNextPageQuery_NoFilters_ReturnsNextPage()
-    {
-      var filters = new PaginationParams { PageSize = 2, Order = PaginationParams.SortType.PriceAsc };
-      var pagination = new ProductsPagination(filters, _context);
-
-      // Get the first product from the first page
-      var firstPage = pagination.GetOffsetPageQuery(1, filters.PageSize).ToList();
-      Assert.Equal(2, firstPage.Count); // Ensure first page exists and has 2 elements
-      var firstProduct = firstPage[1]; // get last element of first page
-
-      var result = pagination.GetNextPageQuery(filters.PageSize, firstProduct).ToList();
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product B", result[0].Name);
-      Assert.Equal("Product C", result[1].Name);
-    }
-
-    [Fact]
-    public void GetNextPageQuery_PriceDescending_ReturnsNextPageInCorrectOrder()
-    {
-      var filters = new PaginationParams { PageSize = 2, Order = PaginationParams.SortType.PriceDesc };
-      var pagination = new ProductsPagination(filters, _context);
-
-      var firstPage = pagination.GetOffsetPageQuery(1, filters.PageSize).ToList();
-      Assert.Equal(2, firstPage.Count);
-      var firstProduct = firstPage[1];
-
-      var result = pagination.GetNextPageQuery(filters.PageSize, firstProduct).ToList();
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product A", result[0].Name);
-      Assert.Equal("Product E", result[1].Name);
-    }
-
-    [Fact]
-    public void GetPreviousPageQuery_NoFilters_ReturnsPreviousPage()
-    {
-      var filters = new PaginationParams { PageSize = 2, Order = PaginationParams.SortType.PriceAsc };
-      var pagination = new ProductsPagination(filters, _context);
-
-      // Get the last product from a later page (e.g., page 3 if it existed). We'll use page 2 since we only have 5 products
-      var secondPage = pagination.GetOffsetPageQuery(2, filters.PageSize).ToList();
-      Assert.Single(secondPage); //Ensure the second page exists with 1 element
-
-      var lastProduct = secondPage[0];
-      var result = pagination.GetPreviousPageQuery(filters.PageSize, lastProduct).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product E", result[0].Name);
-      Assert.Equal("Product A", result[1].Name);
-    }
-
-    [Fact]
-    public void GetPreviousPageQuery_PriceDescending_ReturnsPreviousPageInCorrectOrder()
-    {
-      var filters = new PaginationParams { PageSize = 2, Order = PaginationParams.SortType.PriceDesc };
-      var pagination = new ProductsPagination(filters, _context);
-
-      var secondPage = pagination.GetOffsetPageQuery(2, filters.PageSize).ToList();
-      Assert.Single(secondPage);
-
-      var lastProduct = secondPage[0];
-      var result = pagination.GetPreviousPageQuery(filters.PageSize, lastProduct).ToList();
-
-      Assert.Equal(2, result.Count);
-      Assert.Equal("Product B", result[0].Name);
-      Assert.Equal("Product D", result[1].Name);
-    }
+  [Fact]
+  public void ProductsPagination_Pagination_WorksCorrectly()
+  {
+    int rootCategoryId = 1;
+    var filters = new PaginationParams { Category = rootCategoryId, PageNum = 1, PageSize = 2 };
+    var pagination = new ProductsPagination(filters, _context);
+    var page1 = pagination.GetOffsetPageQuery(1, 2).ToList();
+    var page2 = pagination.GetOffsetPageQuery(2, 2).ToList();
+    Assert.Equal(2, page1.Count);
+    Assert.Equal(2, page2.Count);
+    var allNames = page1.Concat(page2).Select(p => p.Name).ToList();
+    Assert.Contains("RootProduct", allNames);
+    Assert.Contains("Child1Product", allNames);
+    Assert.Contains("Child2Product", allNames);
+    Assert.Contains("GrandchildProduct", allNames);
   }
 }

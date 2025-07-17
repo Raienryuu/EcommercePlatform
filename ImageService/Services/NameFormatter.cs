@@ -5,7 +5,12 @@ using ImageService.Services.Interfaces;
 namespace ImageService.Services;
 public class NameFormatter : INameFormatter
 {
-  // Gets name in format: p-@productId-@imageNumber
+  /// <summary>
+  /// Gets name in format: p-@productId-@imageNumber
+  /// </summary>
+  /// <param name="productId"></param>
+  /// <param name="imageNumber"></param>
+  /// <returns></returns>
   public string GetNameForProductImage(Guid productId, int imageNumber)
   {
     const string PREFIX = "p-";
