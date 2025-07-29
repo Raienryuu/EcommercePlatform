@@ -33,8 +33,7 @@ describe('LoginComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LoginComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -57,9 +56,10 @@ describe('LoginComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
-      ],
-      providers: [UserService, provideHttpClient()],
-    });
+        LoginComponent,
+    ],
+    providers: [UserService, provideHttpClient()],
+});
     
     const userService = TestBed.inject(UserService);
     userLogin = spyOnAllFunctions(userService, true);

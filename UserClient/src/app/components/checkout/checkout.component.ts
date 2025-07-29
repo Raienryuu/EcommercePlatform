@@ -7,12 +7,11 @@ import {
   AddressEditorComponent,
   AddressEditorResponse,
 } from '../address-editor/address-editor.component';
-import { MatRadioChange } from '@angular/material/radio';
+import { MatRadioChange, MatRadioModule } from '@angular/material/radio';
 import {
   SampleCustomerAddresses,
   SampleDeliveryMethod,
   SampleProduct,
-  SampleProducts,
 } from 'src/app/develSamples';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from 'src/app/services/orderService/order.service';
@@ -22,20 +21,40 @@ import { Subscription, map, retry } from 'rxjs';
 import { LockerSelectorDialogComponent } from '../dhl-locker/dhl-locker.component';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
 import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
-import { IMAGE_LOADER } from '@angular/common';
+import { IMAGE_LOADER, NgClass, NgOptimizedImage } from '@angular/common';
 import { imageLoader } from 'src/app/images/imageLoader';
 import { DeliveryService } from 'src/app/services/deliveryService/delivery.service';
 import { DeliveryMethod } from 'src/app/models/delivery-method.model';
 import { OrderDelivery } from 'src/app/models/order-delivery.model';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 import { AddressService } from 'src/app/services/addressService/address.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss'],
-  standalone: false,
+  standalone: true,
   providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
+  imports: [
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatButtonModule,
+    MatRadioModule,
+    FormsModule,
+    MatIconModule,
+    MatCardModule,
+    StripePaymentComponent,
+    NgClass,
+    NgOptimizedImage,
+  ],
 })
 export class CheckoutComponent {
   promoCodes: string[] = [];
@@ -101,7 +120,10 @@ export class CheckoutComponent {
       next: (order) => {
         const productIds = order.products.map<string>((p) => p.productId);
         this.productService.GetProductsBatch(productIds).subscribe({
-          next: (freshProducts) => this.UpdateProducts(order, freshProducts),
+          next: (freshProducts) => {
+            this.UpdateProducts(order, freshProducts);
+            this.orderLoaded = true;
+          },
         });
       },
     });

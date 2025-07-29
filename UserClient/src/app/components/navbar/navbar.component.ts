@@ -1,14 +1,22 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ShouldShowLoggedCapabilitiesPipe } from 'src/app/pipes/should-show-logged-capabilities.pipe';
 import { CartService } from 'src/app/services/cartService/cart.service';
 import { InternalCommunicationService } from 'src/app/services/internalCommunicationService/internal-communication.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
-
 @Component({
   selector: 'app-navbar',
-  standalone: false,
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
+  standalone: true,
+  imports: [
+    MatIconModule,
+    ShouldShowLoggedCapabilitiesPipe,
+    MatButtonModule,
+    RouterModule,
+  ],
 })
 export class NavbarComponent {
   /**

@@ -2,12 +2,28 @@ import { Component } from '@angular/core';
 import { UserService } from '../../services/userService/user.service';
 import { Router } from '@angular/router';
 import { InternalCommunicationService } from 'src/app/services/internalCommunicationService/internal-communication.service';
+import {
+  MatError,
+  MatFormFieldModule,
+  MatLabel,
+} from '@angular/material/form-field';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-login',
-  standalone: false,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [
+    MatError,
+    MatLabel,
+    MatFormFieldModule,
+    FormsModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
 })
 export class LoginComponent {
   constructor(

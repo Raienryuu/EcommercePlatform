@@ -1,12 +1,18 @@
 <body>
   <div class="breadcrumbs-wrapper" style="width: 100%; margin: 0; padding: 0">
     <div class="category-breadcrumbs">
-      <ng-container *ngFor="let category of categoryBreadcrumbs; let i = index">
-        <mat-icon *ngIf="i > 0">remove</mat-icon>
-        <a [disabled]="i === categoryBreadcrumbs.length - 1" mat-button>
+    @for(category of categoryBreadcrumbs; track $index){
+
+
+      <ng-container >
+      @if($index > 0){
+        <mat-icon>remove</mat-icon>
+        }
+        <a mat-button [disabled]="$index === categoryBreadcrumbs.length - 1" >
           {{ category }}
         </a>
       </ng-container>
+      }
     </div>
   </div>
 
@@ -26,12 +32,13 @@
             <span> {{ categoryId }} </span>
           </div>
         </a>
+        @for( child of categoryChildren; track $index){
         <a
           mat-list-item
-          *ngFor="let child of categoryChildren"
           href="products/{{ child.id }}"
           >{{ child.categoryName }}</a
         >
+        }
       </mat-list>
 
       <div class="filters">
@@ -86,8 +93,8 @@
 
     <mat-sidenav-content>
       <div class="applied-filters">
+      @if(filters.MinPrice){
         <button
-          *ngIf="filters.MinPrice"
           class="applied-filter"
           mat-stroked-button
           (click)="RemoveMinPriceFilter()"
@@ -97,30 +104,34 @@
             >close</mat-icon
           >
         </button>
+        }
+        @if(filters.MaxPrice && filters.MaxPrice >= filters.MinPrice){
         <button
-          *ngIf="filters.MaxPrice && filters.MaxPrice >= filters.MinPrice"
           class="applied-filter"
           mat-stroked-button
           (click)="RemoveMaxPriceFilter()"
         >
           Price < {{ filters.MaxPrice }}{{ currencySymbol }}
-          <mat-icon class="material-icons-outlined applied-filter-icon"
-            >close</mat-icon
+          <mat-icon class="material-icons-outlined applied-filter-icon">close</mat-icon>
+        </button>
+        }
+        @if(filters.Name !== null){
+          <button
+            class="applied-filter"
+            mat-stroked-button
+            (click)="RemoveNameFilter()"
           >
-        </button>
-        <button
-          *ngIf="filters.Name !== null"
-          class="applied-filter"
-          mat-stroked-button
-          (click)="RemoveNameFilter()"
-        >
-          Includes "<span class="value">{{ filters.Name }}</span
-          >"
-          <mat-icon class="material-icons-outlined" fontIcon="close" />
-        </button>
+            Includes "<span class="value">{{ filters.Name }}</span
+            >"
+            <mat-icon class="material-icons-outlined" fontIcon="close" />
+          </button>
+        }
       </div>
-      <div class="products" *ngIf="products.length > 0">
-        <div *ngFor="let product of products" class="product">
+      @if(products.length > 0){
+
+      <div class="products" >
+      @for(product of products; track $index){
+        <div class="product">
           <div class="product-details" >
             <img
               alt="productImage"
@@ -146,9 +157,12 @@
             </div>
           </div>
         </div>
+        }
       </div>
+      }
 
-      <div class="paginator" *ngIf="products.length > 0">
+      @if(products.length > 0){
+      <div class="paginator" >
         <div class="paginator-items">
           <span class="paginator-item"> Items per page: &nbsp; </span>
           <mat-form-field
@@ -181,37 +195,37 @@
           </mat-form-field>
         </div>
         <div class="paginator-controls">
+        @if(IsPageAvaiable(-1)){
           <button
             mat-button
             type="button"
             class="page-button"
-            *ngIf="IsPageAvaiable(-1)"
             (click)="LoadNewPage(-1)"
           >
             <span class="page-direction"> Previous </span>
             <mat-icon> arrow_back_ios </mat-icon>
           </button>
-
-          <button
-            *ngIf="IsPageAvaiable(-2)"
-            mat-button
-            type="button"
-            class="page-button page-ref"
-            (click)="LoadNewPage(-2)"
-          >
-            {{ this.filters.PageNum - 2 }}
-          </button>
-
-          <button
-            *ngIf="IsPageAvaiable(-1)"
-            mat-button
-            type="button"
-            class="page-button page-ref"
-            (click)="LoadNewPage(-1)"
-          >
-            {{ this.filters.PageNum - 1 }}
-          </button>
-
+        }
+          @if(IsPageAvaiable(-2)){
+            <button
+              mat-button
+              type="button"
+              class="page-button page-ref"
+              (click)="LoadNewPage(-2)"
+            >
+              {{ this.filters.PageNum - 2 }}
+            </button>
+          }
+          @if(IsPageAvaiable(-1)){
+            <button
+              mat-button
+              type="button"
+              class="page-button page-ref"
+              (click)="LoadNewPage(-1)"
+            >
+              {{ this.filters.PageNum - 1 }}
+            </button>
+          }
           <button
             mat-button
             type="button"
@@ -221,41 +235,44 @@
             {{ this.filters.PageNum }}
           </button>
 
-          <button
-            *ngIf="IsPageAvaiable(1)"
-            mat-button
-            type="button"
-            class="page-button page-ref"
-            (click)="LoadNewPage(1)"
-          >
-            {{ this.filters.PageNum + 1 }}
-          </button>
-
-          <button
-            *ngIf="IsPageAvaiable(2)"
-            mat-button
-            type="button"
-            class="page-button page-ref"
-            (click)="LoadNewPage(2)"
-          >
-            {{ this.filters.PageNum + 2 }}
-          </button>
-
+          @if(IsPageAvaiable(1)){
+            <button
+              mat-button
+              type="button"
+              class="page-button page-ref"
+              (click)="LoadNewPage(1)"
+            >
+              {{ this.filters.PageNum + 1 }}
+            </button>
+          }
+          @if(IsPageAvaiable(2)){
+            <button
+              mat-button
+              type="button"
+              class="page-button page-ref"
+              (click)="LoadNewPage(2)"
+            >
+              {{ this.filters.PageNum + 2 }}
+            </button>
+          }
           <div class="mat-typography paginator-item" style="font-weight: 500">
             out of {{ maxPage }}
           </div>
-          <button
-            mat-button
-            type="button"
-            class="page-button"
-            *ngIf="IsPageAvaiable(1)"
-            (click)="LoadNewPage(1)"
-          >
-            <span class="page-direction"> Next </span>
-            <mat-icon iconPositionEnd> arrow_forward_ios</mat-icon>
-          </button>
+          @if(IsPageAvaiable(1)){
+            <button
+              mat-button
+              type="button"
+              class="page-button"
+              (click)="LoadNewPage(1)"
+            >
+              <span class="page-direction"> Next </span>
+              <mat-icon iconPositionEnd> arrow_forward_ios</mat-icon>
+            </button>
+          }
         </div>
       </div>
+      }
+      @if(products.length === 0 && !isLoading){
       <div
         style="
           display: flex;
@@ -264,22 +281,20 @@
           height: 500px;
           width: 100%;
         "
-        *ngIf="products.length === 0 && !isLoading"
       >
         Sorry, we couldn't find any products that match your criteria.
-      </div>
-      <div
-        style="
-          display: flex;
-          justify-content: space-around;
-          padding-top: 50px;
-          height: 500px;
-          width: 100%;
-        "
-        *ngIf="isLoading"
-      >
+      </div>}
+      @if(isLoading){
+        <div
+          style="
+            display: flex;
+            justify-content: space-around;
+            padding-top: 50px;
+            height: 500px;
+            width: 100%;
+          ">
         <mat-spinner class="progress-spinner" diameter="200" />
-      </div>
+      </div>}
     </mat-sidenav-content>
   </mat-sidenav-container>
 </body>

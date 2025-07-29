@@ -33,8 +33,7 @@ describe('CartComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CartComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -59,9 +58,10 @@ describe('CartComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
-      ],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
+        CartComponent,
+    ],
+    providers: [provideHttpClient(), provideHttpClientTesting()],
+});
     fixture = TestBed.createComponent(CartComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

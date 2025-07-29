@@ -7,15 +7,30 @@ import { Order } from 'src/app/models/order.model';
 import { environment } from 'src/enviroment';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { Subscription } from 'rxjs';
-import { IMAGE_LOADER } from '@angular/common';
+import { IMAGE_LOADER, NgOptimizedImage } from '@angular/common';
 import { imageLoader } from 'src/app/images/imageLoader';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { OrderStatusTransformPipe } from 'src/app/pipes/order-status-transform.pipe';
+import { StripePaymentComponent } from '../stripe-payment/stripe-payment.component';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-order-details',
-  standalone: false,
   templateUrl: './order-details.component.html',
   styleUrl: './order-details.component.scss',
+  standalone: true,
   providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
+  imports: [
+    NgOptimizedImage,
+    MatStepperModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    OrderStatusTransformPipe,
+    StripePaymentComponent,
+    MatButtonModule,
+  ],
 })
 export class OrderDetailsComponent {
   Math = Math;

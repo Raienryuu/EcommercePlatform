@@ -38,7 +38,8 @@
       @defer{
       <div class="products-wrapper">
         <div class="products">
-          <div class="product" *ngFor="let product of products">
+        @for( product of products; track $index){
+          <div class="product" >
             <img
               alt="productImg"
               height="120"
@@ -59,6 +60,7 @@
               }}{{ (product.price * product.quantity).toFixed(2) }}
             </span>
           </div>
+        }
           @if (paymentFormVisible) {
             <app-stripe-payment
               [orderId]="orderId"

@@ -1,5 +1,7 @@
-import { IMAGE_LOADER } from '@angular/common';
+import { IMAGE_LOADER, NgOptimizedImage } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
 import { SampleImageMetadata, SampleProduct } from 'src/app/develSamples';
 import { imageLoader } from 'src/app/images/imageLoader';
@@ -8,17 +10,19 @@ import { Product } from 'src/app/models/product';
 import { ImageService } from 'src/app/services/imagesService/images.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { environment } from 'src/enviroment';
+
 @Component({
   selector: 'app-product-details',
-  standalone: false,
   templateUrl: './product-details.component.html',
   styleUrl: './product-details.component.scss',
+  standalone: true,
   providers: [
     {
       provide: IMAGE_LOADER,
       useValue: imageLoader,
     },
   ],
+  imports: [MatProgressSpinnerModule, NgOptimizedImage, MatButtonModule],
 })
 export class ProductDetailsComponent implements OnInit {
   /**
@@ -41,7 +45,7 @@ export class ProductDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    if (!environment.sampleData) {
+    if (environment.sampleData) {
       this.SetSampleDataValues();
       return;
     }

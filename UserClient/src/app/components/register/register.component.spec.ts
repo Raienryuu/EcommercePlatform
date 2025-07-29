@@ -33,8 +33,7 @@ describe('RegisterComponent', () => {
   let userServiceSpy: jasmine.SpyObj<UserService>;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [RegisterComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -59,9 +58,10 @@ describe('RegisterComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
-      ],
-      providers: [provideHttpClient()],
-    });
+        RegisterComponent,
+    ],
+    providers: [provideHttpClient()],
+});
     fixture = TestBed.createComponent(RegisterComponent);
     const userService = TestBed.inject(UserService);
     userServiceSpy = spyOnAllFunctions(userService, true);

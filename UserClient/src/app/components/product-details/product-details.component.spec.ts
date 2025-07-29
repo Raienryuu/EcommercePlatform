@@ -34,8 +34,8 @@ describe('ProductDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProductDetailsComponent],
-      imports: [BrowserModule,
+      imports: [
+        BrowserModule,
         FormsModule,
         AppRoutingModule,
         BrowserAnimationsModule,
@@ -56,12 +56,18 @@ describe('ProductDetailsComponent', () => {
         MatCardModule,
         MatRadioModule,
         MatCheckboxModule,
-        MatDialogModule,],
-      providers: [ImageService, provideRouter([
-        { path: '', pathMatch: 'full', redirectTo: 'details/1' },
-        { path: 'details/:id', component: ProductDetailsComponent }]
-      ),
-        provideHttpClientTesting(), provideHttpClient()],
+        MatDialogModule,
+        ProductDetailsComponent,
+      ],
+      providers: [
+        ImageService,
+        provideRouter([
+          { path: '', pathMatch: 'full', redirectTo: 'details/1' },
+          { path: 'details/:id', component: ProductDetailsComponent },
+        ]),
+        provideHttpClientTesting(),
+        provideHttpClient(),
+      ],
     }).compileComponents();
 
     environment.sampleData = true;
@@ -79,7 +85,9 @@ describe('ProductDetailsComponent', () => {
     const button = fixture.debugElement.query(By.css('[name=cartbtn]'));
     const cartButtonCall = spyOn(component, 'AddToCart');
     (button.nativeElement as HTMLButtonElement).click();
-    expect(cartButtonCall).withContext('add to cart button function was not called').toHaveBeenCalled();
+    expect(cartButtonCall)
+      .withContext('add to cart button function was not called')
+      .toHaveBeenCalled();
   });
 
   it('should update ngSrc of main image', async () => {
@@ -89,8 +97,7 @@ describe('ProductDetailsComponent', () => {
     images.forEach((element) => {
       if (element.parentElement?.className === 'images') {
         imageMain = element;
-      }
-      else {
+      } else {
         previewImage = element;
       }
     });
@@ -99,7 +106,8 @@ describe('ProductDetailsComponent', () => {
     previewImage.click();
     fixture.detectChanges();
 
-    expect(currentNgSrc).withContext('ngSrc wasn\'t updated')
+    expect(currentNgSrc)
+      .withContext("ngSrc wasn't updated")
       .not.toEqual(imageMain.src);
   });
 
@@ -109,7 +117,9 @@ describe('ProductDetailsComponent', () => {
 
     const spinner = native.querySelector('mat-spinner');
 
-    expect(spinner).withContext('mat-spinner was not found in the DOM').toBeTruthy();
+    expect(spinner)
+      .withContext('mat-spinner was not found in the DOM')
+      .toBeTruthy();
   });
 
   it('should show error message', () => {
@@ -119,7 +129,6 @@ describe('ProductDetailsComponent', () => {
     fixture.detectChanges();
     const error = native.getElementsByClassName('error')[0];
 
-    expect(error).withContext('coudln\'t find the error message').toBeTruthy();
+    expect(error).withContext("coudln't find the error message").toBeTruthy();
   });
-
-})
+});

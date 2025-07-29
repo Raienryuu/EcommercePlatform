@@ -40,7 +40,6 @@ describe('CheckoutComponent', () => {
 
   beforeEach((done) => {
     TestBed.configureTestingModule({
-      declarations: [CheckoutComponent, AddressEditorComponent],
       imports: [
         BrowserModule,
         FormsModule,
@@ -66,6 +65,8 @@ describe('CheckoutComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
+        CheckoutComponent,
+        AddressEditorComponent,
       ],
       providers: [
         provideHttpClient(),

@@ -35,8 +35,7 @@ describe('OrderDetailsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [OrderDetailsComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -62,22 +61,23 @@ describe('OrderDetailsComponent', () => {
         NgxMatInputTelComponent,
         CountrySelectComponent,
         OrderStatusTransformPipe,
-      ],
-      providers: [
+        OrderDetailsComponent,
+    ],
+    providers: [
         {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              paramMap: convertToParamMap({
-                id: '08465a47-c9c7-459b-bdc5-d98849cacb2e',
-              }),
+            provide: ActivatedRoute,
+            useValue: {
+                snapshot: {
+                    paramMap: convertToParamMap({
+                        id: '08465a47-c9c7-459b-bdc5-d98849cacb2e',
+                    }),
+                },
             },
-          },
         },
         provideHttpClient(),
         provideHttpClientTesting(),
-      ],
-    }).compileComponents();
+    ],
+}).compileComponents();
 
     fixture = TestBed.createComponent(OrderDetailsComponent);
     component = fixture.componentInstance;

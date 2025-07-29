@@ -5,16 +5,33 @@ import {
   Output,
   viewChild,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { CountrySelectComponent } from 'src/app/components/country-select/country-select.component';
 import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { AddressService } from 'src/app/services/addressService/address.service';
 
 @Component({
   selector: 'app-address-editor',
-  standalone: false,
+  standalone: true,
   templateUrl: './address-editor.component.html',
   styleUrl: './address-editor.component.scss',
+  imports: [
+    MatDialogModule,
+    MatFormFieldModule,
+    CountrySelectComponent,
+    NgxMatInputTelComponent,
+    ReactiveFormsModule,
+    MatInputModule,
+  ],
 })
 export class AddressEditorComponent {
   @Input() address: CustomerAddress = {

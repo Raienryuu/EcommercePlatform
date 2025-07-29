@@ -30,7 +30,7 @@ import { FooterComponent } from '../components/footer/footer.component';
 describe('AppComponent', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -55,10 +55,11 @@ describe('AppComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
-      ],
-      declarations: [AppComponent, NavbarComponent, FooterComponent],
-      providers: [provideHttpClient()],
-    }),
+        NavbarComponent, FooterComponent,
+        AppComponent,
+    ],
+    providers: [provideHttpClient()],
+}),
   );
 
   it('should create the app', () => {

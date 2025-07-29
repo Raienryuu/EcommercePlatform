@@ -12,7 +12,8 @@
         <div id="products">
           <div class="header">Products</div>
           <div class="content">
-            <div class="product" *ngFor="let product of products">
+          @for( product of products; track $index){
+            <div class="product" >
               <img
                 alt="productImg"
                 height="120"
@@ -35,6 +36,8 @@
                 }}{{ (product.price * product.quantity).toFixed(2) }}
               </span>
             </div>
+
+          }
           </div>
         </div>
         <div id="addresses">
@@ -45,10 +48,12 @@
         </button> -->
           </div>
           <div class="customer-details content">
+          @for( address of customerAddresses; track $index ){
+
+
             <mat-card
-              *ngFor="let address of customerAddresses; index as i"
-              (click)="SelectAddress(i)"
-              [ngClass]="{ selected: i === activeAddressSelection }"
+              (click)="SelectAddress($index)"
+              [ngClass]="{ selected: $index === activeAddressSelection }"
             >
               <mat-card-content>
                 <button
@@ -56,11 +61,11 @@
                   mat-icon-button
                   class="edit"
                   name="edit"
-                  (click)="OpenAddressEditor(false, i)"
+                  (click)="OpenAddressEditor(false, $index)"
                 >
                   <mat-icon
                     fontIcon="edit"
-                    [ngClass]="{ selected: i === activeAddressSelection }"
+                    [ngClass]="{ selected: $index === activeAddressSelection }"
                   />
                 </button>
                 <tr>
@@ -95,6 +100,7 @@
                 </tr>
               </mat-card-content>
             </mat-card>
+          }
             <mat-card>
               <mat-card-content class="center">
                 <button
@@ -176,9 +182,11 @@
           <div class="header">Summary</div>
           <div class="content">
             <div class="promo-codes">
-              <span *ngIf="!promoCodes" class="empty-codes">
+            @if(!promoCodes){
+              <span class="empty-codes">
                 No active promo codes
               </span>
+            }
             </div>
             <div class="total">
               <table>

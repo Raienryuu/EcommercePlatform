@@ -29,8 +29,7 @@ describe('AddressEditorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AddressEditorComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -46,9 +45,10 @@ describe('AddressEditorComponent', () => {
         NgxMatInputTelComponent,
         CountrySelectComponent,
         MatFormFieldModule,
-      ],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    }).compileComponents();
+        AddressEditorComponent,
+    ],
+    providers: [provideHttpClient(), provideHttpClientTesting()],
+}).compileComponents();
 
     fixture = TestBed.createComponent(AddressEditorComponent);
     component = fixture.componentInstance;

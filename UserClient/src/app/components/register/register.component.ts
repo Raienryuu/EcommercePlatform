@@ -1,18 +1,43 @@
-import { Component, viewChild } from '@angular/core';
 import { NewUser } from 'src/app/models/user-registration-form';
 import { UserService } from 'src/app/services/userService/user.service';
-import { FormControl, FormGroup, FormGroupDirective } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  FormGroupDirective,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { RegisterFormWithValidators, ToNewUser } from './RegisterValidation';
 import { Country } from 'ngx-mat-input-tel/lib/model/country.model';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { Router } from '@angular/router';
+import { CountrySelectComponent } from '../country-select/country-select.component';
+import {
+  MatError,
+  MatFormFieldModule,
+  MatLabel,
+} from '@angular/material/form-field';
+import { Component, viewChild } from '@angular/core';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-register',
-  standalone: false,
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
+  standalone: true,
+  imports: [
+    CountrySelectComponent,
+    MatError,
+    MatLabel,
+    MatFormFieldModule,
+    NgxMatInputTelComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
 })
 export class RegisterComponent {
   user!: NewUser;

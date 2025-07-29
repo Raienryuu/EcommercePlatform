@@ -21,27 +21,29 @@
     <mat-form-field class="inputs">
       <mat-label>Password</mat-label>
       <input
-        autocomplete="new-password"
         matInput
+        autocomplete="new-password"
         type="password"
         formControlName="password"
         id="password"
         [errorStateMatcher]="passwordMatcher1"
       />
       <mat-error>
-        <ng-container
-          *ngIf="registerForm.get('password')?.hasError('required')"
-        >
+      @if(registerForm.get('password')?.hasError('required')){
+        <ng-container>
           Password is empty
         </ng-container>
-        <ng-container
-          *ngIf="registerForm.get('password')?.hasError('minlength')"
-        >
+      }
+      @if(registerForm.get('password')?.hasError('minlength')){
+        <ng-container>
           Password should be at least 6 characters
         </ng-container>
-        <ng-container *ngIf="registerForm.hasError('confirmPassword')">
+        }
+      @if(registerForm.hasError('confirmPassword')){
+        <ng-container>
           Passwords should match
         </ng-container>
+        }
       </mat-error>
     </mat-form-field>
 
@@ -56,19 +58,21 @@
         [errorStateMatcher]="passwordMatcher2"
       />
       <mat-error>
-        <ng-container
-          *ngIf="registerForm.get('password2')?.hasError('required')"
-        >
+      @if(registerForm.get('password2')?.hasError('required')){
+        <ng-container>
           Password is empty
         </ng-container>
-        <ng-container
-          *ngIf="registerForm.get('password2')?.hasError('minlength')"
-        >
+      }
+      @if(registerForm.get('password2')?.hasError('minlength')){
+        <ng-container >
           Password should be at least 6 characters
         </ng-container>
-        <ng-container *ngIf="registerForm.hasError('confirmPassword')">
+      }
+      @if(registerForm.hasError('confirmPassword')){
+        <ng-container >
           Passwords should match
         </ng-container>
+      }
       </mat-error>
     </mat-form-field>
 

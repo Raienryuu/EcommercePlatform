@@ -11,13 +11,13 @@ describe('NavbarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [NavbarComponent],
-      providers: [
+    imports: [NavbarComponent],
+    providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: ActivatedRoute, useValue: {} },
-      ],
-    });
+    ],
+});
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

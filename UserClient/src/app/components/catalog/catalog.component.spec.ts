@@ -34,8 +34,7 @@ describe('CatalogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProductsComponent],
-      imports: [
+    imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -60,9 +59,10 @@ describe('CatalogComponent', () => {
         MatDialogModule,
         NgxMatInputTelComponent,
         CountrySelectComponent,
-      ],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
-    });
+        ProductsComponent,
+    ],
+    providers: [provideHttpClient(), provideHttpClientTesting()],
+});
     fixture = TestBed.createComponent(ProductsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

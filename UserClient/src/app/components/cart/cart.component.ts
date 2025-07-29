@@ -1,5 +1,11 @@
-import { IMAGE_LOADER } from '@angular/common';
+import { IMAGE_LOADER, NgOptimizedImage } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { SampleProducts } from 'src/app/develSamples';
@@ -15,7 +21,7 @@ import { environment } from 'src/enviroment';
 
 @Component({
   selector: 'app-cart',
-  standalone: false,
+  standalone: true,
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.scss'],
   providers: [
@@ -23,6 +29,17 @@ import { environment } from 'src/enviroment';
       provide: IMAGE_LOADER,
       useValue: imageLoader,
     },
+  ],
+  imports: [
+    MatLabel,
+    MatFormFieldModule,
+    MatIconModule,
+    NgOptimizedImage,
+    MatInputModule,
+    MatDialogModule,
+    FormsModule,
+    MatInputModule,
+    MatButtonModule,
   ],
 })
 export class CartComponent {

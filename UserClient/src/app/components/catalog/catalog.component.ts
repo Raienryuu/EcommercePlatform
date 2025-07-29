@@ -6,19 +6,44 @@ import { PaginationParams, SortType } from 'src/app/models/pagination-params';
 import { ProductCategoryService } from 'src/app/services/productCategoryService/product-category.service';
 import { ProductService } from 'src/app/services/productService/product.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
-import { MatSelectChange } from '@angular/material/select';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { debounceTime } from 'rxjs';
 import { environment } from 'src/enviroment';
 import { CartService } from 'src/app/services/cartService/cart.service';
 import { LotsOfSampleProducts } from 'src/app/develSamples';
-import { IMAGE_LOADER } from '@angular/common';
+import { IMAGE_LOADER, NgOptimizedImage } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { FormsModule } from '@angular/forms';
+import { MatListModule } from '@angular/material/list';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
 import { imageLoader } from 'src/app/images/imageLoader';
 
 @Component({
   selector: 'app-catalog',
-  standalone: false,
+  standalone: true,
   templateUrl: './catalog.component.html',
   styleUrls: ['./catalog.component.scss'],
+  imports: [
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatOptionModule,
+    MatSelectModule,
+    NgOptimizedImage,
+    MatSidenavModule,
+    FormsModule,
+    MatListModule,
+    MatLabel,
+    MatRadioModule,
+    MatButtonModule,
+    MatInputModule,
+  ],
   providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
 })
 export class ProductsComponent implements OnInit {
