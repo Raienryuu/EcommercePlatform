@@ -3,6 +3,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using Common;
+using Humanizer;
 using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
@@ -120,7 +121,7 @@ public class UserService(
       return ServiceResults.Error<string>("Couldn't find user with given Id", 404);
     }
 
-    return ServiceResults.Success(username, 200);
+    return ServiceResults.Success(username.ToLower().Pascalize(), 200);
   }
 
   private static IdentityUser<Guid> MapToNewUser(NewUser registrationData)

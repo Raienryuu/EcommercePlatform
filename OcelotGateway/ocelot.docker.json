@@ -142,21 +142,21 @@
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
-					"Port": 7107
+					"Port": 8080
 				}
 			],
 			"UpstreamPathTemplate": "/api/v1/productscategories/{everything}"
 		},
     {
-			"DownstreamPathTemplate": "/api/v1/deliveries/{everything}", // productService - deliveries
+			"DownstreamPathTemplate": "/api/v1/deliveries{everything}", // productService - deliveries
 			"DownstreamScheme": "http",
 			"DownstreamHostAndPorts": [
 				{
 					"Host": "productservice",
-					"Port": 7107
+					"Port": 8080
 				}
 			],
-			"UpstreamPathTemplate": "/api/v1/deliveries/{everything}"
+			"UpstreamPathTemplate": "/api/v1/deliveries{everything}"
 		},
 		{
 			"DownstreamPathTemplate": "/api/cart/{everything}", // cartService
