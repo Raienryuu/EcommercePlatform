@@ -34,7 +34,7 @@ describe('CatalogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-    imports: [
+      imports: [
         BrowserModule,
         FormsModule,
         AppRoutingModule,
@@ -60,11 +60,12 @@ describe('CatalogComponent', () => {
         NgxMatInputTelComponent,
         CountrySelectComponent,
         ProductsComponent,
-    ],
-    providers: [provideHttpClient(), provideHttpClientTesting()],
-});
+      ],
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     fixture = TestBed.createComponent(ProductsComponent);
     component = fixture.componentInstance;
+    environment.sampleData = true;
     fixture.detectChanges();
   });
 
@@ -87,9 +88,8 @@ describe('CatalogComponent', () => {
   });
 
   it('should call AddToCart on click', () => {
-    const singleProdut = fixture.debugElement.query(By.css('.product-details'))
+    const addToCartBtn = fixture.debugElement.query(By.css('.product-btn'))
       .nativeElement as HTMLElement;
-    const addToCartBtn = singleProdut.querySelector('button');
     const cartServiceSpy = spyOn(component, 'AddToCart');
 
     addToCartBtn?.click();

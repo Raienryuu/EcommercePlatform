@@ -133,14 +133,18 @@
       @for(product of products; track $index){
         <div class="product">
           <div class="product-details" >
-            <img
-              alt="productImage"
-              height="120"
-              [ngSrc]="GetPreviewImageSource(product.id)"
-              priority="true"
-              width="170"
+            <button
               (click)="NavigateToDetails(product.id)"
-            />
+              (keydown)="NavigateToDetails(product.id)"
+              [tabIndex]="0">
+              <img
+                alt="productImage"
+                height="120"
+                [ngSrc]="GetPreviewImageSource(product.id)"
+                priority="true"
+                width="170"
+              />
+            </button>
             <div class="product-name">{{ product.name }}</div>
             <div class="horizontal-flex" style="width: 100%">
               <div class="product-price">

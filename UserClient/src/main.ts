@@ -1,8 +1,5 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
 import { importProvidersFrom } from '@angular/core';
 import { AppComponent } from './app/core/app.component';
-import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';

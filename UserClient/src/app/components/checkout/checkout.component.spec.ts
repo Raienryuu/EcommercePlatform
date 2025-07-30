@@ -85,6 +85,7 @@ describe('CheckoutComponent', () => {
     });
     fixture = TestBed.createComponent(CheckoutComponent);
     component = fixture.componentInstance;
+    environment.sampleData = true;
     fixture.detectChanges();
     fixture.whenStable();
     const scripts = document.querySelectorAll('ngx-stripe-elements');

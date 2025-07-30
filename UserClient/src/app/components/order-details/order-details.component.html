@@ -96,11 +96,11 @@
         <span class="side-padding">
           <div class="payment-status">
             <div>Payment status</div>
-            @if (paymentStatus == "Pending") {
+            @if (paymentStatus === "Pending") {
               <div #paymentStatus class="default-status pending">Pending</div>
-            } @else if (paymentStatus == "Succeded") {
+            } @else if (paymentStatus === "Succeded") {
               <div #paymentStatus class="default-status succeeded">Success</div>
-            } @else if (paymentStatus == "Cancelled") {
+            } @else if (paymentStatus === "Cancelled") {
               <div #paymentStatus class="default-status failed">Cancelled</div>
             } @else {
               <div #paymentStatus class="default-status failed">Failed</div>
