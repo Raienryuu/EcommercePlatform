@@ -1,4 +1,4 @@
-@import "src/color-palette";
+@use "src/color-palette";
 
 *,
 *::before,
@@ -15,7 +15,7 @@ body {
 
 .headers {
   min-height: 50px;
-  background-color: $primary-200;
+  background-color: color-palette.$primary-200;
   border-radius: 10px 10px 0 0;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr 1fr 1fr 1fr;
@@ -31,7 +31,7 @@ body {
 
 .products {
   height: fit-content;
-  background-color: $primary-100;
+  background-color: color-palette.$primary-100;
   border-radius: 10px;
   max-width: 1800px;
 }
@@ -42,7 +42,7 @@ body {
   align-items: center;
   justify-items: center;
   min-height: 120px;
-  background-color: $gray-100;
+  background-color: color-palette.$gray-100;
   margin: 20px 20px;
   border-radius: 10px;
 }
@@ -116,13 +116,13 @@ body {
 }
 
 button.promotion-element {
-  color: $primary-500;
+  color: color-palette.$primary-500;
 }
 
 
 .empty-cart {
   margin: auto;
-  background-color: $primary-100;
+  background-color: color-palette.$primary-100;
   width: 50%;
   border-radius: 10px;
   text-align: center;
@@ -130,5 +130,5 @@ button.promotion-element {
 }
 
 .unavailable {
-  color: $primary-500;
+  color: color-palette.$primary-500;
 }

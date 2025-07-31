@@ -1,4 +1,4 @@
-@import "src/color-palette.scss";
+@use "src/color-palette.scss";
 
 .header {
   height: calc(clamp(12px, calc(1vh + 1vw), 18px) * 1.4);
@@ -35,7 +35,7 @@ body {
 }
 
 mat-stepper {
-  background-color: $primary-100;
+  background-color: color-palette.$primary-100;
   border-radius: 0 0 10px 10px;
   pointer-events: none;
 }
@@ -46,7 +46,7 @@ mat-stepper {
   align-items: center;
   justify-items: start;
   min-height: 105px;
-  border: 1px solid $gray-100;
+  border: 1px solid color-palette.$gray-100;
   margin: 1vh 1vw;
   border-radius: 10px;
   text-wrap: nowrap;
@@ -134,17 +134,17 @@ mat-stepper {
 }
 
 .pending {
-  background-color: $yellow-300;
+  background-color: color-palette.$yellow-300;
   color: white;
 }
 
 .succeeded {
-  background-color: $green-300;
+  background-color: color-palette.$green-300;
   color: white;
 }
 
 .failed {
-  background-color: $red-300;
+  background-color: color-palette.$red-300;
   color: white;
 }
 
@@ -187,5 +187,5 @@ button.retry {
 .cancel-order>button {
   font-size: inherit;
   text-decoration: underline;
-  color: $primary-400;
+  color: color-palette.$primary-400;
 }

@@ -1,4 +1,4 @@
-@import "src/color-palette";
+@use "src/color-palette";
 /* You can add global styles to this file, and also import other style files */
 
 html,
@@ -20,7 +20,7 @@ body {
 }
 
 .mat-mdc-raised-button.mat-primary {
-  --mat-button-protected-container-color: #{$primary-500};
+  --mat-button-protected-container-color: #{color-palette.$primary-500};
   --mat-button-protected-label-text-color: #fff;
 }
 
@@ -44,7 +44,7 @@ input::-webkit-inner-spin-button {
 
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label,
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label--float-above {
-  color: $gray-400 !important;
+  color: color-palette.$gray-400 !important;
 }
 
 .mat-mdc-form-field {
@@ -58,7 +58,7 @@ input::-webkit-inner-spin-button {
 
 .content {
   max-width: min(1200px, 70vw);
-  background-color: $primary-100;
+  background-color: color-palette.$primary-100;
   padding: calc((1vh + 1vw) / 2);
   border-radius: 0 0 10px 10px;
 
@@ -66,7 +66,7 @@ input::-webkit-inner-spin-button {
 
 .header {
   margin-top: 2svh;
-  background-color: $primary-200;
+  background-color: color-palette.$primary-200;
   // padding: 1svw;
   padding: calc((1vh + 1vw) / 2);
   max-width: min(1200px, 70vw);
@@ -75,7 +75,7 @@ input::-webkit-inner-spin-button {
   border-radius: 10px 10px 0 0;
   font-weight: 700;
   font-size: 1.5em;
-  color: $gray-600;
+  color: color-palette.$gray-600;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -126,7 +126,7 @@ app-cart {
 
 app-checkout {
   .mat-horizontal-stepper-header-container {
-    background-color: $primary-200;
+    background-color: color-palette.$primary-200;
     border-radius: 10px 10px 0 0;
     margin-top: 50px;
   }
@@ -144,7 +144,7 @@ app-checkout {
   }
 
   .mdc-text-field--filled:not(.mdc-text-field--disabled) {
-    background-color: $gray-100 !important;
+    background-color: color-palette.$gray-100 !important;
   }
 
   .mdc-text-field {
@@ -174,21 +174,21 @@ app-checkout {
 }
 
 mat-checkbox {
-  --mat-checkbox-selected-icon-color: #{$primary-500};
-  --mat-checkbox-selected-focus-icon-color: #{$primary-500};
-  --mat-checkbox-selected-hover-icon-color: #{$primary-500};
-  --mat-checkbox-selected-pressed-icon-color: #{$primary-500};
-  --mat-checkbox-selected-focus-state-layer-color: #{$primary-500};
-  --mat-checkbox-selected-hover-state-layer-color: #{$primary-500};
-  --mat-checkbox-selected-pressed-state-layer-color: #{$primary-500};
+  --mat-checkbox-selected-icon-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-focus-icon-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-hover-icon-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-pressed-icon-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-focus-state-layer-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-hover-state-layer-color: #{color-palette.$primary-500};
+  --mat-checkbox-selected-pressed-state-layer-color: #{color-palette.$primary-500};
 }
 
 .mat-mdc-radio-button.mat-accent {
-  --mat-radio-selected-focus-icon-color: #{$primary-500};
-  --mat-radio-selected-hover-icon-color: #{$primary-500};
-  --mat-radio-selected-icon-color: #{$primary-500};
-  --mat-radio-selected-pressed-icon-color: #{$primary-500};
-  --mat-radio-checked-ripple-color: #{$primary-500};
+  --mat-radio-selected-focus-icon-color: #{color-palette.$primary-500};
+  --mat-radio-selected-hover-icon-color: #{color-palette.$primary-500};
+  --mat-radio-selected-icon-color: #{color-palette.$primary-500};
+  --mat-radio-selected-pressed-icon-color: #{color-palette.$primary-500};
+  --mat-radio-checked-ripple-color: #{color-palette.$primary-500};
 }
 
 .dialogPanel {

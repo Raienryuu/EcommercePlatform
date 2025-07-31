@@ -9,7 +9,6 @@ import {
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { RegisterFormWithValidators, ToNewUser } from './RegisterValidation';
-import { Country } from 'ngx-mat-input-tel/lib/model/country.model';
 import { NgxMatInputTelComponent } from 'ngx-mat-input-tel';
 import { Router } from '@angular/router';
 import { CountrySelectComponent } from '../country-select/country-select.component';
@@ -21,22 +20,23 @@ import {
 import { Component, viewChild } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import * as ngxMatInputTel from 'ngx-mat-input-tel';
 
 @Component({
-    selector: 'app-register',
-    templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss'],
-    imports: [
-        CountrySelectComponent,
-        MatError,
-        MatLabel,
-        MatFormFieldModule,
-        NgxMatInputTelComponent,
-        FormsModule,
-        ReactiveFormsModule,
-        MatInputModule,
-        MatButtonModule,
-    ]
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
+  imports: [
+    CountrySelectComponent,
+    MatError,
+    MatLabel,
+    MatFormFieldModule,
+    NgxMatInputTelComponent,
+    FormsModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
 })
 export class RegisterComponent {
   user!: NewUser;
@@ -107,7 +107,7 @@ export class RegisterComponent {
     }
   }
 
-  UpdatePhonePrefix($event: Country): void {
+  UpdatePhonePrefix($event: any): void {
     this.phonePlaceholder = $event.placeHolder?.slice(
       $event.dialCode.length + 1,
     ) as string;

@@ -1,4 +1,4 @@
-@import "src/color-palette.scss";
+@use "src/color-palette.scss";
 
 .header {
   margin-top: 0;
@@ -29,7 +29,7 @@ mat-form-field.full-width {
 }
 
 button.delete-button {
-  background-color: $red-400;
+  background-color: color-palette.$red-400;
   color: white;
 }
 

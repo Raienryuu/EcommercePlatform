@@ -1,4 +1,4 @@
-@import "src/color-palette";
+@use "src/color-palette";
 
 .catalog-main {
   background: white;
@@ -26,8 +26,8 @@
 
 .categories {
   --mat-list-list-item-label-text-size: inherit;
-  --mat-list-list-item-label-text-color: #{$gray-400};
-  --mat-list-list-item-hover-label-text-color: #{$primary-600};
+  --mat-list-list-item-label-text-color: #{color-palette.$gray-400};
+  --mat-list-list-item-hover-label-text-color: #{color-palette.$primary-600};
   --mat-list-list-item-one-line-container-height: 2rem;
   overflow-x: hidden;
 }
@@ -67,7 +67,7 @@ input.filter-input::-webkit-inner-spin-button {
   display: flex;
   justify-content: center;
   padding-top: 2svh;
-  background: $primary-700;
+  background: color-palette.$primary-700;
 }
 
 .category-breadcrumbs {
@@ -80,7 +80,7 @@ input.filter-input::-webkit-inner-spin-button {
   justify-self: center;
   flex-wrap: wrap;
   background: inherit;
-  color: $gray-100;
+  color: color-palette.$gray-100;
   max-width: 1800px;
 }
 
@@ -109,7 +109,7 @@ input.filter-input::-webkit-inner-spin-button {
   margin: 0.5rem;
   border-radius: 15px;
   border-width: 0.1rem;
-  border-color: $gray-200;
+  border-color: color-palette.$gray-200;
 }
 
 .applied-filter-icon {
@@ -120,7 +120,7 @@ input.filter-input::-webkit-inner-spin-button {
 }
 
 .value {
-  color: $primary-400;
+  color: color-palette.$primary-400;
 }
 
 .products {
@@ -145,7 +145,7 @@ input.filter-input::-webkit-inner-spin-button {
   font-size: inherit;
 
   border-radius: 1em;
-  background: $primary-100;
+  background: color-palette.$primary-100;
 }
 
 img {
@@ -186,8 +186,8 @@ img:hover {
 .product-btn {
   position: relative;
   align-items: center;
-  background: $primary-700;
-  color: $gray-100;
+  background: color-palette.$primary-700;
+  color: color-palette.$gray-100;
 }
 
 .horizontal-flex {
@@ -219,15 +219,15 @@ img:hover {
 }
 
 .mat-drawer-side {
-  border-right: 1px solid $gray-400;
-  border-bottom: 1px solid $gray-400;
-  border-left: 1px solid $gray-400;
+  border-right: 1px solid color-palette.$gray-400;
+  border-bottom: 1px solid color-palette.$gray-400;
+  border-left: 1px solid color-palette.$gray-400;
   height: max-content;
   border-radius: 0 0 5% 5%;
 }
 
 mat-spinner.progress-spinner {
-  --mat-progress-spinner-active-indicator-color: #{$primary-800};
+  --mat-progress-spinner-active-indicator-color: #{color-palette.$primary-800};
 }
 
 mat-spinner {
@@ -259,7 +259,7 @@ mat-spinner {
 
 .page-button:hover,
 .paginator-controls button:hover {
-  color: $primary-600;
+  color: color-palette.$primary-600;
 }
 
 .paginator-controls button {
@@ -269,13 +269,13 @@ mat-spinner {
 }
 
 .page-direction {
-  color: $primary-800;
+  color: color-palette.$primary-800;
 }
 
 .page-ref {
-  color: $primary-500;
+  color: color-palette.$primary-500;
 }
 
 .current-page-button {
-  color: $gray-200;
+  color: color-palette.$gray-200;
 }
