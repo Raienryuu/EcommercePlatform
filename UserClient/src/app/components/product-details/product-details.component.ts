@@ -12,17 +12,16 @@ import { ProductService } from 'src/app/services/productService/product.service'
 import { environment } from 'src/enviroment';
 
 @Component({
-  selector: 'app-product-details',
-  templateUrl: './product-details.component.html',
-  styleUrl: './product-details.component.scss',
-  standalone: true,
-  providers: [
-    {
-      provide: IMAGE_LOADER,
-      useValue: imageLoader,
-    },
-  ],
-  imports: [MatProgressSpinnerModule, NgOptimizedImage, MatButtonModule],
+    selector: 'app-product-details',
+    templateUrl: './product-details.component.html',
+    styleUrl: './product-details.component.scss',
+    providers: [
+        {
+            provide: IMAGE_LOADER,
+            useValue: imageLoader,
+        },
+    ],
+    imports: [MatProgressSpinnerModule, NgOptimizedImage, MatButtonModule]
 })
 export class ProductDetailsComponent implements OnInit {
   /**

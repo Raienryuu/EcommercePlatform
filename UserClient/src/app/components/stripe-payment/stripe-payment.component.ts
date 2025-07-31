@@ -18,10 +18,9 @@ import { StripeConfig } from 'src/app/stripe-settings';
 import { environment } from 'src/enviroment';
 
 @Component({
-  selector: 'app-stripe-payment',
-  standalone: true,
-  imports: [NgxStripeModule, MatButtonModule],
-  template: `
+    selector: 'app-stripe-payment',
+    imports: [NgxStripeModule, MatButtonModule],
+    template: `
     @defer {
       @if (clientSecret !== undefined) {
         <div class="stripe-payment-form">
@@ -43,7 +42,7 @@ import { environment } from 'src/enviroment';
       }
     }
   `,
-  styles: `
+    styles: `
     .paymentStripe {
       padding: 1.5vh;
       background-color: #eaebf6;
@@ -64,7 +63,7 @@ import { environment } from 'src/enviroment';
     .stripe-payment-form {
       margin: 10vh 0;
     }
-  `,
+  `
 })
 export class StripePaymentComponent implements OnChanges {
   @Input()

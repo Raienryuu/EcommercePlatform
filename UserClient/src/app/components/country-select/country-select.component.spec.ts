@@ -34,10 +34,9 @@ describe('CountrySelectComponent', () => {
     template: `
       <app-country-select [validate]="true" [countryControl]="countryControl"/>`,
     imports: [
-      CountrySelectComponent
-    ],
-    standalone: true
-  })
+        CountrySelectComponent
+    ]
+})
   class CountrySelectWrapperComponent {
     countryControl = new FormControl<string>('', [Validators.required]);
     component = viewChild<CountrySelectComponent>(

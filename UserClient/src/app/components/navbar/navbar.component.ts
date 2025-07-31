@@ -7,16 +7,15 @@ import { CartService } from 'src/app/services/cartService/cart.service';
 import { InternalCommunicationService } from 'src/app/services/internalCommunicationService/internal-communication.service';
 import { UserSettingsService } from 'src/app/services/userSettingsService/user-settings.service';
 @Component({
-  selector: 'app-navbar',
-  templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.scss'],
-  standalone: true,
-  imports: [
-    MatIconModule,
-    ShouldShowLoggedCapabilitiesPipe,
-    MatButtonModule,
-    RouterModule,
-  ],
+    selector: 'app-navbar',
+    templateUrl: './navbar.component.html',
+    styleUrls: ['./navbar.component.scss'],
+    imports: [
+        MatIconModule,
+        ShouldShowLoggedCapabilitiesPipe,
+        MatButtonModule,
+        RouterModule,
+    ]
 })
 export class NavbarComponent {
   /**

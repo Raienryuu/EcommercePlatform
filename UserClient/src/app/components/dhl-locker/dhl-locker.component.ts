@@ -9,12 +9,10 @@ import { MatInputModule } from '@angular/material/input';
 import { DhlAddress } from 'src/app/models/dhl-address.model';
 
 @Component({
-  selector: 'app-dhl-locker',
-  template:
-    '<iframe class="map" src="https://parcelshop.dhl.pl/mapa"></iframe>',
-  styleUrls: ['./dhl-locker.component.scss'],
-  standalone: true,
-  imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule],
+    selector: 'app-dhl-locker',
+    template: '<iframe class="map" src="https://parcelshop.dhl.pl/mapa"></iframe>',
+    styleUrls: ['./dhl-locker.component.scss'],
+    imports: [MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule]
 })
 export class LockerSelectorDialogComponent {
   constructor(

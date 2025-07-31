@@ -37,24 +37,23 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-checkout',
-  templateUrl: './checkout.component.html',
-  styleUrls: ['./checkout.component.scss'],
-  standalone: true,
-  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
-  imports: [
-    MatProgressSpinnerModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatRadioModule,
-    FormsModule,
-    MatIconModule,
-    MatCardModule,
-    StripePaymentComponent,
-    NgClass,
-    NgOptimizedImage,
-  ],
+    selector: 'app-checkout',
+    templateUrl: './checkout.component.html',
+    styleUrls: ['./checkout.component.scss'],
+    providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
+    imports: [
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+        MatDividerModule,
+        MatButtonModule,
+        MatRadioModule,
+        FormsModule,
+        MatIconModule,
+        MatCardModule,
+        StripePaymentComponent,
+        NgClass,
+        NgOptimizedImage,
+    ]
 })
 export class CheckoutComponent {
   promoCodes: string[] = [];

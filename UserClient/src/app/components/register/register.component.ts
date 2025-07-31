@@ -23,21 +23,20 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss'],
-  standalone: true,
-  imports: [
-    CountrySelectComponent,
-    MatError,
-    MatLabel,
-    MatFormFieldModule,
-    NgxMatInputTelComponent,
-    FormsModule,
-    ReactiveFormsModule,
-    MatInputModule,
-    MatButtonModule,
-  ],
+    selector: 'app-register',
+    templateUrl: './register.component.html',
+    styleUrls: ['./register.component.scss'],
+    imports: [
+        CountrySelectComponent,
+        MatError,
+        MatLabel,
+        MatFormFieldModule,
+        NgxMatInputTelComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        MatInputModule,
+        MatButtonModule,
+    ]
 })
 export class RegisterComponent {
   user!: NewUser;

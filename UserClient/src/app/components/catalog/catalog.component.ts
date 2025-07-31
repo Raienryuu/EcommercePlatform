@@ -25,26 +25,25 @@ import { MatInputModule } from '@angular/material/input';
 import { imageLoader } from 'src/app/images/imageLoader';
 
 @Component({
-  selector: 'app-catalog',
-  standalone: true,
-  templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.scss'],
-  imports: [
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatFormFieldModule,
-    MatOptionModule,
-    MatSelectModule,
-    NgOptimizedImage,
-    MatSidenavModule,
-    FormsModule,
-    MatListModule,
-    MatLabel,
-    MatRadioModule,
-    MatButtonModule,
-    MatInputModule,
-  ],
-  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
+    selector: 'app-catalog',
+    templateUrl: './catalog.component.html',
+    styleUrls: ['./catalog.component.scss'],
+    imports: [
+        MatProgressSpinnerModule,
+        MatIconModule,
+        MatFormFieldModule,
+        MatOptionModule,
+        MatSelectModule,
+        NgOptimizedImage,
+        MatSidenavModule,
+        FormsModule,
+        MatListModule,
+        MatLabel,
+        MatRadioModule,
+        MatButtonModule,
+        MatInputModule,
+    ],
+    providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }]
 })
 export class ProductsComponent implements OnInit {
   products: Product[] = environment.sampleData ? LotsOfSampleProducts : [];

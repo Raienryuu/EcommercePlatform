@@ -17,20 +17,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'app-order-details',
-  templateUrl: './order-details.component.html',
-  styleUrl: './order-details.component.scss',
-  standalone: true,
-  providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
-  imports: [
-    NgOptimizedImage,
-    MatStepperModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    OrderStatusTransformPipe,
-    StripePaymentComponent,
-    MatButtonModule,
-  ],
+    selector: 'app-order-details',
+    templateUrl: './order-details.component.html',
+    styleUrl: './order-details.component.scss',
+    providers: [{ provide: IMAGE_LOADER, useValue: imageLoader }],
+    imports: [
+        NgOptimizedImage,
+        MatStepperModule,
+        MatIconModule,
+        MatProgressSpinnerModule,
+        OrderStatusTransformPipe,
+        StripePaymentComponent,
+        MatButtonModule,
+    ]
 })
 export class OrderDetailsComponent {
   Math = Math;

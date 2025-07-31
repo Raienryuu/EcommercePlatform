@@ -24,26 +24,25 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 
 @Component({
-  selector: 'app-country-select',
-  templateUrl: './country-select.component.html',
-  standalone: true,
-  imports: [
-    MatFormField,
-    MatLabel,
-    MatError,
-    MatOption,
-    MatSelect,
-    FormsModule,
-    FormsModule,
-    ReactiveFormsModule,
-  ],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CountrySelectComponent),
-      multi: true,
-    },
-  ],
+    selector: 'app-country-select',
+    templateUrl: './country-select.component.html',
+    imports: [
+        MatFormField,
+        MatLabel,
+        MatError,
+        MatOption,
+        MatSelect,
+        FormsModule,
+        FormsModule,
+        ReactiveFormsModule,
+    ],
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => CountrySelectComponent),
+            multi: true,
+        },
+    ]
 })
 export class CountrySelectComponent implements ControlValueAccessor {
   /**

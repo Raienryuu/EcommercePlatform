@@ -20,27 +20,26 @@ import { UserSettingsService } from 'src/app/services/userSettingsService/user-s
 import { environment } from 'src/enviroment';
 
 @Component({
-  selector: 'app-cart',
-  standalone: true,
-  templateUrl: './cart.component.html',
-  styleUrls: ['./cart.component.scss'],
-  providers: [
-    {
-      provide: IMAGE_LOADER,
-      useValue: imageLoader,
-    },
-  ],
-  imports: [
-    MatLabel,
-    MatFormFieldModule,
-    MatIconModule,
-    NgOptimizedImage,
-    MatInputModule,
-    MatDialogModule,
-    FormsModule,
-    MatInputModule,
-    MatButtonModule,
-  ],
+    selector: 'app-cart',
+    templateUrl: './cart.component.html',
+    styleUrls: ['./cart.component.scss'],
+    providers: [
+        {
+            provide: IMAGE_LOADER,
+            useValue: imageLoader,
+        },
+    ],
+    imports: [
+        MatLabel,
+        MatFormFieldModule,
+        MatIconModule,
+        NgOptimizedImage,
+        MatInputModule,
+        MatDialogModule,
+        FormsModule,
+        MatInputModule,
+        MatButtonModule,
+    ]
 })
 export class CartComponent {
   products: Product[] = environment.sampleData ? SampleProducts : [];

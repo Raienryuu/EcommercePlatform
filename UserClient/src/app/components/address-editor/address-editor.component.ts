@@ -20,18 +20,17 @@ import { CustomerAddress } from 'src/app/models/customer-address.model';
 import { AddressService } from 'src/app/services/addressService/address.service';
 
 @Component({
-  selector: 'app-address-editor',
-  standalone: true,
-  templateUrl: './address-editor.component.html',
-  styleUrl: './address-editor.component.scss',
-  imports: [
-    MatDialogModule,
-    MatFormFieldModule,
-    CountrySelectComponent,
-    NgxMatInputTelComponent,
-    ReactiveFormsModule,
-    MatInputModule,
-  ],
+    selector: 'app-address-editor',
+    templateUrl: './address-editor.component.html',
+    styleUrl: './address-editor.component.scss',
+    imports: [
+        MatDialogModule,
+        MatFormFieldModule,
+        CountrySelectComponent,
+        NgxMatInputTelComponent,
+        ReactiveFormsModule,
+        MatInputModule,
+    ]
 })
 export class AddressEditorComponent {
   @Input() address: CustomerAddress = {
