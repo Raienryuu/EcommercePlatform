@@ -20,8 +20,8 @@ body {
 }
 
 .mat-mdc-raised-button.mat-primary {
-  --mdc-protected-button-container-color: #{$primary-500};
-  --mdc-protected-button-label-text-color: #fff;
+  --mat-button-protected-container-color: #{$primary-500};
+  --mat-button-protected-label-text-color: #fff;
 }
 
 input::-webkit-outer-spin-button,
@@ -39,7 +39,7 @@ input::-webkit-inner-spin-button {
 }
 
 .mdc-text-field--filled.mdc-text-field--invalid:not(.mdc-text-field--disabled) .mdc-floating-label {
-  color: var(--mdc-filled-text-field-label-text-color) !important;
+  color: var(--mat-form-field-filled-label-text-color) !important;
 }
 
 .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-floating-label,
@@ -53,7 +53,7 @@ input::-webkit-inner-spin-button {
 
 .mat-typography {
   font-size: $font-size;
-  --mdc-typography-button-font-size: #{font-size};
+  --mat-typography-button-font-size: #{font-size};
 }
 
 .content {
@@ -174,20 +174,20 @@ app-checkout {
 }
 
 mat-checkbox {
-  --mdc-checkbox-selected-icon-color: #{$primary-500};
-  --mdc-checkbox-selected-focus-icon-color: #{$primary-500};
-  --mdc-checkbox-selected-hover-icon-color: #{$primary-500};
-  --mdc-checkbox-selected-pressed-icon-color: #{$primary-500};
-  --mdc-checkbox-selected-focus-state-layer-color: #{$primary-500};
-  --mdc-checkbox-selected-hover-state-layer-color: #{$primary-500};
-  --mdc-checkbox-selected-pressed-state-layer-color: #{$primary-500};
+  --mat-checkbox-selected-icon-color: #{$primary-500};
+  --mat-checkbox-selected-focus-icon-color: #{$primary-500};
+  --mat-checkbox-selected-hover-icon-color: #{$primary-500};
+  --mat-checkbox-selected-pressed-icon-color: #{$primary-500};
+  --mat-checkbox-selected-focus-state-layer-color: #{$primary-500};
+  --mat-checkbox-selected-hover-state-layer-color: #{$primary-500};
+  --mat-checkbox-selected-pressed-state-layer-color: #{$primary-500};
 }
 
 .mat-mdc-radio-button.mat-accent {
-  --mdc-radio-selected-focus-icon-color: #{$primary-500};
-  --mdc-radio-selected-hover-icon-color: #{$primary-500};
-  --mdc-radio-selected-icon-color: #{$primary-500};
-  --mdc-radio-selected-pressed-icon-color: #{$primary-500};
+  --mat-radio-selected-focus-icon-color: #{$primary-500};
+  --mat-radio-selected-hover-icon-color: #{$primary-500};
+  --mat-radio-selected-icon-color: #{$primary-500};
+  --mat-radio-selected-pressed-icon-color: #{$primary-500};
   --mat-radio-checked-ripple-color: #{$primary-500};
 }
 

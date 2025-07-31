@@ -25,10 +25,10 @@
 }
 
 .categories {
-  --mdc-list-list-item-label-text-size: inherit;
-  --mdc-list-list-item-label-text-color: #{$gray-400};
-  --mdc-list-list-item-hover-label-text-color: #{$primary-600};
-  --mdc-list-list-item-one-line-container-height: 2rem;
+  --mat-list-list-item-label-text-size: inherit;
+  --mat-list-list-item-label-text-color: #{$gray-400};
+  --mat-list-list-item-hover-label-text-color: #{$primary-600};
+  --mat-list-list-item-one-line-container-height: 2rem;
   overflow-x: hidden;
 }
 
@@ -227,7 +227,7 @@ img:hover {
 }
 
 mat-spinner.progress-spinner {
-  --mdc-circular-progress-active-indicator-color: #{$primary-800};
+  --mat-progress-spinner-active-indicator-color: #{$primary-800};
 }
 
 mat-spinner {
