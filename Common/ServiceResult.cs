@@ -4,6 +4,7 @@ public abstract partial record ServiceResult<T>
 {
   private readonly T _value;
   public readonly bool IsSuccess;
+  public bool IsFailure => !IsSuccess;
   public readonly int StatusCode;
   public readonly string? ErrorMessage;
 
