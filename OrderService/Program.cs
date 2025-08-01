@@ -42,7 +42,10 @@ public class Program
         "DevPolicy",
         policyBuilder =>
         {
-          policyBuilder.WithOrigins("http://localhost:4200").AllowCredentials().AllowAnyHeader();
+          policyBuilder
+            .WithOrigins("http://localhost:4200", "http://localhost")
+            .AllowCredentials()
+            .AllowAnyHeader();
         }
       )
     );

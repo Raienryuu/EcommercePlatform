@@ -27,7 +27,7 @@ new WebHostBuilder()
       {
         c.AddDefaultPolicy(
           new CorsPolicyBuilder()
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("http://localhost:4200", "http://localhost")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()

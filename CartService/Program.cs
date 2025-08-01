@@ -30,7 +30,7 @@ public class Program
         static policyBuilder =>
         {
           _ = policyBuilder
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("http://localhost:4200", "http://localhost")
             .AllowCredentials()
             .AllowAnyMethod()
             .AllowAnyHeader();

@@ -50,7 +50,7 @@ if (
       "devel",
       builder =>
       {
-        builder.WithOrigins("http://localhost:4200").AllowCredentials().AllowAnyHeader();
+        builder.WithOrigins("http://localhost:4200", "http://localhost").AllowCredentials().AllowAnyHeader();
       }
     )
   );
