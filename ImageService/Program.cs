@@ -20,9 +20,11 @@ builder.Services.Configure<ConnectionOptions>(
 );
 var objectSerializer = new ObjectSerializer(ObjectSerializer.AllAllowedTypes);
 BsonSerializer.RegisterSerializer(objectSerializer);
+
 builder.Services.AddSingleton<IImageService, MongoImageService>();
-builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
+
+builder.Services.AddExceptionHandler<MongoExceptionHandler>();
 builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
 var otel = builder.Services.AddOpenTelemetry();
@@ -92,14 +94,15 @@ app.MapGet(
     static async Task<Results<FileContentHttpResult, ProblemHttpResult>> (
       [FromQuery] Guid productId,
       [FromServices] IImageService images,
-      [FromQuery] int imageNumber = 0
+      [FromQuery] int imageNumber = 0,
+      [FromQuery] int imageWidth = 0
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var imageResult = await images.GetProductImageAsync(productId, imageNumber);
+      var imageResult = await images.GetProductImageAsync(productId, imageNumber, imageWidth);
       return imageResult.IsSuccess
         ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
         : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
@@ -111,7 +114,7 @@ app.MapGet(
     "api/v1/imageMetadata",
     static async Task<Results<Ok<ProductImagesMetadata>, ProblemHttpResult>> (
       [FromQuery] Guid productId,
-      IProductImagesMetadataService metadataService
+      IImageService metadataService
     ) =>
     {
       if (productId == Guid.Empty)
@@ -130,7 +133,7 @@ app.MapGet(
 
 app.MapPost(
     "api/v1/image",
-    static async Task<Results<CreatedAtRoute, ProblemHttpResult>> (
+    static async Task<Results<CreatedAtRoute<int>, ProblemHttpResult>> (
       [FromForm] IFormFile file,
       [FromQuery] Guid productId,
       [FromServices] IImageService images
@@ -140,20 +143,83 @@ app.MapPost(
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      if (file.Length == 0)
+      if (file.ContentType is null || file.FileName is null || file.Length == 0)
       {
         return TypedResults.Problem("No file provided", statusCode: 400);
       }
 
       var result = await images.AddProductImageAsync(productId, file);
+
       if (result.IsSuccess)
       {
-        return TypedResults.CreatedAtRoute("api/v1/image", new { productId, imageNumber = result.Value });
+        return TypedResults.CreatedAtRoute(
+          result.Value,
+          "GetImageMetadata",
+          new { productId, imageNumber = result.Value }
+        );
       }
       return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
     }
   )
   .DisableAntiforgery()
   .WithName("AddProductImage");
+
+app.MapPost(
+    "api/v1/image/scale",
+    static async Task<Results<CreatedAtRoute<int>, ProblemHttpResult>> (
+      [FromForm] IFormFile file,
+      [FromServices] IImageService images,
+      [FromQuery] Guid productId,
+      [FromQuery] params int[] dimensions
+    ) =>
+    {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
+      if (file.ContentType is null || file.FileName is null || file.Length == 0)
+      {
+        return TypedResults.Problem("No file provided", statusCode: 400);
+      }
+
+      var result = await images.AddProductImageAsync(productId, file);
+
+      if (result.IsSuccess)
+      {
+        return TypedResults.CreatedAtRoute(
+          result.Value,
+          "GetImageMetadata",
+          new { productId, imageNumber = result.Value }
+        );
+      }
+      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    }
+  )
+  .DisableAntiforgery()
+  .WithName("AddScaledProductImage");
+
+app.MapDelete(
+    "api/v1/image",
+    static async Task<Results<NoContent, ProblemHttpResult>> (
+      [FromQuery] Guid productId,
+      [FromServices] IImageService images
+    ) =>
+    {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
+
+      var result = await images.DeleteAllProductImages(productId);
+
+      if (result.IsSuccess)
+      {
+        return TypedResults.NoContent();
+      }
+      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    }
+  )
+  .DisableAntiforgery()
+  .WithName("DeleteAllProductImages");
 
 app.Run();

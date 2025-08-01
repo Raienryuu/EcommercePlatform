@@ -3,6 +3,7 @@ using ImageService.Models;
 using ImageService.Services.Interfaces;
 
 namespace ImageService.Services;
+
 public class NameFormatter : INameFormatter
 {
   /// <summary>
@@ -53,13 +54,12 @@ public class NameFormatter : INameFormatter
     foreach (var name in storedImages)
     {
       var imageNumber = GetImageNumber(name);
-      if (imageNumber != currentNumber)
-      {
-
-      }
+      if (imageNumber != currentNumber) { }
     }
   }
-  private static int GetImageNumber(string formattedProductName) => int.Parse(formattedProductName.Split('-')[^1], CultureInfo.InvariantCulture);
+
+  private static int GetImageNumber(string formattedProductName) =>
+    int.Parse(formattedProductName.Split('-')[^1], CultureInfo.InvariantCulture);
 
   private static int FormattedComparer(string x, string y)
   {
@@ -69,8 +69,7 @@ public class NameFormatter : INameFormatter
     {
       < 0 => -1,
       0 => 0,
-      _ => result
+      _ => result,
     };
   }
 }
-

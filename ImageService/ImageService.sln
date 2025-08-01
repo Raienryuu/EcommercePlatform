@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService", "ImageService.csproj", "{16AC3509-4E04-4E37-A990-81C5FDD8FF48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Tests", "..\ImageService.Tests\ImageService.Tests.csproj", "{AAB589DC-7EC2-45BA-A9E3-7DD400E6C5C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService.Tests", "..\Tests\ImageService.Tests\ImageService.Tests.csproj", "{AAB589DC-7EC2-45BA-A9E3-7DD400E6C5C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
