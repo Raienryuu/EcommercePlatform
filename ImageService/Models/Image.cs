@@ -12,4 +12,6 @@ public class Image
   public required string Name { get; init; }
 
   public required byte[] Data { get; init; }
+  public required int Width { get; init; }
+  //public  Orientation { get; init; } TODO
 }

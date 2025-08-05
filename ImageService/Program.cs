@@ -23,6 +23,7 @@ BsonSerializer.RegisterSerializer(objectSerializer);
 
 builder.Services.AddSingleton<IImageService, MongoImageService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
+builder.Services.AddSingleton<IImageProcessor, ImageProcessor>();
 
 builder.Services.AddExceptionHandler<MongoExceptionHandler>();
 builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
@@ -94,15 +95,23 @@ app.MapGet(
     static async Task<Results<FileContentHttpResult, ProblemHttpResult>> (
       [FromQuery] Guid productId,
       [FromServices] IImageService images,
+      CancellationToken ct,
       [FromQuery] int imageNumber = 0,
-      [FromQuery] int imageWidth = 0
+      [FromQuery] int imageWidth = 0,
+      [FromQuery] SizeResolveStrategy sizeStrategy = SizeResolveStrategy.BestQuality
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var imageResult = await images.GetProductImageAsync(productId, imageNumber, imageWidth);
+      var imageResult = await images.GetProductImageAsync(
+        productId,
+        imageNumber,
+        imageWidth,
+        sizeStrategy,
+        ct
+      );
       return imageResult.IsSuccess
         ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
         : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
@@ -114,14 +123,15 @@ app.MapGet(
     "api/v1/imageMetadata",
     static async Task<Results<Ok<ProductImagesMetadata>, ProblemHttpResult>> (
       [FromQuery] Guid productId,
-      IImageService metadataService
+      IImageService metadataService,
+      CancellationToken ct
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
+      var metadata = await metadataService.GetProductImagesMetadataAsync(productId, ct);
       if (metadata.IsSuccess)
       {
         return TypedResults.Ok(metadata.Value);
@@ -136,7 +146,8 @@ app.MapPost(
     static async Task<Results<CreatedAtRoute<int>, ProblemHttpResult>> (
       [FromForm] IFormFile file,
       [FromQuery] Guid productId,
-      [FromServices] IImageService images
+      [FromServices] IImageService images,
+      CancellationToken ct
     ) =>
     {
       if (productId == Guid.Empty)
@@ -148,7 +159,7 @@ app.MapPost(
         return TypedResults.Problem("No file provided", statusCode: 400);
       }
 
-      var result = await images.AddProductImageAsync(productId, file);
+      var result = await images.AddProductImageAsync(productId, file, ct);
 
       if (result.IsSuccess)
       {
@@ -166,10 +177,11 @@ app.MapPost(
 
 app.MapPost(
     "api/v1/image/scale",
-    static async Task<Results<CreatedAtRoute<int>, ProblemHttpResult>> (
+    static async Task<Results<Ok<List<string>>, ProblemHttpResult>> (
       [FromForm] IFormFile file,
       [FromServices] IImageService images,
       [FromQuery] Guid productId,
+      CancellationToken ct,
       [FromQuery] params int[] dimensions
     ) =>
     {
@@ -182,17 +194,13 @@ app.MapPost(
         return TypedResults.Problem("No file provided", statusCode: 400);
       }
 
-      var result = await images.AddProductImageAsync(productId, file);
+      var result = await images.AddScaledProductImageAsync(productId, file, ct, dimensions);
 
-      if (result.IsSuccess)
+      if (result.IsFailure)
       {
-        return TypedResults.CreatedAtRoute(
-          result.Value,
-          "GetImageMetadata",
-          new { productId, imageNumber = result.Value }
-        );
+        return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
       }
-      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      return TypedResults.Ok(result.Value);
     }
   )
   .DisableAntiforgery()
@@ -202,7 +210,8 @@ app.MapDelete(
     "api/v1/image",
     static async Task<Results<NoContent, ProblemHttpResult>> (
       [FromQuery] Guid productId,
-      [FromServices] IImageService images
+      [FromServices] IImageService images,
+      CancellationToken ct
     ) =>
     {
       if (productId == Guid.Empty)
@@ -210,7 +219,7 @@ app.MapDelete(
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
 
-      var result = await images.DeleteAllProductImages(productId);
+      var result = await images.DeleteAllProductImages(productId, ct);
 
       if (result.IsSuccess)
       {

@@ -10,10 +10,17 @@ public interface IImageService
     IFormFile file,
     CancellationToken cancellationToken = default
   );
+  Task<ServiceResult<List<string>>> AddScaledProductImageAsync(
+    Guid productId,
+    IFormFile file,
+    CancellationToken cancellationToken = default,
+    params int[] dimensions
+  );
   Task<ServiceResult<Image>> GetProductImageAsync(
     Guid productId,
     int imageNumber,
     int imageWidth,
+    SizeResolveStrategy sizeStrategy,
     CancellationToken cancellationToken = default
   );
   Task<ServiceResult> DeleteAllProductImages(Guid productId, CancellationToken cancellationToken = default);
@@ -22,6 +29,5 @@ public interface IImageService
     CancellationToken cancellationToken = default
   );
   Task<ServiceResult> UpdateMetadataAsync(ProductImagesMetadata productMetadata);
-  Task<ServiceResult> AddNewMetadataAsync(ProductImagesMetadata productMetadata);
   Task<ServiceResult> DeleteMetadataAsync(Guid productId, CancellationToken cancellationToken = default);
 }
