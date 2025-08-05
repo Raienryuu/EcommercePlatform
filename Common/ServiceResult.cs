@@ -19,10 +19,13 @@ public abstract partial record ServiceResult<T>
   public T Value =>
     IsSuccess
       ? _value
-      : throw new InvalidOperationException("Trying to access Value when IsSuccess is false.");
+      : throw new InvalidOperationException("Trying to access Value when result is Failure.");
 }
 
-public abstract partial record ServiceResult(bool IsSuccess, int StatusCode, string? ErrorMessage);
+public abstract partial record ServiceResult(bool IsSuccess, int StatusCode, string? ErrorMessage)
+{
+  public bool IsFailure => !IsSuccess;
+};
 
 //Non-generic
 
@@ -54,4 +57,11 @@ public static partial class ServiceResults
 
   public static ErrorServiceResult Error(string errorMessage, int statusCode) =>
     new(statusCode, errorMessage);
+
+  //Changing type of ErrorServiceResult
+  public static ErrorServiceResult<K> RemapError<T, K>(this ServiceResult<T> result) =>
+    new(result.StatusCode, result.ErrorMessage!);
+
+  public static ErrorServiceResult RemapError<T>(this ServiceResult<T> result) =>
+    new(result.StatusCode, result.ErrorMessage!);
 }
