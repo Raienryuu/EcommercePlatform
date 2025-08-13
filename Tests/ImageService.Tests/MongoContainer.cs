@@ -1,6 +1,7 @@
 using ImageService.Models;
 using ImageService.Services;
 using ImageService.Tests.Data;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using Testcontainers.MongoDb;
@@ -36,10 +37,9 @@ public class MongoContainer : IAsyncInitializer, IAsyncDisposable
     new(
       GetConnectionOptions(),
       new NameFormatter(),
-      new MongoProductImagesMetadataService(GetConnectionOptions())
+      new ImageProcessor(),
+      NullLogger<MongoImageService>.Instance
     );
-
-  public MongoProductImagesMetadataService GetImagesMetadataService() => new(GetConnectionOptions());
 
   public async ValueTask DisposeAsync()
   {

@@ -3,7 +3,7 @@ using ImageService.Services;
 using ImageService.Tests.Data;
 using Microsoft.AspNetCore.Http;
 
-namespace ImageService.Tests;
+namespace ImageService.Tests.Integration;
 
 [ClassDataSource<MongoContainer>(Shared = SharedType.PerTestSession)]
 [method: SetsRequiredMembers]
@@ -22,7 +22,7 @@ public class MongoImageServiceTests(MongoContainer mongoContainer)
   public async Task AddProductImageAsync_Image_FileSavedInDb(Guid productId, IFormFile file)
   {
     await _mongoImageService.AddProductImageAsync(productId, file);
-    var image = await _mongoImageService.GetProductImageAsync(productId, 0);
+    var image = await _mongoImageService.GetProductImageAsync(productId, 0, 0, default);
 
     _ = await Assert.That(image.Value).IsNotNull();
     _ = await Assert.That(image.Value.Length).IsEqualTo(file.Length);
@@ -33,7 +33,7 @@ public class MongoImageServiceTests(MongoContainer mongoContainer)
   public async Task GetProductImageAsync_ImageLocationDetails_FileFromDb(Guid productId, IFormFile file)
   {
     await _mongoImageService.AddProductImageAsync(productId, file);
-    var image = await _mongoImageService.GetProductImageAsync(productId, 0);
+    var image = await _mongoImageService.GetProductImageAsync(productId, 0, 0, default);
 
     _ = await Assert.That(image).IsNotNull();
     _ = await Assert.That(image.Value.Length).IsEqualTo(file.Length);

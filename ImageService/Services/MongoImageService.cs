@@ -52,13 +52,15 @@ public class MongoImageService : IImageService, IDisposable
 
     var nextImageNumber = _nameFormatter.GetNumberOfNextImage(productMetadataResult.Value);
 
+    var imageWidth = _imageProcessor.GetWidth(imageBytes);
+
     var fileAsImage = new Image
     {
       ContentType = file.ContentType,
       Length = file.Length,
       Name = _nameFormatter.GetNameForProductImage(productId, nextImageNumber),
       Data = imageBytes,
-      Width = 0,
+      Width = imageWidth,
     };
 
     productMetadataResult.Value.StoredImages.Add(fileAsImage.Name);
@@ -72,7 +74,7 @@ public class MongoImageService : IImageService, IDisposable
   public async Task<ServiceResult<Image>> GetProductImageAsync(
     Guid productId,
     int imageNumber,
-    int imageWidth,
+    uint imageWidth,
     SizeResolveStrategy sizeStrategy,
     CancellationToken cancellationToken = default
   )
@@ -82,37 +84,57 @@ public class MongoImageService : IImageService, IDisposable
     var collection = _client.GetDatabase(_options.DatabaseName).GetCollection<Image>("images");
     var image = sizeStrategy switch
     {
-      SizeResolveStrategy.BestQuality => await GetBestQualityImage(collection, fileName),
-      SizeResolveStrategy.SmallestSize => await GetLowestSizeImage(collection, fileName),
-      SizeResolveStrategy.PreferQuality => await GetHigherQualityImage(collection, imageWidth, fileName),
-      SizeResolveStrategy.PreferLowerSize => await GetLowerSizeImage(collection, imageWidth, fileName),
-      _ => throw new NotImplementedException(),
+      SizeResolveStrategy.BestQuality => await GetBestQualityImage(collection, fileName, cancellationToken),
+      SizeResolveStrategy.SmallestSize => await GetLowestSizeImage(collection, fileName, cancellationToken),
+      SizeResolveStrategy.PreferQuality => await GetHigherQualityImage(
+        collection,
+        imageWidth,
+        fileName,
+        cancellationToken
+      ),
+      SizeResolveStrategy.PreferLowerSize => await GetLowerSizeImage(
+        collection,
+        imageWidth,
+        fileName,
+        cancellationToken
+      ),
+      _ => throw new NotImplementedException($"Size strategy not found, {sizeStrategy}"),
     };
+
     return image is null ? ServiceResults.Error<Image>("Image not found", 404) : ServiceResults.Ok(image);
   }
 
-  private static Task<Image> GetBestQualityImage(IMongoCollection<Image> collection, string fileName)
+  private static Task<Image> GetBestQualityImage(
+    IMongoCollection<Image> collection,
+    string fileName,
+    CancellationToken ct = default
+  )
   {
     return collection
       .Aggregate()
       .Match(x => x.Name == fileName)
       .Sort(Builders<Image>.Sort.Descending("Width"))
-      .FirstOrDefaultAsync();
+      .FirstOrDefaultAsync(cancellationToken: ct);
   }
 
-  private static Task<Image> GetLowestSizeImage(IMongoCollection<Image> collection, string fileName)
+  private static Task<Image> GetLowestSizeImage(
+    IMongoCollection<Image> collection,
+    string fileName,
+    CancellationToken ct = default
+  )
   {
     return collection
       .Aggregate()
       .Match(x => x.Name == fileName)
       .Sort(Builders<Image>.Sort.Ascending("Width"))
-      .FirstOrDefaultAsync();
+      .FirstOrDefaultAsync(cancellationToken: ct);
   }
 
   private static async Task<Image> GetHigherQualityImage(
     IMongoCollection<Image> collection,
-    int width,
-    string fileName
+    uint width,
+    string fileName,
+    CancellationToken ct = default
   )
   {
     var pipeline = new[]
@@ -138,19 +160,22 @@ public class MongoImageService : IImageService, IDisposable
       ),
     };
     var image =
-      await collection.Aggregate<Image>(pipeline).FirstOrDefaultAsync()
-      ?? await GetLowerSizeImage(collection, width, fileName);
+      await collection
+        .Aggregate<Image>(pipeline, cancellationToken: ct)
+        .FirstOrDefaultAsync(cancellationToken: ct)
+      ?? await GetLowerSizeImage(collection, width, fileName, ct);
     if (image is null)
     {
-      return await GetBestQualityImage(collection, fileName);
+      return await GetBestQualityImage(collection, fileName, ct);
     }
     return image;
   }
 
   private static async Task<Image> GetLowerSizeImage(
     IMongoCollection<Image> collection,
-    int width,
-    string fileName
+    uint width,
+    string fileName,
+    CancellationToken ct = default
   )
   {
     var pipeline = new[] // TODO don't use this, make use of metadata instead as it is being pulled in anyway
@@ -176,11 +201,13 @@ public class MongoImageService : IImageService, IDisposable
       ),
     };
     var image =
-      await collection.Aggregate<Image>(pipeline).FirstOrDefaultAsync()
-      ?? await GetLowerSizeImage(collection, width, fileName);
+      await collection
+        .Aggregate<Image>(pipeline, cancellationToken: ct)
+        .FirstOrDefaultAsync(cancellationToken: ct)
+      ?? await GetLowerSizeImage(collection, width, fileName, ct);
     if (image is null)
     {
-      return await GetBestQualityImage(collection, fileName);
+      return await GetBestQualityImage(collection, fileName, ct);
     }
     return image;
   }
@@ -262,7 +289,7 @@ public class MongoImageService : IImageService, IDisposable
     Guid productId,
     IFormFile file,
     CancellationToken cancellationToken = default,
-    params int[] dimensions
+    params uint[] dimensions
   )
   {
     var productImagesMetadata = await GetProductImagesMetadataAsync(productId, cancellationToken);
@@ -286,7 +313,7 @@ public class MongoImageService : IImageService, IDisposable
       {
         var imageName = _nameFormatter.GetNameForProductImage(productId, nextImageNumber);
 
-        var scaledImage = _imageProcessor.ResizeToWidth(imageBytes, (uint)dimension);
+        var scaledImage = _imageProcessor.ResizeToWidth(imageBytes, dimension);
         var fileAsImage = new Image
         {
           ContentType = file.ContentType,
@@ -298,6 +325,7 @@ public class MongoImageService : IImageService, IDisposable
         await collection.InsertOneAsync(fileAsImage, cancellationToken: cancellationToken);
         productImagesMetadata.Value.StoredImages.Add(fileAsImage.Name);
         processedDimensions++;
+        nextImageNumber++;
       }
       await UpdateMetadataAsync(productImagesMetadata.Value);
     }

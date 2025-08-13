@@ -7,7 +7,7 @@ namespace ImageService.Services;
 public class NameFormatter : INameFormatter
 {
   /// <summary>
-  /// Gets name in format: p-@productId-@imageNumber
+  /// Gets name in format: "p-@productId-@imageNumber"
   /// </summary>
   /// <param name="productId"></param>
   /// <param name="imageNumber"></param>
@@ -38,10 +38,7 @@ public class NameFormatter : INameFormatter
       {
         break;
       }
-      else
-      {
-        proposedNumber++;
-      }
+      proposedNumber++;
     }
 
     return proposedNumber;

@@ -97,21 +97,20 @@ app.MapGet(
       [FromServices] IImageService images,
       CancellationToken ct,
       [FromQuery] int imageNumber = 0,
-      [FromQuery] int imageWidth = 0,
-      [FromQuery] SizeResolveStrategy sizeStrategy = SizeResolveStrategy.BestQuality
+      [FromQuery] uint imageWidth = 0,
+      [FromQuery] string sizeStrategy = "bestquality"
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var imageResult = await images.GetProductImageAsync(
-        productId,
-        imageNumber,
-        imageWidth,
-        sizeStrategy,
-        ct
-      );
+      if (!Enum.TryParse<SizeResolveStrategy>(sizeStrategy, true, out var strategy))
+      {
+        return TypedResults.Problem($"Unknown sizeStrategy provided, {sizeStrategy}");
+      }
+
+      var imageResult = await images.GetProductImageAsync(productId, imageNumber, imageWidth, strategy, ct);
       return imageResult.IsSuccess
         ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
         : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
@@ -182,7 +181,7 @@ app.MapPost(
       [FromServices] IImageService images,
       [FromQuery] Guid productId,
       CancellationToken ct,
-      [FromQuery] params int[] dimensions
+      [FromQuery] params uint[] dimensions
     ) =>
     {
       if (productId == Guid.Empty)

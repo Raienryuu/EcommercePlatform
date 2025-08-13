@@ -14,12 +14,12 @@ public interface IImageService
     Guid productId,
     IFormFile file,
     CancellationToken cancellationToken = default,
-    params int[] dimensions
+    params uint[] dimensions
   );
   Task<ServiceResult<Image>> GetProductImageAsync(
     Guid productId,
     int imageNumber,
-    int imageWidth,
+    uint imageWidth,
     SizeResolveStrategy sizeStrategy,
     CancellationToken cancellationToken = default
   );

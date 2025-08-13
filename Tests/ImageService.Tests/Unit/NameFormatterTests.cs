@@ -2,7 +2,7 @@ using ImageService.Models;
 using ImageService.Services;
 using ImageService.Tests.Data;
 
-namespace ImageService.Tests;
+namespace ImageService.Tests.Unit;
 
 internal class NameFormatterTests
 {
