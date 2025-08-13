@@ -20,9 +20,12 @@ builder.Services.Configure<ConnectionOptions>(
 );
 var objectSerializer = new ObjectSerializer(ObjectSerializer.AllAllowedTypes);
 BsonSerializer.RegisterSerializer(objectSerializer);
+
 builder.Services.AddSingleton<IImageService, MongoImageService>();
-builder.Services.AddSingleton<IProductImagesMetadataService, MongoProductImagesMetadataService>();
 builder.Services.AddSingleton<INameFormatter, NameFormatter>();
+builder.Services.AddSingleton<IImageProcessor, ImageProcessor>();
+
+builder.Services.AddExceptionHandler<MongoExceptionHandler>();
 builder.Services.AddExceptionHandler<UnhandledExceptionHandler>();
 
 var otel = builder.Services.AddOpenTelemetry();
@@ -92,14 +95,22 @@ app.MapGet(
     static async Task<Results<FileContentHttpResult, ProblemHttpResult>> (
       [FromQuery] Guid productId,
       [FromServices] IImageService images,
-      [FromQuery] int imageNumber = 0
+      CancellationToken ct,
+      [FromQuery] int imageNumber = 0,
+      [FromQuery] uint imageWidth = 0,
+      [FromQuery] string sizeStrategy = "bestquality"
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var imageResult = await images.GetProductImageAsync(productId, imageNumber);
+      if (!Enum.TryParse<SizeResolveStrategy>(sizeStrategy, true, out var strategy))
+      {
+        return TypedResults.Problem($"Unknown sizeStrategy provided, {sizeStrategy}");
+      }
+
+      var imageResult = await images.GetProductImageAsync(productId, imageNumber, imageWidth, strategy, ct);
       return imageResult.IsSuccess
         ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
         : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
@@ -111,14 +122,15 @@ app.MapGet(
     "api/v1/imageMetadata",
     static async Task<Results<Ok<ProductImagesMetadata>, ProblemHttpResult>> (
       [FromQuery] Guid productId,
-      IProductImagesMetadataService metadataService
+      IImageService metadataService,
+      CancellationToken ct
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      var metadata = await metadataService.GetProductImagesMetadataAsync(productId);
+      var metadata = await metadataService.GetProductImagesMetadataAsync(productId, ct);
       if (metadata.IsSuccess)
       {
         return TypedResults.Ok(metadata.Value);
@@ -130,30 +142,92 @@ app.MapGet(
 
 app.MapPost(
     "api/v1/image",
-    static async Task<Results<CreatedAtRoute, ProblemHttpResult>> (
+    static async Task<Results<CreatedAtRoute<int>, ProblemHttpResult>> (
       [FromForm] IFormFile file,
       [FromQuery] Guid productId,
-      [FromServices] IImageService images
+      [FromServices] IImageService images,
+      CancellationToken ct
     ) =>
     {
       if (productId == Guid.Empty)
       {
         return TypedResults.Problem("Product Id is required", statusCode: 400);
       }
-      if (file.Length == 0)
+      if (file.ContentType is null || file.FileName is null || file.Length == 0)
       {
         return TypedResults.Problem("No file provided", statusCode: 400);
       }
 
-      var result = await images.AddProductImageAsync(productId, file);
+      var result = await images.AddProductImageAsync(productId, file, ct);
+
       if (result.IsSuccess)
       {
-        return TypedResults.CreatedAtRoute("api/v1/image", new { productId, imageNumber = result.Value });
+        return TypedResults.CreatedAtRoute(
+          result.Value,
+          "GetImageMetadata",
+          new { productId, imageNumber = result.Value }
+        );
       }
       return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
     }
   )
   .DisableAntiforgery()
   .WithName("AddProductImage");
+
+app.MapPost(
+    "api/v1/image/scale",
+    static async Task<Results<Ok<List<string>>, ProblemHttpResult>> (
+      [FromForm] IFormFile file,
+      [FromServices] IImageService images,
+      [FromQuery] Guid productId,
+      CancellationToken ct,
+      [FromQuery] params uint[] dimensions
+    ) =>
+    {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
+      if (file.ContentType is null || file.FileName is null || file.Length == 0)
+      {
+        return TypedResults.Problem("No file provided", statusCode: 400);
+      }
+
+      var result = await images.AddScaledProductImageAsync(productId, file, ct, dimensions);
+
+      if (result.IsFailure)
+      {
+        return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      }
+      return TypedResults.Ok(result.Value);
+    }
+  )
+  .DisableAntiforgery()
+  .WithName("AddScaledProductImage");
+
+app.MapDelete(
+    "api/v1/image",
+    static async Task<Results<NoContent, ProblemHttpResult>> (
+      [FromQuery] Guid productId,
+      [FromServices] IImageService images,
+      CancellationToken ct
+    ) =>
+    {
+      if (productId == Guid.Empty)
+      {
+        return TypedResults.Problem("Product Id is required", statusCode: 400);
+      }
+
+      var result = await images.DeleteAllProductImages(productId, ct);
+
+      if (result.IsSuccess)
+      {
+        return TypedResults.NoContent();
+      }
+      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    }
+  )
+  .DisableAntiforgery()
+  .WithName("DeleteAllProductImages");
 
 app.Run();

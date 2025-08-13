@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using ImageService.Services.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -16,19 +15,8 @@ public class ProductImagesMetadata(Guid productId, List<string> storedImages, IM
   public required IMetadataState MetadataState { get; set; } = state;
 }
 
-public interface IMetadataState
-{
-  void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p);
-}
+public interface IMetadataState { }
 
-public class NoMetadataAvailable : IMetadataState
-{
-  public void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p) =>
-    metadataService.AddNewMetadataAsync(p);
-}
+public class NoMetadataAvailable : IMetadataState { }
 
-public class MetadataAvailable : IMetadataState
-{
-  public void Apply(IProductImagesMetadataService metadataService, ProductImagesMetadata p) =>
-    metadataService.UpdateMetadataAsync(p);
-}
+public class MetadataAvailable : IMetadataState { }

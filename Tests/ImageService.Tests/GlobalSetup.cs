@@ -2,6 +2,7 @@
 
 // You can use attributes at the assembly level to apply to all tests in the assembly
 using ImageService.Models;
+using ImageService.Tests.Integration;
 using MongoDB.Bson.Serialization;
 
 [assembly: Retry(3)]
