@@ -19,7 +19,7 @@ public class UserController(IUserService userService) : ControllerBase
   {
     var result = await userService.RegisterNewUser(registrationData);
 
-    return result.IsSuccess ? Ok() : Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    return result.IsSuccess ? Ok() : Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
   }
 
   [HttpPost]
@@ -31,7 +31,7 @@ public class UserController(IUserService userService) : ControllerBase
   {
     var result = await userService.LogInUser(credentials);
 
-    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode: result.StatusCode);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
   }
 
   [HttpGet]
@@ -44,6 +44,6 @@ public class UserController(IUserService userService) : ControllerBase
     var result = await userService.GetUsernameForLoggedUser(userId);
     return result.IsSuccess
       ? Ok(JsonSerializer.Serialize(result.Value))
-      : Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      : Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
   }
 }

@@ -60,7 +60,7 @@ public class OrderServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(201, result.StatusCode);
+    Assert.Equal(201, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal(userId, result.Value.UserId);
     Assert.Equal(orderRequest.Notes, result.Value.Notes);
@@ -257,7 +257,7 @@ public class OrderServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal(200, (int)result.StatusCode);
     var updatedOrder = await context2.Orders.FindAsync(order.OrderId);
     Assert.NotNull(updatedOrder!.Delivery);
     Assert.Equal(delivery.Name, updatedOrder.Delivery!.Name);
@@ -294,7 +294,7 @@ public class OrderServiceTests : IDisposable
     };
     var result = await service.SetDeliveryMethod(Guid.NewGuid(), userId, delivery, CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal(404, (int)result.StatusCode);
   }
 
   [Fact]
@@ -351,7 +351,7 @@ public class OrderServiceTests : IDisposable
       CancellationToken.None
     );
     Assert.False(result.IsSuccess);
-    Assert.Equal(401, result.StatusCode);
+    Assert.Equal(401, (int)result.StatusCode);
   }
 
   [Fact]
@@ -423,7 +423,7 @@ public class OrderServiceTests : IDisposable
     };
     var result = await service.SetDeliveryMethod(order.OrderId, userId, newDelivery, CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(400, result.StatusCode);
+    Assert.Equal(400, (int)result.StatusCode);
   }
 
   [Fact]
@@ -515,7 +515,7 @@ public class OrderServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal(200, (int)result.StatusCode);
     var updatedOrder = await context2.Orders.FindAsync(order.OrderId);
     Assert.Equal(OrderStatus.Cancelled, updatedOrder!.Status);
     _publishEndpointMock.Verify(
@@ -532,7 +532,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context, _publishEndpointMock.Object);
     var result = await service.CancelOrder(Guid.NewGuid(), userId, CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal(404, (int)result.StatusCode);
   }
 
   [Fact]
@@ -565,7 +565,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context2, _publishEndpointMock.Object);
     var result = await service.CancelOrder(order.OrderId, Guid.NewGuid(), CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(401, result.StatusCode);
+    Assert.Equal(401, (int)result.StatusCode);
   }
 
   [Fact]
@@ -598,7 +598,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context2, _publishEndpointMock.Object);
     var result = await service.CancelOrder(order.OrderId, userId, CancellationToken.None);
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal(200, (int)result.StatusCode);
     var updatedOrder = await context2.Orders.FindAsync(order.OrderId);
     Assert.Equal(OrderStatus.Cancelled, updatedOrder!.Status);
   }
@@ -636,7 +636,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context2, _publishEndpointMock.Object);
     var result = await service.CancelOrder(order.OrderId, userId, CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(400, result.StatusCode);
+    Assert.Equal(400, (int)result.StatusCode);
     var updatedOrder = await context2.Orders.FindAsync(order.OrderId);
     Assert.Equal(status, updatedOrder!.Status);
   }
@@ -672,11 +672,11 @@ public class OrderServiceTests : IDisposable
     // First cancel
     var result1 = await service.CancelOrder(order.OrderId, userId, CancellationToken.None);
     Assert.True(result1.IsSuccess);
-    Assert.Equal(200, result1.StatusCode);
+    Assert.Equal(200, (int)result1.StatusCode);
     // Second cancel (should be idempotent)
     var result2 = await service.CancelOrder(order.OrderId, userId, CancellationToken.None);
     Assert.True(result2.IsSuccess);
-    Assert.Equal(200, result2.StatusCode);
+    Assert.Equal(200, (int)result2.StatusCode);
     var updatedOrder = await context2.Orders.FindAsync(order.OrderId);
     Assert.Equal(OrderStatus.Cancelled, updatedOrder!.Status);
   }
@@ -716,7 +716,7 @@ public class OrderServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal(200, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal(order.OrderId, result.Value.OrderId);
   }
@@ -729,7 +729,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context, _publishEndpointMock.Object);
     var result = await service.GetOrder(Guid.NewGuid(), userId, CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal(404, (int)result.StatusCode);
   }
 
   [Fact]
@@ -762,7 +762,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context2, _publishEndpointMock.Object);
     var result = await service.GetOrder(order.OrderId, Guid.NewGuid(), CancellationToken.None);
     Assert.False(result.IsSuccess);
-    Assert.Equal(401, result.StatusCode);
+    Assert.Equal(401, (int)result.StatusCode);
   }
 
   [Fact]
@@ -795,7 +795,7 @@ public class OrderServiceTests : IDisposable
     var service = new Services.OrderService(_loggerMock.Object, context2, _publishEndpointMock.Object);
     var result = await service.GetOrder(order.OrderId, userId, CancellationToken.None);
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal(200, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal(order.OrderId, result.Value.OrderId);
     Assert.Equal(OrderStatus.Cancelled, result.Value.Status);

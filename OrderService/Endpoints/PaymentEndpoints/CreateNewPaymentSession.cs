@@ -58,7 +58,7 @@ public static class CreateNewPaymentSessionEndpoint
           var paymentIntent = await paymentService.CreatePaymentIntent(order, ct);
           if (!paymentIntent.IsSuccess)
           {
-            return TypedResults.Problem(paymentIntent.ErrorMessage, statusCode: paymentIntent.StatusCode);
+            return TypedResults.Problem(paymentIntent.ErrorMessage, statusCode: (int?)paymentIntent.StatusCode);
           }
 
           order.StripePaymentId = paymentIntent.Value.Id;

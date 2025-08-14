@@ -28,7 +28,7 @@ public static class SetDeliveryMethodEndpoint
 
           return result.IsSuccess
             ? TypedResults.NoContent()
-            : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+            : TypedResults.Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
         }
       )
       .WithName(nameof(SetDeliveryMethodEndpoint));

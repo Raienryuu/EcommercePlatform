@@ -57,17 +57,17 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
   {
     if (id != productCategory.Id)
     {
-      return ServiceResults.Error("IDs do not match.", 400);
+      return ServiceResults.Error("IDs do not match.", System.Net.HttpStatusCode.BadRequest);
     }
 
     if (!await ProductCategoryExists(id, ct))
     {
-      return ServiceResults.Error("No category found with a given ID.", 404);
+      return ServiceResults.Error("No category found with a given ID.", System.Net.HttpStatusCode.NotFound);
     }
 
     if (!await AssignParent(productCategory, ct))
     {
-      return ServiceResults.Error("Parent category not found.", 404);
+      return ServiceResults.Error("Parent category not found.", System.Net.HttpStatusCode.NotFound);
     }
 
     try
@@ -78,10 +78,10 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
     }
     catch (DbUpdateConcurrencyException)
     {
-      return ServiceResults.Error("Concurrency error occurred. Try again using newest data.", 500);
+      return ServiceResults.Error("Concurrency error occurred. Try again using newest data.", System.Net.HttpStatusCode.InternalServerError);
     }
 
-    return ServiceResults.Success(204);
+    return ServiceResults.Success(System.Net.HttpStatusCode.NoContent);
   }
 
   public async Task<ServiceResult<ProductCategory>> CreateProductCategory(
@@ -95,19 +95,19 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
 
     if (existingCategory is not null)
     {
-      return ServiceResults.Error<ProductCategory>("Category already exists.", 409); // Conflict
+      return ServiceResults.Error<ProductCategory>("Category already exists.", System.Net.HttpStatusCode.Conflict); // Conflict
     }
 
     if (!await AssignParent(productCategory, ct))
     {
-      return ServiceResults.Error<ProductCategory>("Parent category not found.", 400); // Bad Request
+      return ServiceResults.Error<ProductCategory>("Parent category not found.", System.Net.HttpStatusCode.BadRequest); // Bad Request
     }
 
     _context.ProductCategories.Add(productCategory);
     await _context.SaveChangesAsync(ct);
     _context.Entry(productCategory).State = EntityState.Detached;
 
-    return ServiceResults.Success(productCategory, 201); // Created
+    return ServiceResults.Success(productCategory, System.Net.HttpStatusCode.Created); // Created
   }
 
   public async Task<ServiceResult> DeleteProductCategory(int id, CancellationToken ct)
@@ -115,13 +115,13 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
     var productCategory = await _context.ProductCategories.FindAsync([id], cancellationToken: ct);
     if (productCategory == null)
     {
-      return ServiceResults.Error("No category found with a given ID.", 404);
+      return ServiceResults.Error("No category found with a given ID.", System.Net.HttpStatusCode.NotFound);
     }
 
     _context.ProductCategories.Remove(productCategory);
     await _context.SaveChangesAsync(ct);
 
-    return ServiceResults.Success(204); // No Content
+    return ServiceResults.Success(System.Net.HttpStatusCode.NoContent); // No Content
   }
 
   private Task<bool> ProductCategoryExists(int id, CancellationToken ct)

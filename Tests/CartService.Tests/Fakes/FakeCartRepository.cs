@@ -1,3 +1,4 @@
+using System.Net;
 using CartService.Helpers;
 using CartService.Models;
 using CartService.Services;
@@ -14,21 +15,21 @@ public class FakeCartRepository : ICartRepository
     var newId = MassTransit.NewId.NextSequentialGuid();
     c = CartHelper.MergeCart(c);
     _products.Add(newId, c);
-    return Task.FromResult<ServiceResult<Guid>>(ServiceResults.Success(newId, 200));
+    return Task.FromResult<ServiceResult<Guid>>(ServiceResults.Success(newId, HttpStatusCode.OK));
   }
 
   public Task<ServiceResult> DeleteCart(Guid g)
   {
     _ = _products.Remove(g);
-    return Task.FromResult<ServiceResult>(ServiceResults.Success(200));
+    return Task.FromResult<ServiceResult>(ServiceResults.Success(HttpStatusCode.OK));
   }
 
   public Task<ServiceResult<Cart>> GetCart(Guid g)
   {
     var retrievalSuccessful = _products.TryGetValue(g, out var cart);
     return retrievalSuccessful
-      ? Task.FromResult<ServiceResult<Cart>>(ServiceResults.Success<Cart>(cart!, 200))
-      : Task.FromResult<ServiceResult<Cart>>(ServiceResults.Error<Cart>("Didn't found the cart", 404));
+      ? Task.FromResult<ServiceResult<Cart>>(ServiceResults.Success<Cart>(cart!, HttpStatusCode.OK))
+      : Task.FromResult<ServiceResult<Cart>>(ServiceResults.Error<Cart>("Didn't found the cart", HttpStatusCode.NotFound));
   }
 
   public Task<ServiceResult<Guid>> UpdateCart(Guid id, Cart c)
@@ -40,6 +41,6 @@ public class FakeCartRepository : ICartRepository
     }
 
     _products[id] = c;
-    return Task.FromResult<ServiceResult<Guid>>(ServiceResults.Success(id, 200));
+    return Task.FromResult<ServiceResult<Guid>>(ServiceResults.Success(id, HttpStatusCode.OK));
   }
 }

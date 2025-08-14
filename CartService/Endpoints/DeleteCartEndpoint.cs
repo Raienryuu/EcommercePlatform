@@ -21,7 +21,7 @@ public class DeleteCartEndpoint(ICartRepository cartProvider) : Endpoint<DeleteC
     }
     else
     {
-      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode));
+      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: (int)result.StatusCode));
     }
   }
 }

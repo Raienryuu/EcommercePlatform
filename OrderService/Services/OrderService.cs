@@ -1,4 +1,5 @@
 using Common;
+using System.Net;
 using MassTransit;
 using MessageQueue.Contracts;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,7 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     logger.NewOrderCreated(newOrder.OrderId);
 
-    return ServiceResults.Success(newOrder, 201);
+    return ServiceResults.Success(newOrder, HttpStatusCode.Created);
   }
 
   public async Task<ServiceResult> SetDeliveryMethod(
@@ -60,17 +61,17 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     if (order is null)
     {
-      return ServiceResults.Error("No order found with given id.", 404);
+      return ServiceResults.Error("No order found with given id.", HttpStatusCode.NotFound);
     }
 
     if (userId != order.UserId)
     {
-      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", 401);
+      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", HttpStatusCode.Unauthorized);
     }
 
     if (order.Delivery is not null)
     {
-      return ServiceResults.Error("Delivery method is already set.", 400);
+      return ServiceResults.Error("Delivery method is already set.", HttpStatusCode.BadRequest);
     }
 
     order.Delivery = deliveryMethod;
@@ -89,7 +90,7 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
       ct
     );
 
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult> CancelOrder(Guid orderId, Guid userId, CancellationToken ct)
@@ -98,21 +99,21 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     if (order is null)
     {
-      return ServiceResults.Error("Order not found", 404);
+      return ServiceResults.Error("Order not found", HttpStatusCode.NotFound);
     }
     if (order.UserId != userId)
     {
-      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", 401);
+      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", HttpStatusCode.Unauthorized);
     }
 
     if (order.Status == OrderStatus.Cancelled)
     {
-      return ServiceResults.Success(200);
+      return ServiceResults.Success(HttpStatusCode.OK);
     }
 
     if (!(order.Status is OrderStatus.AwaitingConfirmation or OrderStatus.Confirmed))
     {
-      return ServiceResults.Error("Too late to cancel the order.", 400);
+      return ServiceResults.Error("Too late to cancel the order.", HttpStatusCode.BadRequest);
     }
 
 
@@ -120,7 +121,7 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     await context.SaveChangesAsync(ct);
     await publisher.Publish<IOrderCancellationRequest>(new { order.OrderId }, ct);
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<Order>> GetOrder(Guid orderId, Guid userId, CancellationToken ct)
@@ -129,15 +130,15 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     if (order is null)
     {
-      return ServiceResults.Error<Order>("Order not found", 404);
+      return ServiceResults.Error<Order>("Order not found", HttpStatusCode.NotFound);
     }
 
     if (userId != order.UserId)
     {
-      return ServiceResults.Error<Order>("Mismatch between logged user Id and order's user Id.", 401);
+      return ServiceResults.Error<Order>("Mismatch between logged user Id and order's user Id.", HttpStatusCode.Unauthorized);
     }
 
-    return ServiceResults.Success(order, 200);
+    return ServiceResults.Success(order, HttpStatusCode.OK);
   }
 
   public Task<List<Order>> GetUserOrders(Guid userId, CancellationToken ct)

@@ -87,7 +87,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
   }
 
   [Fact]
@@ -132,7 +132,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
   }
 
   [Fact]
@@ -154,7 +154,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(204, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NoContent, (int)result.StatusCode);
 
     var updatedEntity = await _productCategoryService.GetProductCategory(categoryId, _cancellationToken);
     Assert.Equal("Updated Category", updatedEntity.Value.CategoryName);
@@ -184,7 +184,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(400, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.BadRequest, (int)result.StatusCode);
   }
 
   [Fact]
@@ -203,7 +203,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
   }
 
   [Fact]
@@ -217,7 +217,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(201, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.Created, (int)result.StatusCode);
     Assert.Equal("NewCategoryTest", result.Value.CategoryName);
 
     var createdEntity = await _context.ProductCategories.FindAsync(result.Value.Id);
@@ -237,7 +237,7 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(409, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.Conflict, (int)result.StatusCode);
   }
 
   [Fact]
@@ -253,11 +253,11 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(204, result.StatusCode);
+    Assert.Equal(204, (int)result.StatusCode);
 
     var deletedEntity = await _productCategoryService.GetProductCategory(categoryId, _cancellationToken);
     Assert.False(deletedEntity.IsSuccess);
-    Assert.Equal(404, deletedEntity.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)deletedEntity.StatusCode);
   }
 
   [Fact]
@@ -271,6 +271,6 @@ public class ProductCategoryServiceTests : IDisposable
 
     // Assert
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
   }
 }

@@ -32,7 +32,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     var result = await productService.GetProduct(id);
 
-    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, (int?)result.StatusCode);
   }
 
   [HttpGet]
@@ -121,7 +121,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
         new { id = createdProductResult.Value.Id },
         createdProductResult.Value
       )
-      : Problem(createdProductResult.ErrorMessage, null, createdProductResult.StatusCode);
+      : Problem(createdProductResult.ErrorMessage, null, (int?)createdProductResult.StatusCode);
   }
 
   /// <summary>
@@ -156,7 +156,7 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     var result = await productService.UpdateProduct(updatedProduct);
 
-    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, (int?)result.StatusCode);
   }
 
   /// <summary>
@@ -193,6 +193,6 @@ public class ProductsController(ProductDbContext db, IProductService productServ
 
     var result = await productService.GetBatchProducts(productsIds);
 
-    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, result.StatusCode);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, null, (int?)result.StatusCode);
   }
 }

@@ -1,4 +1,5 @@
 using Common;
+using System.Net;
 using ImageService;
 using ImageService.Models;
 using ImageService.Services;
@@ -103,7 +104,7 @@ app.MapGet(
     {
       if (productId == Guid.Empty)
       {
-        return TypedResults.Problem("Product Id is required", statusCode: 400);
+        return TypedResults.Problem("Product Id is required", statusCode: (int)HttpStatusCode.BadRequest);
       }
       if (!Enum.TryParse<SizeResolveStrategy>(sizeStrategy, true, out var strategy))
       {
@@ -113,7 +114,7 @@ app.MapGet(
       var imageResult = await images.GetProductImageAsync(productId, imageNumber, imageWidth, strategy, ct);
       return imageResult.IsSuccess
         ? TypedResults.File(imageResult.Value.Data, imageResult.Value.ContentType, imageResult.Value.Name)
-        : TypedResults.Problem(imageResult.ErrorMessage, statusCode: imageResult.StatusCode);
+        : TypedResults.Problem(imageResult.ErrorMessage, statusCode: (int)imageResult.StatusCode);
     }
   )
   .WithName("GetProductImages");
@@ -128,14 +129,14 @@ app.MapGet(
     {
       if (productId == Guid.Empty)
       {
-        return TypedResults.Problem("Product Id is required", statusCode: 400);
+        return TypedResults.Problem("Product Id is required", statusCode: (int)HttpStatusCode.BadRequest);
       }
       var metadata = await metadataService.GetProductImagesMetadataAsync(productId, ct);
       if (metadata.IsSuccess)
       {
         return TypedResults.Ok(metadata.Value);
       }
-      return TypedResults.Problem(metadata.ErrorMessage, statusCode: metadata.StatusCode);
+      return TypedResults.Problem(metadata.ErrorMessage, statusCode: (int)metadata.StatusCode);
     }
   )
   .WithName("GetImageMetadata");
@@ -151,11 +152,11 @@ app.MapPost(
     {
       if (productId == Guid.Empty)
       {
-        return TypedResults.Problem("Product Id is required", statusCode: 400);
+        return TypedResults.Problem("Product Id is required", statusCode: (int)HttpStatusCode.BadRequest);
       }
       if (file.ContentType is null || file.FileName is null || file.Length == 0)
       {
-        return TypedResults.Problem("No file provided", statusCode: 400);
+        return TypedResults.Problem("No file provided", statusCode: (int)HttpStatusCode.BadRequest);
       }
 
       var result = await images.AddProductImageAsync(productId, file, ct);
@@ -168,7 +169,7 @@ app.MapPost(
           new { productId, imageNumber = result.Value }
         );
       }
-      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      return TypedResults.Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
     }
   )
   .DisableAntiforgery()
@@ -186,18 +187,18 @@ app.MapPost(
     {
       if (productId == Guid.Empty)
       {
-        return TypedResults.Problem("Product Id is required", statusCode: 400);
+        return TypedResults.Problem("Product Id is required", statusCode: (int)HttpStatusCode.BadRequest);
       }
       if (file.ContentType is null || file.FileName is null || file.Length == 0)
       {
-        return TypedResults.Problem("No file provided", statusCode: 400);
+        return TypedResults.Problem("No file provided", statusCode: (int)HttpStatusCode.BadRequest);
       }
 
       var result = await images.AddScaledProductImageAsync(productId, file, ct, dimensions);
 
       if (result.IsFailure)
       {
-        return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return TypedResults.Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
       }
       return TypedResults.Ok(result.Value);
     }
@@ -215,7 +216,7 @@ app.MapDelete(
     {
       if (productId == Guid.Empty)
       {
-        return TypedResults.Problem("Product Id is required", statusCode: 400);
+        return TypedResults.Problem("Product Id is required", statusCode: (int)HttpStatusCode.BadRequest);
       }
 
       var result = await images.DeleteAllProductImages(productId, ct);
@@ -224,7 +225,7 @@ app.MapDelete(
       {
         return TypedResults.NoContent();
       }
-      return TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      return TypedResults.Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
     }
   )
   .DisableAntiforgery()

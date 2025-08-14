@@ -28,7 +28,7 @@ public class CreateNewCartEndpoint(ICartRepository cartProvider) : Endpoint<Crea
     }
     else
     {
-      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode));
+      await SendResultAsync(TypedResults.Problem(result.ErrorMessage, statusCode: (int)result.StatusCode));
     }
   }
 }

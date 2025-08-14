@@ -24,7 +24,7 @@ public static class GetPaymentStatusEndpoint
 
           if (!order.IsSuccess)
           {
-            return TypedResults.Problem(order.ErrorMessage, statusCode: order.StatusCode);
+            return TypedResults.Problem(order.ErrorMessage, statusCode: (int?)order.StatusCode);
           }
 
           if (order.Value.PaymentStatus is PaymentStatus.Succeded or PaymentStatus.Cancelled)

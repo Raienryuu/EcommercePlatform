@@ -33,14 +33,14 @@ public class UserService(
     if (createdSuccessfully.Succeeded == false)
     {
       var errorMsg = string.Join(", ", createdSuccessfully.Errors.Select(e => e.Description));
-      return ServiceResults.Error(errorMsg, 400);
+      return ServiceResults.Error(errorMsg, HttpStatusCode.BadRequest);
     }
 
     var addedToRole = await userManager.AddToRoleAsync(newUser, "User");
     if (addedToRole.Succeeded == false)
     {
       var errorMsg = string.Join(", ", addedToRole.Errors.Select(e => e.Description));
-      return ServiceResults.Error(errorMsg, 400);
+      return ServiceResults.Error(errorMsg, HttpStatusCode.BadRequest);
     }
 
     var userAddress = UserAddress.CreateFrom(registrationData, newUser);
@@ -49,7 +49,7 @@ public class UserService(
 
     logger.RegisteredNewUser(newUser.Id);
 
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<string>> LogInUser(
@@ -61,14 +61,14 @@ public class UserService(
 
     if (user is null)
     {
-      return ServiceResults.Error<string>("Not able to get matching values from database.", 400);
+      return ServiceResults.Error<string>("Not able to get matching values from database.", HttpStatusCode.BadRequest);
     }
 
     var isPasswordValid = await userManager.CheckPasswordAsync(user, credentials.Password);
     if (!isPasswordValid)
     {
       logger.InvalidLogin(user.Id);
-      return ServiceResults.Error<string>("Not able to get matching values from database.", 400);
+      return ServiceResults.Error<string>("Not able to get matching values from database.", HttpStatusCode.BadRequest);
     }
 
     var jwtSection = configuration.GetSection("Jwt");
@@ -104,7 +104,7 @@ public class UserService(
 
     logger.SuccessfullLogin(user.Id);
 
-    return ServiceResults.Success(response, 200);
+    return ServiceResults.Success(response, HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<string>> GetUsernameForLoggedUser(
@@ -118,10 +118,10 @@ public class UserService(
       .FirstOrDefaultAsync(cancellationToken);
     if (username is null)
     {
-      return ServiceResults.Error<string>("Couldn't find user with given Id", 404);
+      return ServiceResults.Error<string>("Couldn't find user with given Id", HttpStatusCode.NotFound);
     }
 
-    return ServiceResults.Success(username.ToLower().Pascalize(), 200);
+    return ServiceResults.Success(username.ToLower().Pascalize(), HttpStatusCode.OK);
   }
 
   private static IdentityUser<Guid> MapToNewUser(NewUser registrationData)

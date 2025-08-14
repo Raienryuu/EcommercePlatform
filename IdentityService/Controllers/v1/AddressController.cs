@@ -29,7 +29,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!result.IsSuccess)
     {
-      return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+      return Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
     }
 
     if (result.Value.UserId != userId)
@@ -52,7 +52,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!result.IsSuccess)
     {
-      return StatusCode(result.StatusCode, result.ErrorMessage);
+      return Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
     }
 
     return CreatedAtAction(nameof(GetAddressById), new { id = result.Value.Id }, result.Value);
@@ -69,7 +69,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!addressInDb.IsSuccess)
     {
-      return StatusCode(addressInDb.StatusCode, addressInDb.ErrorMessage);
+      return Problem(addressInDb.ErrorMessage, statusCode: (int)addressInDb.StatusCode);
     }
 
     if (addressInDb.Value.UserId != userId)
@@ -79,7 +79,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     var result = await _addresses.EditAddressAsync(newAddresss);
 
-    return result.IsSuccess ? Ok(result.Value) : StatusCode(result.StatusCode, result.ErrorMessage);
+    return result.IsSuccess ? Ok(result.Value) : Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
   }
 
   // DELETE api/<AddressController>/5
@@ -90,7 +90,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!address.IsSuccess)
     {
-      return StatusCode(address.StatusCode, address.ErrorMessage);
+      return Problem(address.ErrorMessage, statusCode: (int)address.StatusCode);
     }
 
     if (address.Value.UserId != userId)
@@ -102,7 +102,7 @@ public class AddressController(IAddressesService addresses) : ControllerBase
 
     if (!result.IsSuccess)
     {
-      return StatusCode(result.StatusCode, result.ErrorMessage);
+      return Problem(result.ErrorMessage, statusCode: (int)result.StatusCode);
     }
 
     return NoContent();

@@ -21,7 +21,7 @@ public class UpdateCartEndpoint(ICartRepository cartRepository) : Endpoint<Updat
     if (!updateResult.IsSuccess)
     {
       await SendResultAsync(
-        TypedResults.Problem(updateResult.ErrorMessage, statusCode: updateResult.StatusCode)
+        TypedResults.Problem(updateResult.ErrorMessage, statusCode: (int)updateResult.StatusCode)
       );
     }
     else

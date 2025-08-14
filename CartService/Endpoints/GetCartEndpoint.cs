@@ -23,7 +23,7 @@ public class GetCartEndpoint(ICartRepository cartProvider) : Endpoint<GetCartReq
     }
     else
     {
-      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: getResult.StatusCode));
+      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: (int)getResult.StatusCode));
     }
   }
 }

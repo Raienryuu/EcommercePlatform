@@ -18,7 +18,7 @@ public class ProductDbContextFake(DbContextOptions options) : ProductDbContext(o
   }
 
   // Mimic the real function for test compatibility in tests
-  public IQueryable<ProductService.Models.Product> GetProductsFromCategoryHierarchy(int categoryId)
+  public new IQueryable<ProductService.Models.Product> GetProductsFromCategoryHierarchy(int categoryId)
   {
     // Recursively find all descendant category IDs
     var allCategoryIds = new HashSet<int>();

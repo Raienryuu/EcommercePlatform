@@ -19,7 +19,7 @@ public static class ConfirmPaymentEndpoint
           var result = await stripePaymentService.HandleWebhookPaymentConfirm(httpContext.Request, ct);
           return result.IsSuccess
             ? TypedResults.Ok()
-            : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+            : TypedResults.Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
         }
       )
       .WithName(nameof(ConfirmPaymentEndpoint))

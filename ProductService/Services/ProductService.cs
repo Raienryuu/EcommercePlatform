@@ -25,7 +25,7 @@ public partial class ProductService(ProductDbContext db) : IProductService
     db.Products.Add(newProduct);
     await db.SaveChangesAsync(cancellationToken);
 
-    return ServiceResults.Success(newProduct, 201);
+    return ServiceResults.Success(newProduct, System.Net.HttpStatusCode.Created);
   }
 
   public async Task<ServiceResult<List<Product>>> GetBatchProducts(
@@ -73,7 +73,7 @@ public partial class ProductService(ProductDbContext db) : IProductService
     }
     if (updatedProduct.ConcurrencyStamp != oldProduct.ConcurrencyStamp)
     {
-      return new ErrorServiceResult<Product>(422, "ConcurrencyStamp mismatch");
+      return new ErrorServiceResult<Product>(System.Net.HttpStatusCode.UnprocessableEntity, "ConcurrencyStamp mismatch");
     }
 
     await ProductHelpers.AssignNewValuesToProduct(db, updatedProduct, oldProduct, cancellationToken);

@@ -21,7 +21,7 @@ public static class GetAvailableDeliveriesEndpoint
           {
             return TypedResults.Ok(deliveries.Value);
           }
-          return TypedResults.Problem(deliveries.ErrorMessage, statusCode: deliveries.StatusCode);
+          return TypedResults.Problem(deliveries.ErrorMessage, statusCode: (int?)deliveries.StatusCode);
         }
       )
       .WithName(nameof(GetAvailableDeliveriesEndpoint))

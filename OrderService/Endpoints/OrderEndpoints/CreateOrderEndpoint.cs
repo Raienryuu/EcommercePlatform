@@ -40,7 +40,7 @@ public static class CreateOrderEndpoint
               nameof(GetOrderEndpoint),
               new { orderId = result.Value.OrderId }
             )
-            : TypedResults.Problem(result.ErrorMessage, statusCode: result.StatusCode);
+            : TypedResults.Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
         }
       )
       .WithName(nameof(CreateOrderEndpoint));

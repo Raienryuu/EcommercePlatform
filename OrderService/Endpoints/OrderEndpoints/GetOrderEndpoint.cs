@@ -27,7 +27,7 @@ public static class GetOrderEndpoint
 
           return results.IsSuccess
             ? TypedResults.Ok(results.Value)
-            : TypedResults.Problem(results.ErrorMessage, statusCode: results.StatusCode);
+            : TypedResults.Problem(results.ErrorMessage, statusCode: (int?)results.StatusCode);
         }
       )
       .WithName(nameof(GetOrderEndpoint));

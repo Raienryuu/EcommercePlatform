@@ -17,7 +17,7 @@ public class GetCartProductsCountEndpoint(ICartRepository cartProvider) : Endpoi
     var getResult = await cartProvider.GetCart(request.Id);
     if (!getResult.IsSuccess)
     {
-      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: getResult.StatusCode));
+      await SendResultAsync(TypedResults.Problem(getResult.ErrorMessage, statusCode: (int)getResult.StatusCode));
     }
     else
     {

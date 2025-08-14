@@ -42,7 +42,7 @@ public class MongoImageService : IImageService, IDisposable
 
     if (productMetadataResult is { IsSuccess: false, ErrorMessage: not null })
     {
-      return ServiceResults.Error<int>(productMetadataResult.ErrorMessage, productMetadataResult.StatusCode);
+      return ServiceResults.Error<int>(productMetadataResult.ErrorMessage, (HttpStatusCode)productMetadataResult.StatusCode);
     }
 
     var collection = _client.GetDatabase(_options.DatabaseName).GetCollection<Image>("images");
@@ -68,7 +68,7 @@ public class MongoImageService : IImageService, IDisposable
     await UpdateMetadataAsync(productMetadataResult.Value);
     await collection.InsertOneAsync(fileAsImage, cancellationToken: cancellationToken);
 
-    return ServiceResults.Success(nextImageNumber, 200);
+    return ServiceResults.Success(nextImageNumber, HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<Image>> GetProductImageAsync(
@@ -101,7 +101,7 @@ public class MongoImageService : IImageService, IDisposable
       _ => throw new NotImplementedException($"Size strategy not found, {sizeStrategy}"),
     };
 
-    return image is null ? ServiceResults.Error<Image>("Image not found", 404) : ServiceResults.Ok(image);
+    return image is null ? ServiceResults.Error<Image>("Image not found", HttpStatusCode.NotFound) : ServiceResults.Success(image, HttpStatusCode.OK);
   }
 
   private static Task<Image> GetBestQualityImage(
@@ -237,9 +237,9 @@ public class MongoImageService : IImageService, IDisposable
 
     if (!deleteResult.IsAcknowledged || deleteMetadataResult.IsFailure)
     {
-      return ServiceResults.Error("Couldn't delete images.", 500);
+      return ServiceResults.Error("Couldn't delete images.", HttpStatusCode.InternalServerError);
     }
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<ProductImagesMetadata>> GetProductImagesMetadataAsync(
@@ -251,7 +251,7 @@ public class MongoImageService : IImageService, IDisposable
     var metadata =
       await MetadataCollection.Find(filter).FirstOrDefaultAsync(cancellationToken)
       ?? new ProductImagesMetadata(productId, [], new NoMetadataAvailable());
-    return ServiceResults.Success(metadata, 200);
+    return ServiceResults.Success(metadata, HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult> UpdateMetadataAsync(ProductImagesMetadata productImagesMetadata)
@@ -268,7 +268,7 @@ public class MongoImageService : IImageService, IDisposable
 
     await metadataUpdateTask;
 
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult> DeleteMetadataAsync(
@@ -280,9 +280,9 @@ public class MongoImageService : IImageService, IDisposable
     var deleteResult = await MetadataCollection.DeleteOneAsync(filter, cancellationToken);
     if (deleteResult.IsAcknowledged)
     {
-      return ServiceResults.Success(204);
+      return ServiceResults.Success(HttpStatusCode.NoContent);
     }
-    return ServiceResults.Error("Coudln't delete product's metadata.", 500);
+    return ServiceResults.Error("Coudln't delete product's metadata.", HttpStatusCode.InternalServerError);
   }
 
   public async Task<ServiceResult<List<string>>> AddScaledProductImageAsync(
@@ -339,10 +339,10 @@ public class MongoImageService : IImageService, IDisposable
       );
       return ServiceResults.Error<List<string>>(
         "Unable to store scaled image information. Try again later.",
-        (int)HttpStatusCode.ServiceUnavailable
+        HttpStatusCode.ServiceUnavailable
       );
     }
 
-    return ServiceResults.Success(productImagesMetadata.Value.StoredImages, (int)HttpStatusCode.Created);
+    return ServiceResults.Success(productImagesMetadata.Value.StoredImages, HttpStatusCode.Created);
   }
 }

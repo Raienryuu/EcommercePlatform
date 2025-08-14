@@ -3,6 +3,7 @@ using CartService.Helpers;
 using CartService.Models;
 using Common;
 using MassTransit;
+using System.Net;
 using StackExchange.Redis;
 
 namespace CartService.Services;
@@ -23,8 +24,8 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
   {
     var idString = g.ToString();
     return await _db.KeyDeleteAsync(idString)
-      ? ServiceResults.Success(200)
-      : ServiceResults.Error("There was a problem deleting the cart", 500);
+      ? ServiceResults.Success(HttpStatusCode.OK)
+      : ServiceResults.Error("There was a problem deleting the cart", HttpStatusCode.InternalServerError);
   }
 
   public async Task<ServiceResult<Cart>> GetCart(Guid g)
@@ -32,12 +33,12 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
     var objectJson = await _db.StringGetAsync(g.ToString());
     if (objectJson.IsNullOrEmpty)
     {
-      return ServiceResults.Error<Cart>("Didn't find the specified cart.", 404);
+      return ServiceResults.Error<Cart>("Didn't find the specified cart.", HttpStatusCode.NotFound);
     }
     var cartAsString = objectJson.ToString();
     var cart = JsonSerializer.Deserialize<Cart>(cartAsString);
 
-    return ServiceResults.Success(cart!, 200);
+    return ServiceResults.Success(cart!, HttpStatusCode.OK);
   }
 
   public async Task<ServiceResult<Guid>> UpdateCart(Guid id, Cart c)
@@ -56,7 +57,7 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
   private async Task<ServiceResult<Guid>> SetCartValue(Guid key, Cart value)
   {
     return await _db.StringSetAsync(key.ToString(), JsonSerializer.Serialize(value))
-      ? ServiceResults.Success(key, 200)
-      : ServiceResults.Error<Guid>("Could not create new cart", 500);
+      ? ServiceResults.Success(key, HttpStatusCode.OK)
+      : ServiceResults.Error<Guid>("Could not create new cart", HttpStatusCode.InternalServerError);
   }
 }

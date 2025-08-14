@@ -1,15 +1,16 @@
 using System.Data;
+using System.Net;
 using Common;
-using Contracts;
+using OrderService.Models;
 using MassTransit;
 using MessageQueue.Contracts;
 using MessageQueue.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using OrderService.Logging;
-using OrderService.Models;
 using OrderService.Options;
 using Stripe;
+using Contracts;
 
 namespace OrderService.Services;
 
@@ -54,12 +55,12 @@ public class StripePaymentService : IStripePaymentService
     try
     {
       var newPaymentIntent = await _paymentService.CreateAsync(paymentOptions, requestOptions, ct);
-      return ServiceResults.Success(newPaymentIntent, 200);
+      return ServiceResults.Success(newPaymentIntent, HttpStatusCode.OK);
     }
     catch (StripeException e)
     {
       _logger.UnableToCreatePaymentIntent(order.OrderId, e);
-      return ServiceResults.Error<PaymentIntent>("Unable to start new transaction.", 503);
+      return ServiceResults.Error<PaymentIntent>("Unable to start new transaction.", HttpStatusCode.ServiceUnavailable);
     }
   }
 
@@ -82,7 +83,7 @@ public class StripePaymentService : IStripePaymentService
     catch (StripeException e)
     {
       _logger.UnableToRetrievePaymentIntent(order.OrderId, e);
-      return ServiceResults.Error<PaymentIntent>("Unable to retrieve transaction details.", 503);
+      return ServiceResults.Error<PaymentIntent>("Unable to retrieve transaction details.", HttpStatusCode.ServiceUnavailable);
     }
   }
 
@@ -110,7 +111,7 @@ public class StripePaymentService : IStripePaymentService
 
     if (order is null)
     {
-      return ServiceResults.Error("Order with given id doesn't exists.", statusCode: 404);
+      return ServiceResults.Error("Order with given id doesn't exists.", statusCode: HttpStatusCode.NotFound);
     }
 
     _logger.OrderSuccessfulPaymentInfo(paymentIntent.Amount, order.OrderId);
@@ -134,7 +135,7 @@ public class StripePaymentService : IStripePaymentService
         ct
       );
     }
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 
   public async Task RefundPaymentForOrder(Guid orderId, CancellationToken ct = default)

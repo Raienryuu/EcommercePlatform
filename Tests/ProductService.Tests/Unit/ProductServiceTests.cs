@@ -86,7 +86,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.AddProduct(newProduct);
 
     Assert.True(result.IsSuccess);
-    Assert.Equal(201, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.Created, (int)result.StatusCode);
     Assert.NotNull(result.Value);
 
     var productInDb = await _context.Products.FindAsync(newProduct.Id);
@@ -112,7 +112,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.AddProduct(newProduct);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
     Assert.Equal("Category not found", result.ErrorMessage);
   }
 
@@ -127,7 +127,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.GetBatchProducts(productIds);
 
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.OK, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal(2, result.Value.Count);
   }
@@ -143,7 +143,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.GetBatchProducts(productIds);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
     Assert.Equal("Some products id were not found", result.ErrorMessage);
   }
 
@@ -154,7 +154,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.GetBatchProducts(productIds);
 
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.OK, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Empty(result.Value);
   }
@@ -168,7 +168,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.GetProduct(product.Id);
 
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.OK, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal(product.Name, result.Value.Name);
   }
@@ -180,7 +180,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.GetProduct(nonExistentProductId);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
     Assert.Equal($"No product found with given ID: {nonExistentProductId}.", result.ErrorMessage);
   }
 
@@ -205,7 +205,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.UpdateProduct(updatedProduct);
 
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.OK, (int)result.StatusCode);
     Assert.NotNull(result.Value);
     Assert.Equal("Updated Product Name", result.Value.Name);
 
@@ -233,7 +233,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.UpdateProduct(updatedProduct);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal(404, (int)result.StatusCode);
     Assert.Equal("Product not found", result.ErrorMessage);
   }
 
@@ -258,7 +258,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.UpdateProduct(updatedProduct);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(404, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.NotFound, (int)result.StatusCode);
     Assert.Equal("Given category does not exists", result.ErrorMessage);
   }
 
@@ -283,7 +283,7 @@ public class ProductServiceTests : IDisposable
     var result = await _productService.UpdateProduct(updatedProduct);
 
     Assert.False(result.IsSuccess);
-    Assert.Equal(422, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.UnprocessableEntity, (int)result.StatusCode);
     Assert.Equal("ConcurrencyStamp mismatch", result.ErrorMessage);
   }
 
@@ -311,7 +311,7 @@ public class ProductServiceTests : IDisposable
 
     // Assert
     Assert.True(result.IsSuccess);
-    Assert.Equal(200, result.StatusCode);
+    Assert.Equal((int)System.Net.HttpStatusCode.OK, (int)result.StatusCode);
 
     var productInDb = await _context.Products.FindAsync(product.Id);
     Assert.NotNull(productInDb);

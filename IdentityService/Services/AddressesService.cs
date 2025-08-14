@@ -2,6 +2,7 @@ using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.EntityFrameworkCore;
 using Common;
+using System.Net;
 
 namespace IdentityService.Services;
 
@@ -54,12 +55,12 @@ public class AddressesService(ApplicationDbContext db) : IAddressesService
 
     if (address is null)
     {
-      return ServiceResults.Error("Address not found",404);
+      return ServiceResults.Error("Address not found", HttpStatusCode.NotFound);
     }
 
     _db.Addresses.Remove(address);
     await _db.SaveChangesAsync(cancellationToken);
 
-    return ServiceResults.Success(200);
+    return ServiceResults.Success(HttpStatusCode.OK);
   }
 }

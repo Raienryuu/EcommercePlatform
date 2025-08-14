@@ -22,7 +22,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
       }
     }
 
@@ -38,7 +38,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
       }
     }
 
@@ -52,10 +52,10 @@ namespace ProductService.Controllers.V1
       {
         return Ok(result.Value);
       }
-      else
-      {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
-      }
+       else
+       {
+           return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
+       }
     }
 
     // PATCH: api/ProductsCategories/5
@@ -70,7 +70,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
       }
     }
 
@@ -88,7 +88,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
       }
     }
 
@@ -104,7 +104,7 @@ namespace ProductService.Controllers.V1
       }
       else
       {
-        return Problem(result.ErrorMessage, statusCode: result.StatusCode);
+        return Problem(result.ErrorMessage, statusCode: (int?)result.StatusCode);
       }
     }
   }
