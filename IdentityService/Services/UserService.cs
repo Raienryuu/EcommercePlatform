@@ -61,14 +61,14 @@ public class UserService(
 
     if (user is null)
     {
-      return ServiceResults.Error<string>("Not able to get matching values from database.", HttpStatusCode.BadRequest);
+      return ServiceResults.Error("Not able to get matching values from database.", HttpStatusCode.BadRequest);
     }
 
     var isPasswordValid = await userManager.CheckPasswordAsync(user, credentials.Password);
     if (!isPasswordValid)
     {
       logger.InvalidLogin(user.Id);
-      return ServiceResults.Error<string>("Not able to get matching values from database.", HttpStatusCode.BadRequest);
+      return ServiceResults.Error("Not able to get matching values from database.", HttpStatusCode.BadRequest);
     }
 
     var jwtSection = configuration.GetSection("Jwt");
@@ -118,7 +118,7 @@ public class UserService(
       .FirstOrDefaultAsync(cancellationToken);
     if (username is null)
     {
-      return ServiceResults.Error<string>("Couldn't find user with given Id", HttpStatusCode.NotFound);
+      return ServiceResults.Error("Couldn't find user with given Id", HttpStatusCode.NotFound);
     }
 
     return ServiceResults.Success(username.ToLower().Pascalize(), HttpStatusCode.OK);

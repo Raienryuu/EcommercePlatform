@@ -42,7 +42,7 @@ public class MongoImageService : IImageService, IDisposable
 
     if (productMetadataResult is { IsSuccess: false, ErrorMessage: not null })
     {
-      return ServiceResults.Error<int>(productMetadataResult.ErrorMessage, (HttpStatusCode)productMetadataResult.StatusCode);
+      return ServiceResults.Error(productMetadataResult.ErrorMessage, (HttpStatusCode)productMetadataResult.StatusCode);
     }
 
     var collection = _client.GetDatabase(_options.DatabaseName).GetCollection<Image>("images");
@@ -101,7 +101,7 @@ public class MongoImageService : IImageService, IDisposable
       _ => throw new NotImplementedException($"Size strategy not found, {sizeStrategy}"),
     };
 
-    return image is null ? ServiceResults.Error<Image>("Image not found", HttpStatusCode.NotFound) : ServiceResults.Success(image, HttpStatusCode.OK);
+    return image is null ? ServiceResults.Error("Image not found", HttpStatusCode.NotFound) : ServiceResults.Success(image, HttpStatusCode.OK);
   }
 
   private static Task<Image> GetBestQualityImage(
@@ -178,7 +178,7 @@ public class MongoImageService : IImageService, IDisposable
     CancellationToken ct = default
   )
   {
-    var pipeline = new[] // TODO don't use this, make use of metadata instead as it is being pulled in anyway
+    var pipeline = new[] // TODO don't use THIS, make use of metadata instead as it is being pulled in anyway
     {
       new BsonDocument("$match", new BsonDocument("Name", fileName)),
       new BsonDocument(
@@ -337,7 +337,7 @@ public class MongoImageService : IImageService, IDisposable
         dimensions.Length,
         e
       );
-      return ServiceResults.Error<List<string>>(
+      return ServiceResults.Error(
         "Unable to store scaled image information. Try again later.",
         HttpStatusCode.ServiceUnavailable
       );

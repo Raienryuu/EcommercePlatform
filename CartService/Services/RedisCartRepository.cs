@@ -33,7 +33,7 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
     var objectJson = await _db.StringGetAsync(g.ToString());
     if (objectJson.IsNullOrEmpty)
     {
-      return ServiceResults.Error<Cart>("Didn't find the specified cart.", HttpStatusCode.NotFound);
+      return ServiceResults.Error("Didn't find the specified cart.", HttpStatusCode.NotFound);
     }
     var cartAsString = objectJson.ToString();
     var cart = JsonSerializer.Deserialize<Cart>(cartAsString);
@@ -58,6 +58,6 @@ public class RedisCartRepository(RedisConnectionFactory dbFactory) : ICartReposi
   {
     return await _db.StringSetAsync(key.ToString(), JsonSerializer.Serialize(value))
       ? ServiceResults.Success(key, HttpStatusCode.OK)
-      : ServiceResults.Error<Guid>("Could not create new cart", HttpStatusCode.InternalServerError);
+      : ServiceResults.Error("Could not create new cart", HttpStatusCode.InternalServerError);
   }
 }

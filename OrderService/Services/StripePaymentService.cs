@@ -60,7 +60,7 @@ public class StripePaymentService : IStripePaymentService
     catch (StripeException e)
     {
       _logger.UnableToCreatePaymentIntent(order.OrderId, e);
-      return ServiceResults.Error<PaymentIntent>("Unable to start new transaction.", HttpStatusCode.ServiceUnavailable);
+      return ServiceResults.Error("Unable to start new transaction.", HttpStatusCode.ServiceUnavailable);
     }
   }
 
@@ -83,7 +83,7 @@ public class StripePaymentService : IStripePaymentService
     catch (StripeException e)
     {
       _logger.UnableToRetrievePaymentIntent(order.OrderId, e);
-      return ServiceResults.Error<PaymentIntent>("Unable to retrieve transaction details.", HttpStatusCode.ServiceUnavailable);
+      return ServiceResults.Error("Unable to retrieve transaction details.", HttpStatusCode.ServiceUnavailable);
     }
   }
 

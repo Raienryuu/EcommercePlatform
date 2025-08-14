@@ -95,12 +95,12 @@ public class ProductCategoryService(ProductDbContext context) : IProductCategory
 
     if (existingCategory is not null)
     {
-      return ServiceResults.Error<ProductCategory>("Category already exists.", System.Net.HttpStatusCode.Conflict); // Conflict
+      return ServiceResults.Error("Category already exists.", System.Net.HttpStatusCode.Conflict); // Conflict
     }
 
     if (!await AssignParent(productCategory, ct))
     {
-      return ServiceResults.Error<ProductCategory>("Parent category not found.", System.Net.HttpStatusCode.BadRequest); // Bad Request
+      return ServiceResults.Error("Parent category not found.", System.Net.HttpStatusCode.BadRequest); // Bad Request
     }
 
     _context.ProductCategories.Add(productCategory);

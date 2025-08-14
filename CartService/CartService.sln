@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService", "CartService.csproj", "{8C8EC62A-D6AD-4946-ABB9-23E3B773FD14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Tests", "..\CartService.Tests\CartService.Tests.csproj", "{89CB2038-B558-46C7-BE22-1D693A38ADBF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService.Tests", "..\Tests\CartService.Tests\CartService.Tests.csproj", "{89CB2038-B558-46C7-BE22-1D693A38ADBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

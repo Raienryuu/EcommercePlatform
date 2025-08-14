@@ -2,15 +2,12 @@ using System.Net;
 
 namespace Common;
 
-public abstract partial record ServiceResult<T>
+public abstract partial record ServiceResult<T> : ServiceResult
 {
   private readonly T _value;
-  public readonly bool IsSuccess;
-  public bool IsFailure => !IsSuccess;
-  public readonly HttpStatusCode StatusCode;
-  public readonly string? ErrorMessage;
 
-  protected ServiceResult(T value, bool isSuccess, HttpStatusCode statusCode, string? errorMessage)
+
+  protected ServiceResult(T value, bool isSuccess, HttpStatusCode statusCode, string? errorMessage) : base(isSuccess, statusCode, errorMessage)
   {
     _value = value;
     IsSuccess = isSuccess;
@@ -22,6 +19,10 @@ public abstract partial record ServiceResult<T>
     IsSuccess
       ? _value
       : throw new InvalidOperationException("Trying to access Value when result is Failure.");
+
+
+  public static implicit operator ServiceResult<T>(ErrorServiceResult result) => new ErrorServiceResult<T>(result.StatusCode, result.ErrorMessage!);
+
 }
 
 public abstract partial record ServiceResult(bool IsSuccess, HttpStatusCode StatusCode, string? ErrorMessage)

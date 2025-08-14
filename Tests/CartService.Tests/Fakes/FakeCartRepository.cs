@@ -29,7 +29,7 @@ public class FakeCartRepository : ICartRepository
     var retrievalSuccessful = _products.TryGetValue(g, out var cart);
     return retrievalSuccessful
       ? Task.FromResult<ServiceResult<Cart>>(ServiceResults.Success<Cart>(cart!, HttpStatusCode.OK))
-      : Task.FromResult<ServiceResult<Cart>>(ServiceResults.Error<Cart>("Didn't found the cart", HttpStatusCode.NotFound));
+      : Task.FromResult<ServiceResult<Cart>>(ServiceResults.Error("Didn't found the cart", HttpStatusCode.NotFound));
   }
 
   public Task<ServiceResult<Guid>> UpdateCart(Guid id, Cart c)

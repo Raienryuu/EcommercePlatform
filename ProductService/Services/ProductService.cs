@@ -73,7 +73,7 @@ public partial class ProductService(ProductDbContext db) : IProductService
     }
     if (updatedProduct.ConcurrencyStamp != oldProduct.ConcurrencyStamp)
     {
-      return new ErrorServiceResult<Product>(System.Net.HttpStatusCode.UnprocessableEntity, "ConcurrencyStamp mismatch");
+      return ServiceResults.Error("ConcurrencyStamp mismatch", System.Net.HttpStatusCode.UnprocessableEntity);
     }
 
     await ProductHelpers.AssignNewValuesToProduct(db, updatedProduct, oldProduct, cancellationToken);

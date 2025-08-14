@@ -130,12 +130,12 @@ public class OrderService(ILogger<OrderService> logger, OrderDbContext context, 
 
     if (order is null)
     {
-      return ServiceResults.Error<Order>("Order not found", HttpStatusCode.NotFound);
+      return ServiceResults.Error("Order not found", HttpStatusCode.NotFound);
     }
 
     if (userId != order.UserId)
     {
-      return ServiceResults.Error<Order>("Mismatch between logged user Id and order's user Id.", HttpStatusCode.Unauthorized);
+      return ServiceResults.Error("Mismatch between logged user Id and order's user Id.", HttpStatusCode.Unauthorized);
     }
 
     return ServiceResults.Success(order, HttpStatusCode.OK);
